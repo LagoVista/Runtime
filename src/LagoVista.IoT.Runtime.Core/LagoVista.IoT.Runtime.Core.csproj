@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LagoVista.Core" Version="0.8.144-alpha00856" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="0.8.145-alpha01099" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin" Version="0.8.144-alpha00970" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="0.8.145-alpha01000" />
+    <PackageReference Include="LagoVista.IoT.Logging" Version="0.8.145-alpha01073" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="0.8.145-alpha01016" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="T4ResourceGenerator - Copy.cs">
+      <DependentUpon>T4ResourceGenerator.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="T4ResourceGenerator - Copy.cs">
+      <DependentUpon>T4ResourceGenerator.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\PipelineCore.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ErrorCodeGenerator.tt">
+      <LastGenOutput>ErrorCodeGenerator.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="T4ResourceGenerator.tt">
+      <LastGenOutput>T4ResourceGenerator - Copy.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+  </ItemGroup>
+
+</Project>

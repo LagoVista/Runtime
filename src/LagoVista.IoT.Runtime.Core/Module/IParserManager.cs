@@ -2,6 +2,8 @@
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
+using LagoVista.IoT.Runtime.Core.Models.Verifiers;
+using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -22,5 +24,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
     {
 
         IMessageFieldParser GetFieldMessageParser(IMessageFieldParserConfiguration parserConfig, ILogger logger);
+    }
+
+    public interface IFieldParserVerifierRuntime
+    {
+        Task<VerificationResult> VerifyAsync(VerificationRequest<MessageFieldParserConfiguration> request);
     }
 }

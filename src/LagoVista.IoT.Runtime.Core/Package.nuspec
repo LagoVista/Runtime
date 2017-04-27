@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/LagoVista/IoTEngine</projectUrl>
     <iconUrl>http://bytemaster.blob.core.windows.net/icons/LagoVistaIcon.png</iconUrl>
-    <description>Provides Core Functionality and Specifications in the form of Interfaces for Pipeline Modules of the Execution Engine in the LagoVista IoT and Devices Framework</description>
+    <description>Provides Core Functionality and Specifications in the form of Interfaces for Pipeline Modules of the Execution Engine in the LagoVista Devices, IoT and Home Automation Framework</description>
     <releaseNotes>Initial and Unstable Release</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>HomeAutomation IoT Cloud</tags>

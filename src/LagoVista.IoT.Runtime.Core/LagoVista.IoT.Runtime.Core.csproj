@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LagoVista.Core" Version="0.8.144-alpha00856" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="0.8.145-alpha01099" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin" Version="0.8.144-alpha00970" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="0.8.145-alpha01000" />
-    <PackageReference Include="LagoVista.IoT.Logging" Version="0.8.145-alpha01073" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="0.8.145-alpha01016" />
+    <PackageReference Include="LagoVista.Core" Version="0.8.146-alpha01178" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="0.8.146-alpha01332" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin" Version="0.8.146-alpha01256" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="0.8.146-alpha01274" />
+    <PackageReference Include="LagoVista.IoT.Logging" Version="0.8.146-alpha01320" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="0.8.146-alpha01267" />
   </ItemGroup>
 
   <ItemGroup>

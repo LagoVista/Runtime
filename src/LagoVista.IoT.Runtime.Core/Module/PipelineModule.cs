@@ -5,6 +5,7 @@ using System.Diagnostics;
 using LagoVista.IoT.DeviceAdmin.Interfaces;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Processor;
+using LagoVista.Core.Validation;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -122,25 +123,49 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 while(Status == PipelineModuleStatus.Running)
                 {
                     var msg = await _listenerQueue.ReceiveAsync();
-                    ExecuteAsync(msg);
+                    
+                    /* queue will return a null message when it's "turned off", should probably change the logic to use cancellation tokens, not today though KDW 5/3/2017 */
+                    //TODO Use cancellation token rather than return null when queue is no longer listenting.
+                    if (msg != null)
+                    {
+                        ExecuteAsync(msg);
+                    }
                 }                
             });
         }
         
 
-        public virtual async Task StartAsync()
+        public virtual async Task<InvokeResult> StartAsync()
         {
             CreationDate = DateTime.Now;
             Status = PipelineModuleStatus.Running;
-            await _listenerQueue.StartListeningAsync();
+            var result = await _listenerQueue.StartListeningAsync();
+            if (result.Successful)
+            {
+                WorkLoop();
+            }
 
-            WorkLoop();
+            return result;
         }
 
-        public virtual Task StopAsync()
+        public virtual Task<InvokeResult> PauseAsync()
+        {
+            Status = PipelineModuleStatus.Paused;
+
+            return Task.FromResult(InvokeResult.Success);
+        }
+
+        public virtual Task<InvokeResult> StopAsync()
         {
             Status = PipelineModuleStatus.Idle;
-            return _listenerQueue.StopListeningAsync();
+            if (_listenerQueue != null)
+            {
+                return _listenerQueue.StopListeningAsync();
+            }
+            else
+            {
+                return Task.FromResult(InvokeResult.Success);
+            }
         }
 
         protected IPEMBus PEMBus { get { return _pemBus; } }

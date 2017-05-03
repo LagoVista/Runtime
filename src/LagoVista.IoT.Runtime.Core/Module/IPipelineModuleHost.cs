@@ -1,4 +1,5 @@
-﻿using LagoVista.IoT.Deployment.Admin.Models;
+﻿using LagoVista.Core.Validation;
+using LagoVista.IoT.Deployment.Admin.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -6,16 +7,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
 {    
     public interface IDeploymentHost : IDisposable
     {
-        DeploymentHostStates Status { get; }
+        DeploymentIntanceStates Status { get; }
 
         string Id { get; }
 
-        Task StartAsync();
+        Task<InvokeResult> StartAsync();
 
-        Task PauseAsync();
+        Task<InvokeResult> PauseAsync();
 
-        Task StopAsync();
+        Task<InvokeResult> StopAsync();
 
-        Task<bool> InitAsync(string instanceId);
+        Task<InvokeResult> InitAsync(string instanceId);
     }
 }

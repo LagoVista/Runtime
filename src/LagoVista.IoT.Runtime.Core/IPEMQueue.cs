@@ -1,4 +1,5 @@
-﻿using LagoVista.IoT.Pipeline.Admin.Models;
+﻿using LagoVista.Core.Validation;
+using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using System;
 using System.Threading.Tasks;
@@ -20,8 +21,8 @@ namespace LagoVista.IoT.Runtime.Core
 
         String Key { get; }
 
-        Task StartListeningAsync();
-        Task StopListeningAsync();
+        Task<InvokeResult> StartListeningAsync();
+        Task<InvokeResult> StopListeningAsync();
 
         Task<PipelineExectionMessage> ReceiveAsync();
 
@@ -35,6 +36,6 @@ namespace LagoVista.IoT.Runtime.Core
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task EnqueueAsync(PipelineExectionMessage message);        
+        Task<InvokeResult> EnqueueAsync(PipelineExectionMessage message);        
     }
 }

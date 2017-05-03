@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Processor;
+using LagoVista.Core.Validation;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -11,6 +12,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         Idle,
         StartingUp,
         Running,
+        Paused,
         ShuttingDown,
     }
 
@@ -22,9 +24,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         List<IPEMQueue> OutgoingQueues { get; set; }
 
-        Task StartAsync();
+        Task<InvokeResult> StartAsync();
 
-        Task StopAsync();
+        Task<InvokeResult> PauseAsync();
+
+        Task<InvokeResult> StopAsync();
 
         System.DateTime CreationDate { get; }
 

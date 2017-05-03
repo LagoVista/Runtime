@@ -1,6 +1,7 @@
 ﻿using LagoVista.Core.PlatformSupport;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Logging;
+using LagoVista.IoT.Runtime.Core.Services;
 using System.Collections.Generic;
 
 namespace LagoVista.IoT.Runtime.Core
@@ -13,6 +14,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         DeploymentInstance Instance { get; set; }
 
+        IWebSocketChannel WebSocketChannel { get; }
 
         LagoVista.IoT.DeviceManagement.Core.Managers.IDeviceManager DeviceManager { get; set; }
 

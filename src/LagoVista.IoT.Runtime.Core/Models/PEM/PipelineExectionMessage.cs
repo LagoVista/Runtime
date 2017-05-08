@@ -68,6 +68,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public string CompletionTimeStamp { get; set; }
 
+
         /// <summary>
         /// Time Stamp in MS from when the Message was Created to when it was completed.
         /// </summary>

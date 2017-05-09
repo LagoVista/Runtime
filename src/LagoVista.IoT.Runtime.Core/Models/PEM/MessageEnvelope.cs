@@ -13,10 +13,10 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             Values = new Dictionary<string, MessageValue>();
         }
 
+        public String Path { get; set; }
         public Dictionary<string, string> Headers { get; private set; }
         public int ReceivedOnPort { get; set; }
         public String FromAddress { get; set; }
-
         public EntityHeader MessageType { get; set; }
 
         public Dictionary<String, MessageValue> Values { get; set; }

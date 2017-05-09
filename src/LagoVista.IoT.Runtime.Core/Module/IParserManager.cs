@@ -25,7 +25,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
     public interface IMessageParser
     {
-
+    
     }
 
     public interface IParserManager

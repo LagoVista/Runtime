@@ -7,6 +7,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Messaging
     public struct MessageFieldParserResult
     {
         public bool Success { get; set; }
+        public String FailureReason { get; set; }
 
         public string Result { get; set; }
 
@@ -19,11 +20,12 @@ namespace LagoVista.IoT.Runtime.Core.Models.Messaging
             };
         }
 
-        public static MessageFieldParserResult FromFailure()
+        public static MessageFieldParserResult FromFailure(String reason)
         {
             return new MessageFieldParserResult()
             {
                 Success = false,
+                FailureReason = reason
             };
         }
     }

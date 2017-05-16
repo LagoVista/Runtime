@@ -1,4 +1,5 @@
 ﻿using LagoVista.Core.PlatformSupport;
+using LagoVista.IoT.DeviceMessaging.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
@@ -30,13 +31,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
     public interface IParserManager
     {
-        IMessageFieldParser GetFieldMessageParser(IMessageFieldParserConfiguration parserConfig, ILogger logger);
+        IMessageFieldParser GetFieldMessageParser(DeviceMessageDefinitionField parserConfig, ILogger logger);
 
-        IMessageParser GetMessageParser(IMessageFieldParserConfiguration parserConfig, ILogger logger);
+        IMessageParser GetMessageParser(DeviceMessageDefinitionField parserConfig, ILogger logger);
     }
 
     public interface IFieldParserVerifierRuntime
     {
-        Task<VerificationResult> VerifyAsync(VerificationRequest<MessageFieldParserConfiguration> request);
+        Task<VerificationResult> VerifyAsync(VerificationRequest<DeviceMessageDefinitionField> request);
     }
 }

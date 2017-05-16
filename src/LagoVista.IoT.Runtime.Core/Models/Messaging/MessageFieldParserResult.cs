@@ -8,6 +8,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Messaging
     {
         public bool Success { get; set; }
         public String FailureReason { get; set; }
+        public String InvalidConfiguration { get; set; }
 
         public string Result { get; set; }
 
@@ -26,6 +27,15 @@ namespace LagoVista.IoT.Runtime.Core.Models.Messaging
             {
                 Success = false,
                 FailureReason = reason
+            };
+        }
+
+        public static MessageFieldParserResult FromInvalidConfiguration(String reason)
+        {
+            return new MessageFieldParserResult()
+            {
+                Success = false,
+                InvalidConfiguration = reason
             };
         }
     }

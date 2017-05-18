@@ -1,4 +1,5 @@
 ﻿using LagoVista.Core.PlatformSupport;
+using LagoVista.Core.Validation;
 using LagoVista.IoT.DeviceMessaging.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
@@ -39,5 +40,15 @@ namespace LagoVista.IoT.Runtime.Core.Module
     public interface IFieldParserVerifierRuntime
     {
         Task<VerificationResult> VerifyAsync(VerificationRequest<DeviceMessageDefinitionField> request);
+    }
+
+    public interface IMessageFieldPreProcessor
+    {
+        InvokeResult PreProcess(DeviceMessageDefinitionField field, MessageValue value);
+    }
+
+    public interface IMessageParserFieldValidator
+    {
+        InvokeResult Validate(DeviceMessageDefinitionField field, MessageValue msgValue);
     }
 }

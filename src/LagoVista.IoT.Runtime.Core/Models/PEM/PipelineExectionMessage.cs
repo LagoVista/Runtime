@@ -68,6 +68,10 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public string CompletionTimeStamp { get; set; }
 
+        /// <summary>
+        /// Total of MS (better by subsecond) required to parse the message.
+        /// </summary>
+        public double ParsingExecutionTimeMS { get; set; }
 
         /// <summary>
         /// Time Stamp in MS from when the Message was Created to when it was completed.
@@ -83,7 +87,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// Length of either the Binary or Text Payload
         /// </summary>
        public int PayloadLength { get; set; }
-
 
         /// <summary>
         /// Byte Array that makes up the Binary Payload

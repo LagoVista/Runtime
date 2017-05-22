@@ -18,17 +18,19 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             _plannerQueue = plannerQueue;
         }
-        
+
         public async Task AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp)
         {
             PEMBus.Logger.Log(LagoVista.Core.PlatformSupport.LogLevel.Message, this.GetType().Name, "Received byte " + buffer.Length);
 
             var message = new PipelineExectionMessage()
             {
-                Id = Guid.NewGuid().ToId()          
+                PayloadType = MessagePayloadTypes.Binary
             };
 
-            var listenerInstruction = new PipelineExectionInstruction() {};
+            message.BinaryPayload = buffer;
+        
+            var listenerInstruction = new PipelineExectionInstruction() { };
             listenerInstruction.StartDateStamp = startTimeStamp.ToJSONString();
             listenerInstruction.ProcessByHostId = ModuleHost.Id;
             listenerInstruction.ExecutionTimeMS = (DateTime.Now.ToUniversalTime() - startTimeStamp).TotalMilliseconds;
@@ -43,9 +45,36 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await _plannerQueue.EnqueueAsync(message);
         }
 
-        public Task AddStringMessageAsync(string buffer, DateTime startTimeStamp)
+        public async Task AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", Dictionary<string, string> headers = null)
         {
-            return Task.FromResult(default(object));
+            var message = new PipelineExectionMessage()
+            {
+                PayloadType = MessagePayloadTypes.Binary,
+                TextPayload = buffer
+            };
+
+            message.Envelope.Path = path;
+            if (headers != null)
+            {
+                foreach (var hdr in headers)
+                {
+                    message.Envelope.Headers.Add(hdr.Key, hdr.Value);
+                }
+            }
+
+
+            var listenerInstruction = new PipelineExectionInstruction() { };
+            listenerInstruction.StartDateStamp = startTimeStamp.ToJSONString();
+            listenerInstruction.ProcessByHostId = ModuleHost.Id;
+            listenerInstruction.ExecutionTimeMS = (DateTime.Now.ToUniversalTime() - startTimeStamp).TotalMilliseconds;
+            message.Instructions.Add(listenerInstruction);
+
+            var planner = PEMBus.Instance.Solution.Value.Planner.Value;
+            var plannerInstruction = new PipelineExectionInstruction() { };
+            message.Instructions.Add(new PipelineExectionInstruction() { QueueName = planner.Key });
+            message.CurrentInstruction = plannerInstruction;
+            message.Instructions.Add(plannerInstruction);
+            await _plannerQueue.EnqueueAsync(message);
         }
     }
 }

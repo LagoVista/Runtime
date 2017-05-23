@@ -117,7 +117,123 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Common_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Common_IsPublic" xml:space="preserve">
+    <value>Is Public</value>
+  </data>
+  <data name="Common_Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="Common_Key_Help" xml:space="preserve">
+    <value>The key is used to identify this item in scripts and must be unique with respect to it's parent. One a key has been assigned, it can not be changed.</value>
+  </data>
+  <data name="Common_Key_Validation" xml:space="preserve">
+    <value>The key must use only letters and numbers, and must be lowercase and must be between 3 and 20 characters.</value>
+  </data>
+  <data name="Common_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="Verifier_Aborted" xml:space="preserve">
+    <value>Aborted after completing interations:</value>
+    <comment>Will append number of iterations completed to messages</comment>
+  </data>
+  <data name="Verifier_Actual" xml:space="preserve">
+    <value>Actual:</value>
+  </data>
+  <data name="Verifier_Component" xml:space="preserve">
+    <value>Component</value>
+  </data>
+  <data name="Verifier_Description" xml:space="preserve">
+    <value>You can add Verifiers to certain components of your deployment.  A verifier can be thought of as a test that can be ran against certain components to verifiy they behave the way you expect.</value>
+  </data>
+  <data name="Verifier_Empty" xml:space="preserve">
+    <value>-empty-</value>
+  </data>
+  <data name="Verifier_Expected" xml:space="preserve">
+    <value>Expected:</value>
+  </data>
+  <data name="Verifier_ExpectedOutput" xml:space="preserve">
+    <value>Expected Output</value>
+  </data>
+  <data name="Verifier_Expected_NotMatch_Actual" xml:space="preserve">
+    <value>Expected Value does not match Actual Value</value>
+  </data>
+  <data name="Verifier_Header" xml:space="preserve">
+    <value>Message Headers </value>
+  </data>
+  <data name="Verifier_Header_Help" xml:space="preserve">
+    <value>You can enter Key Value Pairs that represent the contents of the heades of your messages to be evaluated by the Verifier</value>
+  </data>
+  <data name="Verifier_Help" xml:space="preserve">
+    <value>You can add Verifiers to certain components of your deployment.  A verifier can be thought of as a test that can be ran against certain components to verifiy they behave the way you expect.</value>
+  </data>
+  <data name="Verifier_Input" xml:space="preserve">
+    <value>Input</value>
+  </data>
+  <data name="Verifier_InputType" xml:space="preserve">
+    <value>Input Type</value>
+  </data>
+  <data name="Verifier_InputType_Binary" xml:space="preserve">
+    <value>Binary</value>
+  </data>
+  <data name="Verifier_InputType_Help" xml:space="preserve">
+    <value>You will need to specify how the input data will be presented to the verifier, if you select string, you can simply enter the string to be used for testing.  If you select binary, you will need to enter two characters consisting of 0, 1, 2, 3...E, F, a typical binary message might look like 02 05 03 5F C3 A2 04 05</value>
+  </data>
+  <data name="Verifier_InputType_Select" xml:space="preserve">
+    <value>-select input type-</value>
+  </data>
+  <data name="Verifier_InputType_Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Verifier_IterationCountZero" xml:space="preserve">
+    <value>Nothing to do, interation count was zero</value>
+  </data>
+  <data name="Verifier_MissingExpectedOutput" xml:space="preserve">
+    <value>Missing Expected Output</value>
+  </data>
+  <data name="Verifier_MissingExpectedOutputs" xml:space="preserve">
+    <value>Missing Expected Outputs</value>
+  </data>
+  <data name="Verifier_MissingInput" xml:space="preserve">
+    <value>Input is required.</value>
+  </data>
+  <data name="Verifier_MissingInputType" xml:space="preserve">
+    <value>Missing Input Type</value>
+  </data>
+  <data name="Verifier_ParserFailed" xml:space="preserve">
+    <value>Parser Failed</value>
+  </data>
+  <data name="Verifier_PathAndQueryString" xml:space="preserve">
+    <value>Path and Query String</value>
+  </data>
+  <data name="Verifier_PathAndQueryString_Help" xml:space="preserve">
+    <value>You can provide a path and query string to test the expression. </value>
+  </data>
+  <data name="Verifier_ResultDoesNotContainKey" xml:space="preserve">
+    <value>Result set does not contain key:</value>
+    <comment>Will append some additional text to message</comment>
+  </data>
+  <data name="Verifier_ShouldSucceed" xml:space="preserve">
+    <value>Should Succeed</value>
+  </data>
+  <data name="Verifier_ShouldSucceed_Help" xml:space="preserve">
+    <value>In some cases the verifier you are testing should not succeed, you are testing a case in which it would fail.  If that is the case, this value should not be checked.</value>
+  </data>
+  <data name="Verifier_Title" xml:space="preserve">
+    <value>Verifier</value>
+  </data>
+  <data name="Verifier_VerifierType" xml:space="preserve">
+    <value>Verifier Type</value>
+  </data>
+  <data name="Verifier_VerifierType_MessageFieldParser" xml:space="preserve">
+    <value>Message Field Parser</value>
+  </data>
+  <data name="Verifier_VerifierType_Planner" xml:space="preserve">
+    <value>Planner</value>
   </data>
 </root>

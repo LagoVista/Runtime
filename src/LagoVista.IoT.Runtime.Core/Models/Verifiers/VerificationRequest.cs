@@ -12,7 +12,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         }
 
         public TConfiguration Configuration { get; set; }
-        public IVerifier Verifier { get; set; }
+        public Verifier Verifier { get; set; }
         public int Iterations { get; set; }
     }
 }

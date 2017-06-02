@@ -1,6 +1,7 @@
 ﻿using LagoVista.Core.PlatformSupport;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Logging;
+using LagoVista.IoT.Logging.Loggers;
 using LagoVista.IoT.Runtime.Core.Services;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ namespace LagoVista.IoT.Runtime.Core
     {
         List<IPEMQueue> Queues { get; }
 
-        ILogger Logger { get; }
+        IInstanceLogger Logger { get; }
 
         DeploymentInstance Instance { get; set; }
 

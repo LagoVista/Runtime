@@ -21,7 +21,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public async Task AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp)
         {
-            PEMBus.Logger.Log(LagoVista.Core.PlatformSupport.LogLevel.Message, this.GetType().Name, "Received byte " + buffer.Length);
+            //PEMBus.Logger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, this.GetType().Name, "Received byte " + buffer.Length);
 
             var message = new PipelineExectionMessage()
             {

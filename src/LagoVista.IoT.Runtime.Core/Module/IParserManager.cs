@@ -1,5 +1,6 @@
 ﻿using LagoVista.Core.PlatformSupport;
 using LagoVista.IoT.DeviceMessaging.Admin.Models;
+using LagoVista.IoT.Logging.Loggers;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
     public interface IParserManager
     {
-        IMessageFieldParser GetFieldMessageParser(DeviceMessageDefinitionField parserConfig, ILogger logger);
+        IMessageFieldParser GetFieldMessageParser(DeviceMessageDefinitionField parserConfig, IInstanceLogger logger);
 
-        IMessageParser GetMessageParser(DeviceMessageDefinition parserConfig, ILogger logger);
+        IMessageParser GetMessageParser(DeviceMessageDefinition parserConfig, IInstanceLogger logger);
     }
 }

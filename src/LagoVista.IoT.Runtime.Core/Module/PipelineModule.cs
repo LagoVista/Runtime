@@ -107,7 +107,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             instructionIndex++;
             if(instructionIndex == message.Instructions.Count)
             {
-                PEMBus.Logger.Log(LagoVista.Core.PlatformSupport.LogLevel.Message, "PipelineModule", "Message completed",new KeyValuePair<string, string>("Execution Time (ms)", message.ExecutionTimeMS.ToString()));
+                //PEMBus.Logger.Log(LagoVista.Core.PlatformSupport.LogLevel.Message, "PipelineModule", "Message completed",new KeyValuePair<string, string>("Execution Time (ms)", message.ExecutionTimeMS.ToString()));
             }
             else
             {

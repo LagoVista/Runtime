@@ -11,7 +11,9 @@ namespace LagoVista.IoT.Runtime.Core
     {
         List<IPEMQueue> Queues { get; }
 
-        IInstanceLogger Logger { get; }
+        IInstanceLogger InstanceLogger { get; }
+
+        IDeviceLogger DeviceLogger { get; }
 
         DeploymentInstance Instance { get; set; }
 

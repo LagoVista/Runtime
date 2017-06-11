@@ -7,7 +7,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 {    
     public interface IDeploymentHost : IDisposable
     {
-        DeploymentIntanceStates Status { get; }
+        DeploymentInstanceStates Status { get; }
 
         string Id { get; }
 
@@ -17,6 +17,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         Task<InvokeResult> StopAsync();
 
+        /// <summary>
+        /// To be called upon deployment.
+        /// </summary>
+        /// <param name="instanceId"></param>
+        /// <returns></returns>
         Task<InvokeResult> InitAsync(string instanceId);
+
+        /// <summary>
+        /// To be called when the instances is being removed from the host.
+        /// </summary>
+        /// <returns></returns>
+        Task<InvokeResult> CleanupAsync();
     }
 }

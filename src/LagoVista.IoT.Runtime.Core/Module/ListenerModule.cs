@@ -42,6 +42,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             message.CurrentInstruction = plannerInstruction;
             message.Instructions.Add(plannerInstruction);
 
+            await PEMBus.PEMStorage.AddMessageAsync(message);
+
             await _plannerQueue.EnqueueAsync(message);
         }
 
@@ -62,7 +64,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
             }
 
-
             var listenerInstruction = new PipelineExectionInstruction() { };
             listenerInstruction.StartDateStamp = startTimeStamp.ToJSONString();
             listenerInstruction.ProcessByHostId = ModuleHost.Id;
@@ -74,6 +75,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
             message.Instructions.Add(new PipelineExectionInstruction() { QueueName = planner.Key });
             message.CurrentInstruction = plannerInstruction;
             message.Instructions.Add(plannerInstruction);
+
+            await PEMBus.PEMStorage.AddMessageAsync(message);
+
             await _plannerQueue.EnqueueAsync(message);
         }
     }

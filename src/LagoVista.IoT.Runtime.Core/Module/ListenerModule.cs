@@ -49,7 +49,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             var message = new PipelineExectionMessage()
             {
-                PayloadType = MessagePayloadTypes.Binary,
+                PayloadType = MessagePayloadTypes.Text,
                 TextPayload = buffer
             };
 

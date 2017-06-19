@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Diagnostics;
@@ -6,6 +7,7 @@ using LagoVista.IoT.DeviceAdmin.Interfaces;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Processor;
 using LagoVista.Core.Validation;
+using LagoVista.IoT.Runtime.Core.Models.Messaging;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -169,5 +171,52 @@ namespace LagoVista.IoT.Runtime.Core.Module
         }
 
         protected IPEMBus PEMBus { get { return _pemBus; } }
+
+        protected void LogMessage(string tag, string message, params KeyValuePair<string, string>[] args)
+        {
+            var newArgs = args.ToList();
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, tag, message, newArgs.ToArray());
+        }
+
+        protected void LogVerboseMessage(string tag, string message, params KeyValuePair<string, string>[] args)
+        {
+            var newArgs = args.ToList();
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Verbose, tag, message, newArgs.ToArray());
+        }
+
+        protected void LogWarningMessage(string tag, string message, params KeyValuePair<string, string>[] args)
+        {
+            var newArgs = args.ToList();
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Warning, tag, message, newArgs.ToArray());
+        }
+
+        protected void LogErrorMessage(string tag, string message, params KeyValuePair<string, string>[] args)
+        {
+            var newArgs = args.ToList();
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
+        }
+
+        protected void LogStateChange(string tag, string oldState, string newState)
+        {
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, tag, "statusChange",
+                new KeyValuePair<string, string>("oldState", oldState),
+                new KeyValuePair<string, string>("newState", newState),
+                new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+        }
+
+        protected async void NotifyWebSocketSubscribers(String messageType, String message)
+        {
+            var msgReceiveddMsg = StatusUpdateMessage.Create(messageType, message);
+            await PEMBus.WebSocketChannel.SendToChannelAsync(msgReceiveddMsg, "instance", PEMBus.Instance.Id);
+        }
+
+        protected void NotifySMSSubscribers(string messagType, string message)
+        {
+            
+        }
     }
 }

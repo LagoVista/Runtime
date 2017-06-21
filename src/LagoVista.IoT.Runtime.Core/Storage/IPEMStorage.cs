@@ -1,5 +1,6 @@
 ﻿using LagoVista.IoT.Runtime.Core.Models.PEM;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Storage
@@ -14,6 +15,10 @@ namespace LagoVista.IoT.Runtime.Core.Storage
         Task<PipelineExectionMessage> GetMessageAsync(String id);
         Task UpdateMessageAsync(PipelineExectionMessage message);
 
-        Task MoveToDeadLetterStorageAsync(string id);
+        Task MoveToDeadLetterStorageAsync(PipelineExectionMessage message);
+
+        Task<IEnumerable<PEMIndex>> GetPEMIndexForDeviceAsync(string deviceId, int take, string dateStampAfter);
+
+        Task<IEnumerable<PEMIndex>> GetDeadLetterPEMIndexAsync(string dateStampAfter);
     }
 }

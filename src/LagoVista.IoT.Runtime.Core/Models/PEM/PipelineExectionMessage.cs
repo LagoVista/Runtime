@@ -31,7 +31,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         {
             Id = Guid.NewGuid().ToId();
 
-            CreationTimeStamp = DateTime.UtcNow.ToJSONString();
             Status = StatusTypes.Created;
 
             PayloadType = MessagePayloadTypes.Unknown;

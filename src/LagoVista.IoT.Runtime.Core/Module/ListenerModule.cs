@@ -27,18 +27,29 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 PayloadType = MessagePayloadTypes.Binary
             };
-
+            message.CreationTimeStamp = startTimeStamp.ToJSONString();
             message.BinaryPayload = buffer;
-        
-            var listenerInstruction = new PipelineExectionInstruction() { };
-            listenerInstruction.StartDateStamp = startTimeStamp.ToJSONString();
-            listenerInstruction.ProcessByHostId = ModuleHost.Id;
-            listenerInstruction.ExecutionTimeMS = (DateTime.Now.ToUniversalTime() - startTimeStamp).TotalMilliseconds;
+
+            var listenerInstruction = new PipelineExectionInstruction()
+            {
+                Name = _pipelineModuleConfiguration.Name,
+                Type = GetType().Name,
+                QueueId = "N/A",
+                StartDateStamp = startTimeStamp.ToJSONString(),
+                ProcessByHostId = ModuleHost.Id,
+                ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
+            };
+
             message.Instructions.Add(listenerInstruction);
 
             var planner = PEMBus.Instance.Solution.Value.Planner.Value;
-            var plannerInstruction = new PipelineExectionInstruction() { };
-            message.Instructions.Add(new PipelineExectionInstruction() { QueueName = planner.Key });
+            var plannerInstruction = new PipelineExectionInstruction()
+            {
+                Name = "Planner",
+                Type = "Planner",
+                QueueId = "N/A",
+            };            
+
             message.CurrentInstruction = plannerInstruction;
             message.Instructions.Add(plannerInstruction);
 
@@ -56,6 +67,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             };
 
             message.Envelope.Path = path;
+            message.CreationTimeStamp = startTimeStamp.ToJSONString();
+
             if (headers != null)
             {
                 foreach (var hdr in headers)
@@ -64,15 +77,26 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
             }
 
-            var listenerInstruction = new PipelineExectionInstruction() { };
-            listenerInstruction.StartDateStamp = startTimeStamp.ToJSONString();
-            listenerInstruction.ProcessByHostId = ModuleHost.Id;
-            listenerInstruction.ExecutionTimeMS = (DateTime.Now.ToUniversalTime() - startTimeStamp).TotalMilliseconds;
+            var listenerInstruction = new PipelineExectionInstruction()
+            {
+                Name = _pipelineModuleConfiguration.Name,
+                Type = GetType().Name,
+                QueueId = "N/A",
+                StartDateStamp = startTimeStamp.ToJSONString(),
+                ProcessByHostId = ModuleHost.Id,
+                ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
+            };
+
             message.Instructions.Add(listenerInstruction);
 
             var planner = PEMBus.Instance.Solution.Value.Planner.Value;
-            var plannerInstruction = new PipelineExectionInstruction() { };
-            message.Instructions.Add(new PipelineExectionInstruction() { QueueName = planner.Key });
+            var plannerInstruction = new PipelineExectionInstruction()
+            {
+                Name = "Planner",
+                Type = "Planner",
+                QueueId = "N/A",
+            };
+
             message.CurrentInstruction = plannerInstruction;
             message.Instructions.Add(plannerInstruction);
 

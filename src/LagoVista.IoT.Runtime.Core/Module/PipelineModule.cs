@@ -90,31 +90,60 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             InProcessCount++;
 
-            var sw = new Stopwatch();
-            sw.Start();
-            var result = await ProcessAsync(message);
-            sw.Stop();            
-
-            InProcessCount--;
-
-            message.ErrorMessages.AddRange(result.ErrorMessages);
-            message.InfoMessages.AddRange(result.InfoMessages);
-            message.WarningMessages.AddRange(result.WarningMessages);
-
-            message.ExecutionTimeMS += sw.Elapsed.TotalMilliseconds;
-            message.CurrentInstruction.ExecutionTimeMS = sw.Elapsed.TotalMilliseconds;
-            message.CurrentInstruction.ProcessByHostId = ModuleHost.Id;
-
-            var instructionIndex = message.Instructions.IndexOf(message.CurrentInstruction);
-            instructionIndex++;
-            if(instructionIndex == message.Instructions.Count)
+            try
             {
-                //PEMBus.Logger.Log(LagoVista.Core.PlatformSupport.LogLevel.Message, "PipelineModule", "Message completed",new KeyValuePair<string, string>("Execution Time (ms)", message.ExecutionTimeMS.ToString()));
+                var sw = new Stopwatch();
+                sw.Start();
+                var result = await ProcessAsync(message);
+                sw.Stop();
+
+                PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}.execution", sw.Elapsed);
+                PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}");
+
+                message.ErrorMessages.AddRange(result.ErrorMessages);
+                message.InfoMessages.AddRange(result.InfoMessages);
+                message.WarningMessages.AddRange(result.WarningMessages);
+
+                message.ExecutionTimeMS += sw.Elapsed.TotalMilliseconds;
+                message.CurrentInstruction.ExecutionTimeMS = sw.Elapsed.TotalMilliseconds;
+                message.CurrentInstruction.ProcessByHostId = ModuleHost.Id;
+
+                if (result.Success)
+                {
+                    var instructionIndex = message.Instructions.IndexOf(message.CurrentInstruction);
+                    instructionIndex++;
+                    if (instructionIndex == message.Instructions.Count)
+                    {
+                        message.Status = message.WarningMessages.Count > 0 ? StatusTypes.CompletedWithWarnings : StatusTypes.Completed;
+                        message.CurrentInstruction = null;
+                        await PEMBus.PEMStorage.UpdateMessageAsync(message);
+                    }
+                    else
+                    {
+                        message.CurrentInstruction = message.Instructions[instructionIndex];
+                        await PEMBus.PEMStorage.UpdateMessageAsync(message);
+                        var nextQueue = PEMBus.Queues.Where(que => que.PipelineModuleId == message.CurrentInstruction.QueueId).FirstOrDefault();
+                        if(nextQueue == null)
+                        {
+                            throw new Exception("Could not find next queue in sequence, Queue Name (Pipeline Module Id)" + message.CurrentInstruction.QueueId);
+                        }
+
+                        await nextQueue.EnqueueAsync(message);
+                        //await QueueForNextExecutionAsync(message);
+                    }
+                }
+                else
+                {
+                    await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                message.CurrentInstruction = message.Instructions[instructionIndex];
-                await QueueForNextExecutionAsync(message); 
+                PEMBus.InstanceLogger.AddException($"pipeline.{this.GetType().Name.ToLower()}", ex);
+            }
+            finally
+            {
+                InProcessCount--;
             }
         }
 

@@ -31,9 +31,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         {
             Id = Guid.NewGuid().ToId();
 
-            Status = StatusTypes.Created;
+            Status = EntityHeader<StatusTypes>.Create(StatusTypes.Created);
 
-            PayloadType = MessagePayloadTypes.Unknown;
+            PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Unknown);
 
             Envelope = new MessageEnvelope();
 
@@ -51,9 +51,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// </summary>
         public string Id { get; set; }
 
-        public StatusTypes Status { get; set; }
+        public EntityHeader<StatusTypes> Status { get; set; }
 
-        public MessagePayloadTypes PayloadType { get; set; }
+        public EntityHeader<MessagePayloadTypes> PayloadType { get; set; }
 
         public EntityHeader<DeviceConfiguration> Configuration { get; set; }
 
@@ -97,7 +97,10 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// </summary>
         public string TextPayload { get; set; }
 
-
+        /// <summary>
+        /// The Message ID as identified by the parser
+        /// </summary>
+        public String MessageId { get; set; }
 
         public List<Error> ErrorMessages {get; set;}
         public List<Info> InfoMessages { get; set; }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Processor;
 using LagoVista.Core.Validation;
+using LagoVista.IoT.Runtime.Core.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -32,13 +33,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         System.DateTime CreationDate { get; }
 
-        int MessagesProcessed { get; }
-        int UnhandledExceptionCount { get; }
-        int ErrorCount { get; }
-        int WarningCount { get; }
-        int InProcessCount { get; }
-        TimeSpan AverageExecutionTimeMS { get; }
+        UsageMetrics GetAndResetMetrics();
+
 
         Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
+
+
     }
 }

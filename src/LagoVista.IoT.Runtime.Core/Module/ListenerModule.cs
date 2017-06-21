@@ -5,6 +5,7 @@ using LagoVista.IoT.DeviceAdmin.Interfaces;
 using System.Threading.Tasks;
 using LagoVista.Core;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
+using LagoVista.Core.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -25,10 +26,15 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             var message = new PipelineExectionMessage()
             {
-                PayloadType = MessagePayloadTypes.Binary
+                PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Binary),
+                BinaryPayload = buffer,
+                CreationTimeStamp = startTimeStamp.ToJSONString()
             };
-            message.CreationTimeStamp = startTimeStamp.ToJSONString();
-            message.BinaryPayload = buffer;
+
+            if (buffer != null)
+            {
+                message.PayloadLength = buffer.Length;
+            }
 
             var listenerInstruction = new PipelineExectionInstruction()
             {
@@ -48,7 +54,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Name = "Planner",
                 Type = "Planner",
                 QueueId = "N/A",
-            };            
+            };
 
             message.CurrentInstruction = plannerInstruction;
             message.Instructions.Add(plannerInstruction);
@@ -62,12 +68,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             var message = new PipelineExectionMessage()
             {
-                PayloadType = MessagePayloadTypes.Text,
-                TextPayload = buffer
+                PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text),
+                TextPayload = buffer,
+                CreationTimeStamp = startTimeStamp.ToJSONString()
             };
 
+            if (buffer != null)
+            {
+                message.PayloadLength = buffer.Length;
+            }
+
             message.Envelope.Path = path;
-            message.CreationTimeStamp = startTimeStamp.ToJSONString();
 
             if (headers != null)
             {

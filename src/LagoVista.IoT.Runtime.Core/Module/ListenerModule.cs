@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LagoVista.Core;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.Core.Models;
+using LagoVista.Core.Validation;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -20,100 +21,156 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _plannerQueue = plannerQueue;
         }
 
-        public async Task AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp)
+        public async Task<InvokeResult> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")
         {
-            //PEMBus.Logger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, this.GetType().Name, "Received byte " + buffer.Length);
-
-            var message = new PipelineExectionMessage()
+            try
             {
-                PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Binary),
-                BinaryPayload = buffer,
-                CreationTimeStamp = startTimeStamp.ToJSONString()
-            };
+                var message = new PipelineExectionMessage()
+                {
+                    PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Binary),
+                    BinaryPayload = buffer,
+                    CreationTimeStamp = startTimeStamp.ToJSONString()
+                };
 
-            if (buffer != null)
+                Metrics.MessagesProcessed++;
+
+                if (buffer != null)
+                {
+                    message.PayloadLength = buffer.Length;
+                }
+
+                var bytesProcessed = message.PayloadLength + (String.IsNullOrEmpty(topic) ? 0 : topic.Length);
+                LogMessage("addbinarymessage", "New Message Created.", new KeyValuePair<string, string>("messageid", message.Id));
+
+                message.Envelope.DeviceId = deviceId;
+                message.Envelope.Topic = topic;
+
+                var listenerInstruction = new PipelineExectionInstruction()
+                {
+                    Name = _pipelineModuleConfiguration.Name,
+                    Type = GetType().Name,
+                    QueueId = "N/A",
+                    StartDateStamp = startTimeStamp.ToJSONString(),
+                    ProcessByHostId = ModuleHost.Id,
+                    ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
+                };
+
+                message.Instructions.Add(listenerInstruction);
+
+                var planner = PEMBus.Instance.Solution.Value.Planner.Value;
+                var plannerInstruction = new PipelineExectionInstruction()
+                {
+                    Name = "Planner",
+                    Type = "Planner",
+                    QueueId = "N/A",
+                };
+
+                message.CurrentInstruction = plannerInstruction;
+                message.Instructions.Add(plannerInstruction);
+
+                await PEMBus.PEMStorage.AddMessageAsync(message);
+
+                await _plannerQueue.EnqueueAsync(message);
+
+                return InvokeResult.Success;
+
+            }
+            catch (Exception ex)
             {
-                message.PayloadLength = buffer.Length;
+                PEMBus.InstanceLogger.AddException("ListenerModule_AddBinaryMessageAsync", ex);
+                return InvokeResult.FromException("ListenerModule_AddBinaryMessageAsync", ex);
             }
 
-            var listenerInstruction = new PipelineExectionInstruction()
-            {
-                Name = _pipelineModuleConfiguration.Name,
-                Type = GetType().Name,
-                QueueId = "N/A",
-                StartDateStamp = startTimeStamp.ToJSONString(),
-                ProcessByHostId = ModuleHost.Id,
-                ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
-            };
-
-            message.Instructions.Add(listenerInstruction);
-
-            var planner = PEMBus.Instance.Solution.Value.Planner.Value;
-            var plannerInstruction = new PipelineExectionInstruction()
-            {
-                Name = "Planner",
-                Type = "Planner",
-                QueueId = "N/A",
-            };
-
-            message.CurrentInstruction = plannerInstruction;
-            message.Instructions.Add(plannerInstruction);
-
-            await PEMBus.PEMStorage.AddMessageAsync(message);
-
-            await _plannerQueue.EnqueueAsync(message);
         }
 
-        public async Task AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", Dictionary<string, string> headers = null)
+        public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", Dictionary<string, string> headers = null)
         {
-            var message = new PipelineExectionMessage()
+            try
             {
-                PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text),
-                TextPayload = buffer,
-                CreationTimeStamp = startTimeStamp.ToJSONString()
-            };
-
-            if (buffer != null)
-            {
-                message.PayloadLength = buffer.Length;
-            }
-
-            message.Envelope.Path = path;
-
-            if (headers != null)
-            {
-                foreach (var hdr in headers)
+                var message = new PipelineExectionMessage()
                 {
-                    message.Envelope.Headers.Add(hdr.Key, hdr.Value);
+                    PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text),
+                    TextPayload = buffer,
+                    CreationTimeStamp = startTimeStamp.ToJSONString()
+                };
+
+                var headerLength = 0;
+
+                if (headers != null)
+                {
+                    if (headers.ContainsKey("method"))
+                    {
+                        message.Envelope.Method = headers["method"];
+                    }
+
+                    if (headers.ContainsKey("topic"))
+                    {
+                        message.Envelope.Topic = headers["topic"];
+
+
+                        foreach (var header in headers)
+                        {
+                            headerLength += header.Key.Length + (String.IsNullOrEmpty(header.Value) ? 0 : header.Value.Length);
+                        }
+                    }
+
+
+                    if (headers != null)
+                    {
+                        foreach (var hdr in headers)
+                        {
+                            message.Envelope.Headers.Add(hdr.Key, hdr.Value);
+                        }
+                    }
+
                 }
+
+                message.PayloadLength = String.IsNullOrEmpty(buffer) ? 0 : buffer.Length;
+
+                var bytesProcessed = message.PayloadLength + (String.IsNullOrEmpty(path) ? 0 : path.Length) + headerLength;
+
+                LogMessage("addtextmessage", "New Message Created.", new KeyValuePair<string, string>("messageid", message.Id), new KeyValuePair<string, string>("bytes", bytesProcessed.ToString()));
+
+                Metrics.BytesProcessed += bytesProcessed;
+                Metrics.MessagesProcessed++;
+
+                message.Envelope.DeviceId = deviceId;
+                message.Envelope.Path = path;
+
+                var listenerInstruction = new PipelineExectionInstruction()
+                {
+                    Name = _pipelineModuleConfiguration.Name,
+                    Type = GetType().Name,
+                    QueueId = "N/A",
+                    StartDateStamp = startTimeStamp.ToJSONString(),
+                    ProcessByHostId = ModuleHost.Id,
+                    ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
+                };
+
+                message.Instructions.Add(listenerInstruction);
+
+                var planner = PEMBus.Instance.Solution.Value.Planner.Value;
+                var plannerInstruction = new PipelineExectionInstruction()
+                {
+                    Name = "Planner",
+                    Type = "Planner",
+                    QueueId = "N/A",
+                };
+
+                message.CurrentInstruction = plannerInstruction;
+                message.Instructions.Add(plannerInstruction);
+
+                await PEMBus.PEMStorage.AddMessageAsync(message);
+
+                await _plannerQueue.EnqueueAsync(message);
+                return InvokeResult.Success;
+
             }
-
-            var listenerInstruction = new PipelineExectionInstruction()
+            catch (Exception ex)
             {
-                Name = _pipelineModuleConfiguration.Name,
-                Type = GetType().Name,
-                QueueId = "N/A",
-                StartDateStamp = startTimeStamp.ToJSONString(),
-                ProcessByHostId = ModuleHost.Id,
-                ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
-            };
-
-            message.Instructions.Add(listenerInstruction);
-
-            var planner = PEMBus.Instance.Solution.Value.Planner.Value;
-            var plannerInstruction = new PipelineExectionInstruction()
-            {
-                Name = "Planner",
-                Type = "Planner",
-                QueueId = "N/A",
-            };
-
-            message.CurrentInstruction = plannerInstruction;
-            message.Instructions.Add(plannerInstruction);
-
-            await PEMBus.PEMStorage.AddMessageAsync(message);
-
-            await _plannerQueue.EnqueueAsync(message);
+                PEMBus.InstanceLogger.AddException("ListenerModule_AddStringMessageAsync", ex);
+                return InvokeResult.FromException("ListenerModule_AddStringMessageAsync", ex);
+            }
         }
     }
 }

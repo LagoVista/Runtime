@@ -100,7 +100,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// <summary>
         /// The Message ID as identified by the parser
         /// </summary>
-        public String MessageId { get; set; }
+        public String MessageId { get; set; }    
 
         public List<Error> ErrorMessages {get; set;}
         public List<Info> InfoMessages { get; set; }

@@ -19,6 +19,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
     public interface IPipelineModule
     {
+        UsageMetrics Metrics { get; }
+
         IPipelineModuleHost ModuleHost { get; }
 
         PipelineModuleStatus Status { get; }
@@ -35,9 +37,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         UsageMetrics GetAndResetMetrics();
 
-
         Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
-
-
     }
 }

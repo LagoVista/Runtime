@@ -79,11 +79,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
         public List<IPEMQueue> OutgoingQueues { get; set; }
 
         public DateTime CreationDate { get; private set; }
-        
+
         public abstract Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
 
 
-        private UsageMetrics Metrics
+        public UsageMetrics Metrics
         {
             get
             {
@@ -98,7 +98,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             //TODO: This __could__ be a bottle neck, not sure though.
             /* This needs to be VERY, VERY fast since it will block anyone elses access to writing metrics */
-            lock(_pipelineMetrics)
+            lock (_pipelineMetrics)
             {
                 var clonedMetrics = new UsageMetrics();
                 clonedMetrics.EndTimeStamp = DateTime.UtcNow.ToJSONString();
@@ -115,7 +115,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     clonedMetrics.MessagesPerSecond = clonedMetrics.MessagesProcessed / (clonedMetrics.ElapsedMS * 1000.0);
                 }
                 clonedMetrics.WarningCount = _pipelineMetrics.WarningCount;
-                if(clonedMetrics.MessagesProcessed > 0)
+                if (clonedMetrics.MessagesProcessed > 0)
                 {
                     clonedMetrics.AvergeProcessingMs = Math.Round(clonedMetrics.ProcessingMS / clonedMetrics.MessagesProcessed, 3);
                 }
@@ -149,7 +149,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Metrics.ProcessingMS += sw.Elapsed.TotalMilliseconds;
                 Metrics.MessagesProcessed++;
                 Metrics.BytesProcessed += message.PayloadLength;
-                
+
 
                 PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}.execution", sw.Elapsed);
                 PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}");
@@ -210,7 +210,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
                     LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
-                    message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.MissingPipelineQueue.ToError());
+                    foreach (var err in message.ErrorMessages)
+                    {
+                        message.ErrorMessages.Add(err);
+                    }
+
                     message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
                     Metrics.ErrorCount++;
                     message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
@@ -221,7 +225,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
                 LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
-                message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.MissingPipelineQueue.ToError());
+                message.ErrorMessages.Add(new Error()
+                {
+                    Message = ex.Message,
+                    Details = ex.StackTrace,
+                    DeviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN",                     
+                });
+
                 message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.ErrorCount++;

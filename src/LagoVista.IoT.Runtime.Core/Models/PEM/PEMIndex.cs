@@ -8,6 +8,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
     {
         public String DeviceId { get; set; }
         public String MessageId { get; set; }
+        public String Topic { get; set; }
         public String PEM_URI { get; set; }
         public String Status { get; set; }
         public String CreatedTimeStamp { get; set; }

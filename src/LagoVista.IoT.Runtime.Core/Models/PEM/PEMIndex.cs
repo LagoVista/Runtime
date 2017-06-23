@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
+
+    /* NOTE NOTE NOTE: Have a bit of a leaky abstraction here, I want to keep the PEM index record here because it belongs here
+     * but we also need it for managing devices and doing diagnostics, we have an abreviated version here
+     */
     public class PEMIndex : TableStorageEntity
     {
         public String DeviceId { get; set; }

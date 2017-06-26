@@ -359,18 +359,27 @@ namespace LagoVista.IoT.Runtime.Core.Module
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
         }
 
-        protected void StateChanged(States newState)
+        protected  async void StateChanged(States newState)
         {
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
                 new KeyValuePair<string, string>("oldState", _state.ToString()),
                 new KeyValuePair<string, string>("newState", newState.ToString()),
                 new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
 
-            SendNotificationAsync(Targets.WebSocket, "Status Change", new StateChangeNotification()
+            var stateChangeNotification = new StateChangeNotification()
             {
-                 OldState = _state.ToString(),
-                 NewState = newState.ToString(),
-            });
+                OldState = _state.ToString(),
+                NewState = newState.ToString(),
+            };
+
+            var msg = new Notification();
+            msg.Payload = JsonConvert.SerializeObject(stateChangeNotification);
+            msg.PayloadType = typeof(StateChangeNotification).Name;
+            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
+            msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.Text = "Status Change";
+
+            await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, msg);
 
             _state = newState;
         }
@@ -385,8 +394,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
             var msg = new Notification();
             msg.Payload = JsonConvert.SerializeObject(payload);
             msg.PayloadType = typeof(TPayload).Name;
-            msg.Channel = Services.Channels.PipelineModule;
+            msg.Channel =  EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
             msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.Text = text;
+
+            await PEMBus.NotificationPublisher.PublishAsync(target, msg);
+
+            msg = new Notification();
+            msg.Payload = JsonConvert.SerializeObject(payload);
+            msg.PayloadType = typeof(TPayload).Name;
+            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance);
+            msg.ChannelId = PEMBus.Instance.Id;
             msg.Text = text;
 
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
@@ -395,8 +413,15 @@ namespace LagoVista.IoT.Runtime.Core.Module
         protected async void SendNotificationAsync(Targets target, String text)
         {
             var msg = new Notification();
-            msg.Channel = Services.Channels.PipelineModule;
+            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
             msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.Text = text;
+
+            await PEMBus.NotificationPublisher.PublishAsync(target, msg);
+
+            msg = new Notification();
+            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance);
+            msg.ChannelId = PEMBus.Instance.Id;
             msg.Text = text;
 
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);

@@ -30,6 +30,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.Messaging
         [JsonProperty("channelId")]
         public string ChannelId { get; set; }
 
+        [JsonProperty("title")]
+        public String Title { get; set; }
+
         [JsonProperty("text")]
         public String Text { get; set; }
 

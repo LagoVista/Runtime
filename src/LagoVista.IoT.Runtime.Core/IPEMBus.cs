@@ -20,7 +20,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         DeploymentInstance Instance { get; set; }
 
-        IWebSocketChannel WebSocketChannel { get; }
+        INotificationPublisher NotificationPublisher { get; }
 
         LagoVista.IoT.DeviceManagement.Core.Managers.IDeviceManager DeviceManager { get; set; }
 

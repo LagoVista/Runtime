@@ -12,6 +12,8 @@ using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.Core.Models;
 using LagoVista.IoT.Logging;
 using LagoVista.IoT.Runtime.Core.Models;
+using Newtonsoft.Json;
+using LagoVista.IoT.Runtime.Core.Services;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -343,23 +345,40 @@ namespace LagoVista.IoT.Runtime.Core.Module
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
         }
 
-        protected void LogStateChange(string tag, string oldState, string newState)
+        protected void StateChanged(string tag, string oldState, string newState)
         {
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, tag, "statusChange",
                 new KeyValuePair<string, string>("oldState", oldState),
                 new KeyValuePair<string, string>("newState", newState),
                 new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+
+            SendNotificationAsync(Targets.WebSocket, "Status Change", new StateChangeNotification()
+            {
+                 OldState = oldState,
+                 NewState = newState
+            });
         }
 
-        protected async void NotifyWebSocketSubscribers(String messageType, String message)
+        protected async void SendNotificationAsync<TPayload>(Targets target, String text, TPayload payload)
         {
-            var msgReceiveddMsg = StatusUpdateMessage.Create(messageType, message);
-            await PEMBus.WebSocketChannel.SendToChannelAsync(msgReceiveddMsg, "instance", PEMBus.Instance.Id);
+            var msg = new Notification();
+            msg.Payload = JsonConvert.SerializeObject(payload);
+            msg.PayloadType = typeof(TPayload).Name;
+            msg.Channel = Services.Channels.PipelineModule;
+            msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.Text = text;
+
+            await PEMBus.NotificationPublisher.PublishAsync(target, msg);
         }
 
-        protected void NotifySMSSubscribers(string messagType, string message)
+        protected async void SendNotificationAsync<TPayload>(Targets target, String text)
         {
+            var msg = new Notification();
+            msg.Channel = Services.Channels.PipelineModule;
+            msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.Text = text;
 
+            await PEMBus.NotificationPublisher.PublishAsync(target, msg);
         }
     }
 }

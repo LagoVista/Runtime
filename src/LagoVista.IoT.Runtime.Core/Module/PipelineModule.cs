@@ -17,6 +17,17 @@ using LagoVista.IoT.Runtime.Core.Services;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
+    public enum States
+    {
+        Idle,
+        Starting,
+        Running,
+        Listening,
+        Stopping,
+        Stopped,
+        FatalError
+    }
+
     public abstract class PipelineModule : IPipelineModule
     {
         IPEMQueue _listenerQueue;
@@ -25,6 +36,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
         IPipelineModuleConfiguration _pipelineModuleConfiguration;
         List<IPEMQueue> _secondaryOutputQueues;
         UsageMetrics _pipelineMetrics;
+
+
+        States _state = States.Idle;
 
         //TODO: SHould condolidate constructors with call to this(....);
 
@@ -345,18 +359,25 @@ namespace LagoVista.IoT.Runtime.Core.Module
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
         }
 
-        protected void StateChanged(string tag, string oldState, string newState)
+        protected void StateChanged(States newState)
         {
-            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, tag, "statusChange",
-                new KeyValuePair<string, string>("oldState", oldState),
-                new KeyValuePair<string, string>("newState", newState),
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
+                new KeyValuePair<string, string>("oldState", _state.ToString()),
+                new KeyValuePair<string, string>("newState", newState.ToString()),
                 new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
 
             SendNotificationAsync(Targets.WebSocket, "Status Change", new StateChangeNotification()
             {
-                 OldState = oldState,
-                 NewState = newState
+                 OldState = _state.ToString(),
+                 NewState = newState.ToString(),
             });
+
+            _state = newState;
+        }
+
+        public States State
+        {
+            get { return _state; }
         }
 
         protected async void SendNotificationAsync<TPayload>(Targets target, String text, TPayload payload)
@@ -371,7 +392,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
         }
 
-        protected async void SendNotificationAsync<TPayload>(Targets target, String text)
+        protected async void SendNotificationAsync(Targets target, String text)
         {
             var msg = new Notification();
             msg.Channel = Services.Channels.PipelineModule;

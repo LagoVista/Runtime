@@ -23,6 +23,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.Messaging
         [JsonProperty("channel")]
         public Channels Channel { get; set; }
 
+        [JsonProperty("verbosity")]
+        public NotificationVerbosity Verbosity { get; set; }
+
         [JsonProperty("channelId")]
         public string ChannelId { get; set; }
 

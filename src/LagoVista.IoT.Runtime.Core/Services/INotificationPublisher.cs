@@ -18,6 +18,13 @@ namespace LagoVista.IoT.Runtime.Core.Services
         PipelineModule,
     }
 
+    public enum NotificationVerbosity
+    {
+        Diagnostics,
+        Normal,
+        Errors,
+    }
+
     public enum Targets
     {
         WebSocket,
@@ -27,10 +34,10 @@ namespace LagoVista.IoT.Runtime.Core.Services
 
     public interface INotificationPublisher
     {
-        Task PublishAsync(Targets target, Notification notification);
+        Task PublishAsync(Targets target, Notification notification, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
 
-        Task PublishAsync<TPayload>(Targets target, Channels channel, string channelId, TPayload message);
+        Task PublishAsync<TPayload>(Targets target, Channels channel, string channelId, TPayload message, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
 
-        Task PUblishAsync<TPayload>(Targets target, Channels channel, string channelId, String text, TPayload message);
+        Task PublishAsync<TPayload>(Targets target, Channels channel, string channelId, String text, TPayload message, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
     }
 }

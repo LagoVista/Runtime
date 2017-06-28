@@ -6,6 +6,7 @@ using System.Text;
 
 namespace LagoVista.IoT.Runtime.Core
 {
+    [DomainDescriptor]
     public class VerifierDomain
     {
         public const string Verifiers = "Verifiers";

@@ -175,11 +175,8 @@
   <data name="Verifier_Help" xml:space="preserve">
     <value>You can add Verifiers to certain components of your deployment.  A verifier can be thought of as a test that can be ran against certain components to verifiy they behave the way you expect.</value>
   </data>
-  <data name="Verifier_Input" xml:space="preserve">
-    <value>Input</value>
-  </data>
   <data name="Verifier_InputType" xml:space="preserve">
-    <value>Input Type</value>
+    <value>Payload Type</value>
   </data>
   <data name="Verifier_InputType_Binary" xml:space="preserve">
     <value>Binary</value>
@@ -216,6 +213,9 @@
   </data>
   <data name="Verifier_PathAndQueryString_Help" xml:space="preserve">
     <value>You can provide a path and query string to test the expression. </value>
+  </data>
+  <data name="Verifier_Payload" xml:space="preserve">
+    <value>Payload</value>
   </data>
   <data name="Verifier_ResultDoesNotContainKey" xml:space="preserve">
     <value>Result set does not contain key:</value>

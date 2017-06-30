@@ -75,10 +75,10 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Component, FieldType: FieldTypes.EntityHeaderPicker, IsRequired: true, ResourceType: typeof(RuntimeCoreResources))]
         public EntityHeader Component { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Input, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Payload, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
         public string Input { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.Text, ResourceType: typeof(RuntimeCoreResources))]
         public string ExpectedOutput { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]

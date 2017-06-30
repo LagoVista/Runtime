@@ -15,7 +15,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
             Component = component;
             VerifierType = EntityHeader<VerifierTypes>.Create(type);
             Results = new ObservableCollection<VerificationResult>();
-            ErrorMessage = new List<string>();
+            ErrorMessages = new List<string>();
         }
 
         public string Id { get; set; }
@@ -26,10 +26,10 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public EntityHeader<VerifierTypes> VerifierType { get; set; }
 
         public EntityHeader Component { get; set; }
-        public int IterationCompleted { get; set; }
+        public int IterationsCompleted { get; set; }
         public double ExecutionTimeMS { get; set; }
         public bool Success { get; set; }
-        public List<string> ErrorMessage { get; set; }
+        public List<string> ErrorMessages { get; set; }
         public ObservableCollection<VerificationResult> Results {get; set;}
         public string DatabaseName { get; set; }
         public string EntityType { get; set; }

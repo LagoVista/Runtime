@@ -111,9 +111,6 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 //Resources:RuntimeCoreResources:Verifier_Help
 
 		public static string Verifier_Help { get { return GetResourceString("Verifier_Help"); } }
-//Resources:RuntimeCoreResources:Verifier_Input
-
-		public static string Verifier_Input { get { return GetResourceString("Verifier_Input"); } }
 //Resources:RuntimeCoreResources:Verifier_InputType
 
 		public static string Verifier_InputType { get { return GetResourceString("Verifier_InputType"); } }
@@ -153,6 +150,9 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 //Resources:RuntimeCoreResources:Verifier_PathAndQueryString_Help
 
 		public static string Verifier_PathAndQueryString_Help { get { return GetResourceString("Verifier_PathAndQueryString_Help"); } }
+//Resources:RuntimeCoreResources:Verifier_Payload
+
+		public static string Verifier_Payload { get { return GetResourceString("Verifier_Payload"); } }
 //Resources:RuntimeCoreResources:Verifier_ResultDoesNotContainKey
 
 
@@ -208,7 +208,6 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 			public const string Verifier_Header = "Verifier_Header";
 			public const string Verifier_Header_Help = "Verifier_Header_Help";
 			public const string Verifier_Help = "Verifier_Help";
-			public const string Verifier_Input = "Verifier_Input";
 			public const string Verifier_InputType = "Verifier_InputType";
 			public const string Verifier_InputType_Binary = "Verifier_InputType_Binary";
 			public const string Verifier_InputType_Help = "Verifier_InputType_Help";
@@ -222,6 +221,7 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 			public const string Verifier_ParserFailed = "Verifier_ParserFailed";
 			public const string Verifier_PathAndQueryString = "Verifier_PathAndQueryString";
 			public const string Verifier_PathAndQueryString_Help = "Verifier_PathAndQueryString_Help";
+			public const string Verifier_Payload = "Verifier_Payload";
 			public const string Verifier_ResultDoesNotContainKey = "Verifier_ResultDoesNotContainKey";
 			public const string Verifier_ShouldSucceed = "Verifier_ShouldSucceed";
 			public const string Verifier_ShouldSucceed_Help = "Verifier_ShouldSucceed_Help";

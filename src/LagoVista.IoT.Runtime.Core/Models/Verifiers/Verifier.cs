@@ -1,5 +1,6 @@
 ﻿using LagoVista.Core.Attributes;
 using LagoVista.Core.Models;
+using LagoVista.Core.Validation;
 using LagoVista.IoT.DeviceAdmin.Models;
 using LagoVista.IoT.Logging.Exceptions;
 using LagoVista.IoT.Runtime.Core.Resources;
@@ -12,8 +13,12 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
 {
     public enum VerifierTypes
     {
+        [EnumLabel(Verifier.VerifierType_NotSpecified, RuntimeCoreResources.Names.VerifierType_NotSpecified, typeof(RuntimeCoreResources))]
+        NotSpecified,
         [EnumLabel(Verifier.VerifierType_MessageFieldParser, RuntimeCoreResources.Names.Verifier_VerifierType_MessageFieldParser, typeof(RuntimeCoreResources))]
         MessageFieldParser,
+        [EnumLabel(Verifier.VerifierType_MessageParser, RuntimeCoreResources.Names.Verifier_VerifierType_MessageParser, typeof(RuntimeCoreResources))]
+        MessageParser,
         [EnumLabel(Verifier.VerifierType_Planner, RuntimeCoreResources.Names.Verifier_VerifierType_Planner, typeof(RuntimeCoreResources))]
         Planner
     }
@@ -32,7 +37,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public const string InputType_Binary = "binary";
         public const string InputType_Text = "text";
 
+        public const string VerifierType_NotSpecified = "notspecified";
         public const string VerifierType_MessageFieldParser = "messagefieldparser";
+        public const string VerifierType_MessageParser = "message";
         public const string VerifierType_Planner = "planner";
 
         public string DatabaseName { get; set; }
@@ -42,6 +49,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         {
             Headers = new ObservableCollection<Header>();
             ExpectedOutputs = new ObservableCollection<ExpectedValue>();
+            VerifierType = EntityHeader<VerifierTypes>.Create(VerifierTypes.NotSpecified);
         }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Common_Key, HelpResource: RuntimeCoreResources.Names.Common_Key_Help, FieldType: FieldTypes.Key, RegExValidationMessageResource: RuntimeCoreResources.Names.Common_Key_Validation, ResourceType: typeof(RuntimeCoreResources), IsRequired: true)]
@@ -61,18 +69,86 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString, FieldType: FieldTypes.Text, HelpResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString_Help, ResourceType: typeof(RuntimeCoreResources))]
         public String PathAndQueryString { get; set; }
 
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Topic, FieldType: FieldTypes.Text,  ResourceType: typeof(RuntimeCoreResources))]
+        public String Topic { get; set; }
+
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Component, FieldType: FieldTypes.EntityHeaderPicker, IsRequired: true, ResourceType: typeof(RuntimeCoreResources))]
         public EntityHeader Component { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Input, FieldType: FieldTypes.MultiLineText, IsRequired: true, ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Input, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
         public string Input { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.MultiLineText, IsRequired: true, ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
         public string ExpectedOutput { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.MultiLineText, IsRequired: true, ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
         public ObservableCollection<ExpectedValue> ExpectedOutputs { get; set; }
 
+        [CustomValidator]
+        public void Validate(ValidationResult result, Actions action)
+        {
+            switch(VerifierType.Value)
+            {
+                case VerifierTypes.Planner:
+                    
+                    break;
+                case VerifierTypes.NotSpecified:
+                    result.Errors.Add(new ErrorMessage() { Message = "Verifier Type Not Specified." });
+                    break;
+                case VerifierTypes.MessageParser:
+                    if(String.IsNullOrEmpty(Input) && String.IsNullOrEmpty(PathAndQueryString) && String.IsNullOrEmpty(Topic) && Headers.Count == 0)
+                    {
+                        result.Errors.Add(new ErrorMessage() { Message = "Must Supply at a minimum an Input, Path/Query String, Topic or Header." });
+                    }
+
+                    if(ExpectedOutputs.Count == 0)
+                    {
+                        //TODO: Add translation and error code
+                        result.Errors.Add(new ErrorMessage() { Message = "Must Supply at least one Expected Output." });
+                    }
+
+                    foreach(var expectedOutput in ExpectedOutputs)
+                    {
+                        if(String.IsNullOrEmpty(expectedOutput.Key))
+                        {
+                            result.Errors.Add(new ErrorMessage() { Message = "Key is Required for All Specified Expected Outputs, please fix or remove any incomplete expected values." });
+                        }
+
+                        if (String.IsNullOrEmpty(expectedOutput.Value))
+                        {
+                            result.Errors.Add(new ErrorMessage() { Message = "Value is Required for All Specified Expected Outputs, please fix or remove any incomplete expected values." });
+                        }
+                    }
+
+                    foreach (var expectedOutput in Headers)
+                    {
+                        if (String.IsNullOrEmpty(expectedOutput.Name))
+                        {
+                            result.Errors.Add(new ErrorMessage() { Message = "Name is Required for All Available Headers, please fix or remove any incomplete headers." });
+                        }
+
+                        if (String.IsNullOrEmpty(expectedOutput.Value))
+                        {
+                            result.Errors.Add(new ErrorMessage() { Message = "Value is Required for All Available Headers, please fix or remove any incomplete headers." });
+                        }
+                    }
+
+                    break;
+                case VerifierTypes.MessageFieldParser:
+                    if (String.IsNullOrEmpty(Input) && String.IsNullOrEmpty(PathAndQueryString) && String.IsNullOrEmpty(Topic) && Headers.Count == 0)
+                    {
+                        result.Errors.Add(new ErrorMessage() { Message = "Must Supply at a minimum an Input, Path/Query String, Topic or Header." });
+                    }
+
+                    if (String.IsNullOrEmpty(ExpectedOutput))
+                    {
+                        //TODO: Add translation and error code
+                        result.Errors.Add(new ErrorMessage() { Message = "Expected Output is a Required Field." });
+                    }
+                    break;
+            }            
+        }
+       
 
         public byte[] GetBinaryPayload()
         {

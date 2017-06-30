@@ -138,6 +138,9 @@
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
+  <data name="VerifierType_NotSpecified" xml:space="preserve">
+    <value>Not Specified</value>
+  </data>
   <data name="Verifier_Aborted" xml:space="preserve">
     <value>Aborted after completing interations:</value>
     <comment>Will append number of iterations completed to messages</comment>
@@ -227,11 +230,17 @@
   <data name="Verifier_Title" xml:space="preserve">
     <value>Verifier</value>
   </data>
+  <data name="Verifier_Topic" xml:space="preserve">
+    <value>Topic</value>
+  </data>
   <data name="Verifier_VerifierType" xml:space="preserve">
     <value>Verifier Type</value>
   </data>
   <data name="Verifier_VerifierType_MessageFieldParser" xml:space="preserve">
     <value>Message Field Parser</value>
+  </data>
+  <data name="Verifier_VerifierType_MessageParser" xml:space="preserve">
+    <value>Message</value>
   </data>
   <data name="Verifier_VerifierType_Planner" xml:space="preserve">
     <value>Planner</value>

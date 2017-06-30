@@ -169,15 +169,24 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 //Resources:RuntimeCoreResources:Verifier_Title
 
 		public static string Verifier_Title { get { return GetResourceString("Verifier_Title"); } }
+//Resources:RuntimeCoreResources:Verifier_Topic
+
+		public static string Verifier_Topic { get { return GetResourceString("Verifier_Topic"); } }
 //Resources:RuntimeCoreResources:Verifier_VerifierType
 
 		public static string Verifier_VerifierType { get { return GetResourceString("Verifier_VerifierType"); } }
 //Resources:RuntimeCoreResources:Verifier_VerifierType_MessageFieldParser
 
 		public static string Verifier_VerifierType_MessageFieldParser { get { return GetResourceString("Verifier_VerifierType_MessageFieldParser"); } }
+//Resources:RuntimeCoreResources:Verifier_VerifierType_MessageParser
+
+		public static string Verifier_VerifierType_MessageParser { get { return GetResourceString("Verifier_VerifierType_MessageParser"); } }
 //Resources:RuntimeCoreResources:Verifier_VerifierType_Planner
 
 		public static string Verifier_VerifierType_Planner { get { return GetResourceString("Verifier_VerifierType_Planner"); } }
+//Resources:RuntimeCoreResources:VerifierType_NotSpecified
+
+		public static string VerifierType_NotSpecified { get { return GetResourceString("VerifierType_NotSpecified"); } }
 
 		public static class Names
 		{
@@ -217,9 +226,12 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 			public const string Verifier_ShouldSucceed = "Verifier_ShouldSucceed";
 			public const string Verifier_ShouldSucceed_Help = "Verifier_ShouldSucceed_Help";
 			public const string Verifier_Title = "Verifier_Title";
+			public const string Verifier_Topic = "Verifier_Topic";
 			public const string Verifier_VerifierType = "Verifier_VerifierType";
 			public const string Verifier_VerifierType_MessageFieldParser = "Verifier_VerifierType_MessageFieldParser";
+			public const string Verifier_VerifierType_MessageParser = "Verifier_VerifierType_MessageParser";
 			public const string Verifier_VerifierType_Planner = "Verifier_VerifierType_Planner";
+			public const string VerifierType_NotSpecified = "VerifierType_NotSpecified";
 		}
 	}
 }

@@ -14,6 +14,8 @@ using LagoVista.IoT.Logging;
 using LagoVista.IoT.Runtime.Core.Models;
 using Newtonsoft.Json;
 using LagoVista.IoT.Runtime.Core.Services;
+using LagoVista.IoT.DeviceManagement.Core.Models;
+using System.Globalization;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -166,7 +168,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Metrics.MessagesProcessed++;
                 Metrics.BytesProcessed += message.PayloadLength;
 
-
                 PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}.execution", sw.Elapsed);
                 PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}");
 
@@ -187,6 +188,31 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         message.Status = EntityHeader<StatusTypes>.Create(message.WarningMessages.Count > 0 ? StatusTypes.CompletedWithWarnings : StatusTypes.Completed);
                         message.CurrentInstruction = null;
                         message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
+
+                        var deviceConfig = PEMBus.Instance.Solution.Value.DeviceConfigurations.Where(cfg => cfg.Id == message.Device.DeviceConfiguration.Id).FirstOrDefault();
+
+                        if (message.Envelope.Values.Count > 0)
+                        {
+                            var inverseTimeKey  = $"{(DateTime.MaxValue.Ticks - message.CreationTimeStamp.ToDateTime().Ticks).ToString("D19")}";
+                            var archive = new DeviceArchive();
+                            archive.DeviceConfigurationId = message.Device.DeviceConfiguration.Id;
+                            archive.PartitionKey = message.Device.Id;
+                            archive.RowKey = $"{inverseTimeKey}.{message.Id}";
+                            archive.DeviceId = message.Device.DeviceId;
+                            archive.DeviceConfigurationVersionId = deviceConfig.Value.ConfigurationVersion;
+                            archive.PEMMessageId = message.Id;
+                            archive.Timestamp = message.CreationTimeStamp;
+                            foreach (var value in message.Envelope.Values)
+                            {
+                                if (value.Value.HasValue)
+                                {
+                                    archive.Properties.Add(value.Key, value.Value.Value); // .Value.Value.Value.Value.Value.Value :) I still stand by the approach
+                                }
+                            }
+
+                            await PEMBus.DeviceManager.ArchiveManager.AddArchiveAsync(PEMBus.Instance.DeviceRepository.Value, archive);
+                        }
+
                         await PEMBus.PEMStorage.UpdateMessageAsync(message);
                     }
                     else
@@ -245,7 +271,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     Message = ex.Message,
                     Details = ex.StackTrace,
-                    DeviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN",                     
+                    DeviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN",
                 });
 
                 message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
@@ -359,7 +385,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
         }
 
-        protected  async void StateChanged(States newState)
+        protected async void StateChanged(States newState)
         {
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
                 new KeyValuePair<string, string>("oldState", _state.ToString()),
@@ -394,7 +420,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             var msg = new Notification();
             msg.Payload = JsonConvert.SerializeObject(payload);
             msg.PayloadType = typeof(TPayload).Name;
-            msg.Channel =  EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
+            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
             msg.ChannelId = _pipelineModuleConfiguration.Id;
             msg.Text = text;
 

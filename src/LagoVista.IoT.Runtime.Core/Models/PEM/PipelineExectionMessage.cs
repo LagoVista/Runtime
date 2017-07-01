@@ -55,8 +55,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public EntityHeader<MessagePayloadTypes> PayloadType { get; set; }
 
-        public EntityHeader<DeviceConfiguration> Configuration { get; set; }
-
         public Device Device { get; set; }
 
         public  PipelineExectionInstruction CurrentInstruction { get; set; }

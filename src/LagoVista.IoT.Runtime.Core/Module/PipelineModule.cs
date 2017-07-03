@@ -191,28 +191,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                         var deviceConfig = PEMBus.Instance.Solution.Value.DeviceConfigurations.Where(cfg => cfg.Id == message.Device.DeviceConfiguration.Id).FirstOrDefault();
 
-                        if (message.Envelope.Values.Count > 0)
-                        {
-                            var inverseTimeKey  = $"{(DateTime.MaxValue.Ticks - message.CreationTimeStamp.ToDateTime().Ticks).ToString("D19")}";
-                            var archive = new DeviceArchive();
-                            archive.DeviceConfigurationId = message.Device.DeviceConfiguration.Id;
-                            archive.PartitionKey = message.Device.Id;
-                            archive.RowKey = $"{inverseTimeKey}.{message.Id}";
-                            archive.DeviceId = message.Device.DeviceId;
-                            archive.DeviceConfigurationVersionId = deviceConfig.Value.ConfigurationVersion;
-                            archive.PEMMessageId = message.Id;
-                            archive.Timestamp = message.CreationTimeStamp;
-                            foreach (var value in message.Envelope.Values)
-                            {
-                                if (value.Value.HasValue)
-                                {
-                                    archive.Properties.Add(value.Key, value.Value.Value); // .Value.Value.Value.Value.Value.Value :) I still stand by the approach
-                                }
-                            }
-
-                            await PEMBus.DeviceManager.ArchiveManager.AddArchiveAsync(PEMBus.Instance.DeviceRepository.Value, archive);
-                        }
-
                         await PEMBus.PEMStorage.UpdateMessageAsync(message);
                     }
                     else

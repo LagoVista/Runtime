@@ -5,6 +5,7 @@ using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Processor;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Runtime.Core.Models;
+using LagoVista.IoT.DeviceAdmin.Interfaces;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -35,8 +36,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         System.DateTime CreationDate { get; }
 
-        UsageMetrics GetAndResetMetrics();
+        UsageMetrics GetAndResetMetrics(DateTime dateStamp);
 
         Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
+
+        IPipelineModuleConfiguration Configuration { get; }
     }
 }

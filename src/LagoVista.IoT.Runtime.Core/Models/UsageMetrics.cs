@@ -1,5 +1,7 @@
 ﻿using LagoVista.Core;
+using LagoVista.Core.Attributes;
 using LagoVista.Core.Models;
+using LagoVista.IoT.Runtime.Core.Resources;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +16,18 @@ namespace LagoVista.IoT.Runtime.Core.Models
     {
         public UsageMetrics(String hostId, String instanceId, string pipelineModuleId)
         {
+            if(!String.IsNullOrEmpty(PipelineModuleId))
+            {
+                PartitionKey = PipelineModuleId;
+            } else if(!String.IsNullOrEmpty(InstanceId))
+            {
+                PartitionKey = InstanceId;
+            }
+            else if(!String.IsNullOrEmpty(HostId))
+            {
+                PartitionKey = HostId;
+            }
+
             HostId = HostId;
             InstanceId = instanceId;
             PipelineModuleId = pipelineModuleId;
@@ -24,7 +38,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
 
         }
 
-        public String StartStamp { get; set; }
+        public String StartTimeStamp { get; set; }
         public String EndTimeStamp { get; set; }
         public double ElapsedMS { get; set; }
         public double MessagesPerSecond { get; set; }
@@ -33,6 +47,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public String InstanceId { get; set; }
         public String PipelineModuleId { get; set; }
         public int MessagesProcessed { get; set; }
+        public int DeadLetterCount { get; set; }
         public long BytesProcessed { get; set; }
         public int ErrorCount { get; set; }
         public int WarningCount { get; set; }
@@ -41,7 +56,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
 
         public void Reset(String previousEndTime = null)
         {
-            StartStamp = previousEndTime == null ? DateTime.UtcNow.ToJSONString() : previousEndTime;
+            StartTimeStamp = previousEndTime == null ? DateTime.UtcNow.ToJSONString() : previousEndTime;
             EndTimeStamp = String.Empty;
 
             ElapsedMS = 0.0;
@@ -52,6 +67,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
             WarningCount = 0;
             ActiveCount = 0;
             ProcessingMS = 0;
+            DeadLetterCount = 0;
         }
     }
 }

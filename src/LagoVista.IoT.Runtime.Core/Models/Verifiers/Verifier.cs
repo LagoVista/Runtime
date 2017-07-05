@@ -2,6 +2,7 @@
 using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.DeviceAdmin.Models;
+using LagoVista.IoT.DeviceMessaging.Admin.Models;
 using LagoVista.IoT.Logging.Exceptions;
 using LagoVista.IoT.Runtime.Core.Resources;
 using System;

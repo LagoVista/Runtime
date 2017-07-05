@@ -121,6 +121,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 var clonedMetrics = new UsageMetrics();
                 clonedMetrics.EndTimeStamp = actualDataStamp.ToJSONString();
+                clonedMetrics.StartTimeStamp = _pipelineMetrics.StartTimeStamp;
                 clonedMetrics.RowKey = $"{(DateTime.MaxValue.Ticks - actualDataStamp.Ticks).ToString("D19")}.{Guid.NewGuid().ToId()}";
 
                 clonedMetrics.ActiveCount = _pipelineMetrics.ActiveCount;

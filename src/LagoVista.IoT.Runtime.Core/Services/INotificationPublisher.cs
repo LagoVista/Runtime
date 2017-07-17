@@ -11,11 +11,15 @@ namespace LagoVista.IoT.Runtime.Core.Services
         Org,
         Team,
         User,
+
         Host,
         Instance,
         DeviceGroup,
         Device,
         PipelineModule,
+        Route,
+        DeviceConfiguration,
+        MessageType,
     }
 
     public enum NotificationVerbosity

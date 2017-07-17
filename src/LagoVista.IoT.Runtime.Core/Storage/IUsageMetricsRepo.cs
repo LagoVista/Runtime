@@ -1,4 +1,5 @@
-﻿using LagoVista.IoT.Runtime.Core.Models;
+﻿using LagoVista.IoT.Deployment.Admin.Models;
+using LagoVista.IoT.Runtime.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -16,19 +16,10 @@ using Newtonsoft.Json;
 using LagoVista.IoT.Runtime.Core.Services;
 using LagoVista.IoT.DeviceManagement.Core.Models;
 using System.Globalization;
+using LagoVista.IoT.Deployment.Admin.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
-    public enum States
-    {
-        Idle,
-        Starting,
-        Running,
-        Listening,
-        Stopping,
-        Stopped,
-        FatalError
-    }
 
     public abstract class PipelineModule : IPipelineModule
     {
@@ -38,8 +29,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
         IPipelineModuleConfiguration _pipelineModuleConfiguration;
         List<IPEMQueue> _secondaryOutputQueues;
         UsageMetrics _pipelineMetrics;
-
-        States _state = States.Idle;
+        string _stateChangeTimeStamp;
+        PipelineModuleStatus _state = PipelineModuleStatus.Idle;
 
         //TODO: SHould condolidate constructors with call to this(....);
 
@@ -52,7 +43,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _secondaryOutputQueues = secondaryOutputQueues;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, pipelineModuleConfiguration.Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
         }
 
@@ -64,7 +55,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _secondaryOutputQueues = secondaryOutputQueues;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, pipelineModuleConfiguration.Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
 
         }
@@ -76,7 +67,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, pipelineModuleConfiguration.Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
         }
 
@@ -86,9 +77,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, pipelineModuleConfiguration.Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
         }
+
+        public string Id { get; set; }
 
         public IPipelineModuleHost ModuleHost { get; private set; }
 
@@ -122,8 +115,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var clonedMetrics = new UsageMetrics();                
                 clonedMetrics.HostId = PEMBus.Instance.Host.Id;
                 clonedMetrics.InstanceId = PEMBus.Instance.Id;
-                clonedMetrics.PipelineModuleId = Configuration.Id;
-                clonedMetrics.PartitionKey = Configuration.Id;
+                clonedMetrics.PipelineModuleId = Id;
+                clonedMetrics.PartitionKey = Id;
                 clonedMetrics.RowKey = $"{(DateTime.MaxValue.Ticks - actualDataStamp.Ticks).ToString("D19")}.{Guid.NewGuid().ToId()}";
 
                 clonedMetrics.EndTimeStamp = actualDataStamp.ToJSONString();
@@ -298,7 +291,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         public virtual async Task<InvokeResult> StartAsync()
         {
             CreationDate = DateTime.Now;
-            Status = PipelineModuleStatus.Running;
+            StateChanged(PipelineModuleStatus.Running);
             var result = await _listenerQueue.StartListeningAsync();
             if (result.Successful)
             {
@@ -310,20 +303,19 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public virtual Task<InvokeResult> PauseAsync()
         {
-            Status = PipelineModuleStatus.Paused;
-
+            StateChanged(PipelineModuleStatus.Paused);
             return Task.FromResult(InvokeResult.Success);
         }
 
         public virtual Task<InvokeResult> StopAsync()
         {
-            Status = PipelineModuleStatus.Idle;
             if (_listenerQueue != null)
             {
                 return _listenerQueue.StopListeningAsync();
             }
             else
             {
+                StateChanged(PipelineModuleStatus.Idle);
                 return Task.FromResult(InvokeResult.Success);
             }
         }
@@ -333,7 +325,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         protected void LogMessage(string tag, string message, params KeyValuePair<string, string>[] args)
         {
             var newArgs = args.ToList();
-            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, tag, message, newArgs.ToArray());
         }
 
@@ -341,7 +333,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             Metrics.ErrorCount++;
             var newArgs = args.ToList();
-            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
             PEMBus.InstanceLogger.AddException(tag, ex, newArgs.ToArray());
         }
 
@@ -349,14 +341,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             Metrics.ErrorCount++;
             var newArgs = args.ToList();
-            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
             PEMBus.InstanceLogger.AddError(err, newArgs.ToArray());
         }
 
         protected void LogVerboseMessage(string tag, string message, params KeyValuePair<string, string>[] args)
         {
             var newArgs = args.ToList();
-            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Verbose, tag, message, newArgs.ToArray());
         }
 
@@ -364,7 +356,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             Metrics.WarningCount++;
             var newArgs = args.ToList();
-            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Warning, tag, message, newArgs.ToArray());
         }
 
@@ -372,16 +364,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             Metrics.ErrorCount++;
             var newArgs = args.ToList();
-            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
         }
 
-        protected async void StateChanged(States newState)
+        protected async void StateChanged(PipelineModuleStatus newState)
         {
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
                 new KeyValuePair<string, string>("oldState", _state.ToString()),
                 new KeyValuePair<string, string>("newState", newState.ToString()),
-                new KeyValuePair<string, string>("pipelineModuleId", _pipelineModuleConfiguration.Id));
+                new KeyValuePair<string, string>("pipelineModuleId", Id));
 
             var stateChangeNotification = new StateChangeNotification()
             {
@@ -393,7 +385,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             msg.Payload = JsonConvert.SerializeObject(stateChangeNotification);
             msg.PayloadType = typeof(StateChangeNotification).Name;
             msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
-            msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.ChannelId = Id;
             msg.Text = "Status Change";
 
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, msg);
@@ -401,7 +393,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _state = newState;
         }
 
-        public States State
+        public String StateChangeTimeStamp
+        {
+            get { return _stateChangeTimeStamp;  }
+            set { _stateChangeTimeStamp = value; }
+        }
+
+        public PipelineModuleStatus State
         {
             get { return _state; }
         }
@@ -412,7 +410,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             msg.Payload = JsonConvert.SerializeObject(payload);
             msg.PayloadType = typeof(TPayload).Name;
             msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
-            msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.ChannelId = Id;
             msg.Text = text;
 
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
@@ -431,7 +429,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             var msg = new Notification();
             msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
-            msg.ChannelId = _pipelineModuleConfiguration.Id;
+            msg.ChannelId = Id;
             msg.Text = text;
 
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);

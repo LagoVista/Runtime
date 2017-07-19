@@ -30,7 +30,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
         List<IPEMQueue> _secondaryOutputQueues;
         UsageMetrics _pipelineMetrics;
         string _stateChangeTimeStamp;
-        PipelineModuleStatus _state = PipelineModuleStatus.Idle;
 
         //TODO: SHould condolidate constructors with call to this(....);
 
@@ -371,13 +370,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
         protected async void StateChanged(PipelineModuleStatus newState)
         {
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
-                new KeyValuePair<string, string>("oldState", _state.ToString()),
+                new KeyValuePair<string, string>("oldState", Status.ToString()),
                 new KeyValuePair<string, string>("newState", newState.ToString()),
                 new KeyValuePair<string, string>("pipelineModuleId", Id));
 
             var stateChangeNotification = new StateChangeNotification()
             {
-                OldState = _state.ToString(),
+                OldState = Status.ToString(),
                 NewState = newState.ToString(),
             };
 
@@ -390,7 +389,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, msg);
 
-            _state = newState;
+            Status = newState;
         }
 
         public String StateChangeTimeStamp
@@ -398,11 +397,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             get { return _stateChangeTimeStamp;  }
             set { _stateChangeTimeStamp = value; }
         }
-
-        public PipelineModuleStatus State
-        {
-            get { return _state; }
-        }
+        
 
         protected async void SendNotificationAsync<TPayload>(Targets target, String text, TPayload payload)
         {

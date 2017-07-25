@@ -18,6 +18,6 @@
   </metadata>
   <files>
     <file src="ReadMe.html" target="" />
-    <file src="bin\release\netstandard1.2\*.dll" target="lib\netstandard1.2" />
+    <file src="bin\release\netstandard1.3\*.dll" target="lib\netstandard1.3" />
   </files>
 </package>

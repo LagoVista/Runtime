@@ -18,26 +18,12 @@ namespace LagoVista.IoT.Runtime.Core.Models
             return resources;
         }
 
-
         public String StartTimeStamp { get; set; }
         public String EndTimeStamp { get; set; }
         public double ElapsedMS { get; set; }
-
-        public long CurrentProcessMemoryAllocation { get; set; }
-
-        public long BytesSent { get; set; }
-        public long BytesReceived { get; set; }
-        public long PacketErrors { get; set; }
-        public long ProcessCount { get; set; }
-
-        public long CurrentProcessThreadCount { get; set; }
-        public double CurrentProcessCPUTimeMS { get; set; }
-
-        public byte CurrentProcessCPUPercent { get; set; }
-
-        public long AllProcessThreadCount { get; set; }
-        public double AllProcessCPUTimeMS { get; set; }
-        
-        public byte AllProcessCPUPercent { get; set; }
+        public string Status { get; set; }
+        public string StatusDetails { get; set; }
+        public string CpuPercent { get; set; }
+        public string MemoryPercent { get; set; }
     }
 }

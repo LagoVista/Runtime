@@ -36,6 +36,11 @@ namespace LagoVista.IoT.Runtime.Core
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task<InvokeResult> EnqueueAsync(PipelineExectionMessage message);        
+        Task<InvokeResult> EnqueueAsync(PipelineExectionMessage message);
+
+        /// <summary>
+        /// Returns true if nothing in the queue, false if it has at least one item.
+        /// </summary>
+        Task<bool> CheckIfEmptyAsync();
     }
 }

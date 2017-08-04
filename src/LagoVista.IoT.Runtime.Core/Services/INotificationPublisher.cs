@@ -31,6 +31,7 @@ namespace LagoVista.IoT.Runtime.Core.Services
 
     public enum Targets
     {
+        Sms,
         WebSocket,
         Push,
         WebSocketAndPush
@@ -39,9 +40,8 @@ namespace LagoVista.IoT.Runtime.Core.Services
     public interface INotificationPublisher
     {
         Task PublishAsync(Targets target, Notification notification, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
-
         Task PublishAsync<TPayload>(Targets target, Channels channel, string channelId, TPayload message, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
-
         Task PublishAsync<TPayload>(Targets target, Channels channel, string channelId, String text, TPayload message, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
+        Task PublishTextAsync(Targets target, Channels channel, string channelId, String text, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
     }
 }

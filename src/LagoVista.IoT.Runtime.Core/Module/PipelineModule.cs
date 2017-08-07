@@ -124,6 +124,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 clonedMetrics.ActiveCount = _pipelineMetrics.ActiveCount;
                 clonedMetrics.ErrorCount = _pipelineMetrics.ErrorCount;
                 clonedMetrics.WarningCount = _pipelineMetrics.WarningCount;
+                clonedMetrics.DeadLetterCount = _pipelineMetrics.DeadLetterCount;
                 clonedMetrics.BytesProcessed = _pipelineMetrics.BytesProcessed;
                 clonedMetrics.MessagesProcessed = _pipelineMetrics.MessagesProcessed;
                 clonedMetrics.ProcessingMS = Math.Round(_pipelineMetrics.ProcessingMS, 4);
@@ -229,11 +230,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         await nextQueue.EnqueueAsync(message);
                     }
                 }
-                else /* Processing Faile d*/
+                else /* Processing Failed*/
                 {
                     var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
                     LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
-                    foreach (var err in message.ErrorMessages)
+                    foreach (var err in result.ErrorMessages)
                     {
                         message.ErrorMessages.Add(err);
                     }
@@ -255,6 +256,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Details = ex.StackTrace,
                     DeviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN",
                 });
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Exception in loop " + ex.Message);
+                Console.ResetColor();
 
                 message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
@@ -283,6 +288,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         ExecuteAsync(msg);
                     }
                 }
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Cancelled out " + this.GetType().Name.ToLower() + " " + Status.ToString());
+                Console.ResetColor();
             });
         }
 
@@ -290,7 +299,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         public virtual async Task<InvokeResult> StartAsync()
         {
             CreationDate = DateTime.Now;
-            StateChanged(PipelineModuleStatus.Running);
+            await StateChanged(PipelineModuleStatus.Running);
             var result = await _listenerQueue.StartListeningAsync();
             if (result.Successful)
             {
@@ -300,22 +309,22 @@ namespace LagoVista.IoT.Runtime.Core.Module
             return result;
         }
 
-        public virtual Task<InvokeResult> PauseAsync()
+        public async virtual Task<InvokeResult> PauseAsync()
         {
-            StateChanged(PipelineModuleStatus.Paused);
-            return Task.FromResult(InvokeResult.Success);
+            await StateChanged(PipelineModuleStatus.Paused);
+            return InvokeResult.Success;
         }
 
-        public virtual Task<InvokeResult> StopAsync()
-        {
+        public async virtual Task<InvokeResult> StopAsync()
+        {            
             if (_listenerQueue != null)
             {
-                return _listenerQueue.StopListeningAsync();
+                return await _listenerQueue.StopListeningAsync();
             }
             else
             {
-                StateChanged(PipelineModuleStatus.Idle);
-                return Task.FromResult(InvokeResult.Success);
+                await StateChanged(PipelineModuleStatus.Idle);
+                return InvokeResult.Success;
             }
         }
 
@@ -367,7 +376,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
         }
 
-        protected async void StateChanged(PipelineModuleStatus newState)
+        protected async Task StateChanged(PipelineModuleStatus newState)
         {
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
                 new KeyValuePair<string, string>("oldState", Status.ToString()),
@@ -376,8 +385,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             var stateChangeNotification = new StateChangeNotification()
             {
-                OldState = Status.ToString(),
-                NewState = newState.ToString(),
+                OldState = EntityHeader<PipelineModuleStatus>.Create(Status),
+                NewState = EntityHeader<PipelineModuleStatus>.Create(Status),
             };
 
             var msg = new Notification();

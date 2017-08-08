@@ -111,12 +111,12 @@ namespace LagoVista.IoT.Runtime.Core.Module
             /* This needs to be VERY, VERY fast since it will block anyone elses access to writing metrics */
             lock (_pipelineMetrics)
             {
-                var clonedMetrics = new UsageMetrics();                
+                var clonedMetrics = new UsageMetrics();
+                clonedMetrics.RowKey = actualDataStamp.ToInverseTicksRowKey();
                 clonedMetrics.HostId = PEMBus.Instance.Host.Id;
                 clonedMetrics.InstanceId = PEMBus.Instance.Id;
                 clonedMetrics.PipelineModuleId = Id;
-                clonedMetrics.PartitionKey = Id;
-                clonedMetrics.RowKey = $"{(DateTime.MaxValue.Ticks - actualDataStamp.Ticks).ToString("D19")}.{Guid.NewGuid().ToId()}";
+                clonedMetrics.PartitionKey = $"{clonedMetrics.InstanceId}.{Id}";
 
                 clonedMetrics.EndTimeStamp = actualDataStamp.ToJSONString();
                 clonedMetrics.StartTimeStamp = _pipelineMetrics.StartTimeStamp;                

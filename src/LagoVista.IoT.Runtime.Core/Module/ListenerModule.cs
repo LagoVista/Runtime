@@ -7,6 +7,7 @@ using LagoVista.Core;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
+using Newtonsoft.Json;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -133,6 +134,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 Metrics.BytesProcessed += bytesProcessed;
                 Metrics.MessagesProcessed++;
+
+                var json = JsonConvert.SerializeObject(Metrics);
+                Console.WriteLine("LISTENER => " + Id);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(json);
+                Console.WriteLine("----------------------------");
+
 
                 message.Envelope.DeviceId = deviceId;
                 message.Envelope.Path = path;

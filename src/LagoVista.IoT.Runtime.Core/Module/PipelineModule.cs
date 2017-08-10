@@ -105,7 +105,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         }
         
 
-        public UsageMetrics GetAndResetMetrics(DateTime actualDataStamp)
+        public UsageMetrics GetAndResetMetrics(DateTime actualDataStamp, string hostVersion)
         {
             //TODO: This __could__ be a bottle neck, not sure though.
             /* This needs to be VERY, VERY fast since it will block anyone elses access to writing metrics */
@@ -115,8 +115,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 clonedMetrics.RowKey = actualDataStamp.ToInverseTicksRowKey();
                 clonedMetrics.HostId = PEMBus.Instance.Host.Id;
                 clonedMetrics.InstanceId = PEMBus.Instance.Id;
+                clonedMetrics.Version = hostVersion;
                 clonedMetrics.PipelineModuleId = Id;
-                clonedMetrics.PartitionKey = $"{clonedMetrics.InstanceId}.{Id}";
+                clonedMetrics.PartitionKey = Id;
 
                 clonedMetrics.EndTimeStamp = actualDataStamp.ToJSONString();
                 clonedMetrics.StartTimeStamp = _pipelineMetrics.StartTimeStamp;                
@@ -128,6 +129,20 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 clonedMetrics.BytesProcessed = _pipelineMetrics.BytesProcessed;
                 clonedMetrics.MessagesProcessed = _pipelineMetrics.MessagesProcessed;
                 clonedMetrics.ProcessingMS = Math.Round(_pipelineMetrics.ProcessingMS, 4);
+
+                var json = JsonConvert.SerializeObject(_pipelineMetrics);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+
+                Console.WriteLine("MODULE: " + Id);
+                Console.WriteLine(json);
+                Console.WriteLine("----------------------------");
+
+                json = JsonConvert.SerializeObject(clonedMetrics);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(json);
+                Console.WriteLine("----------------------------");
+                Console.WriteLine("--");
+                Console.WriteLine("--");
 
                 clonedMetrics.ElapsedMS = Math.Round((clonedMetrics.EndTimeStamp.ToDateTime() - clonedMetrics.StartTimeStamp.ToDateTime()).TotalMilliseconds, 3);
                 if (clonedMetrics.ElapsedMS > 1)

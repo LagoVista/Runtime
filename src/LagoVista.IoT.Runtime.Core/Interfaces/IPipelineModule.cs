@@ -31,7 +31,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         System.DateTime CreationDate { get; }
 
-        UsageMetrics GetAndResetMetrics(DateTime dateStamp);
+        UsageMetrics GetAndResetMetrics(DateTime dateStamp, string hostVersion);
 
         Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
 

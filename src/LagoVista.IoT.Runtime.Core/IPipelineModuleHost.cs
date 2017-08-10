@@ -10,6 +10,6 @@ namespace LagoVista.IoT.Runtime.Core
 
         HostTypes HostType { get; }
 
-        Task<UsageMetrics> GetAndResetMetricsAsync(DateTime dateStamp);
+        Task<UsageMetrics> GetAndResetMetricsAsync(DateTime dateStamp, string hostVersion);
     }
 }

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Processor;
 using LagoVista.Core.Validation;
-using LagoVista.IoT.Runtime.Core.Models;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceAdmin.Interfaces;
+using LagoVista.IoT.Pipeline.Admin.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
+
     public interface IPipelineModule
     {
         String Id { get; set; }
@@ -36,5 +37,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
         Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
 
         IPipelineModuleConfiguration Configuration { get; }
+
+        PipelineModuleType ModuleType { get; set; }
+        string CustomModuleType { get; set; }
     }
 }

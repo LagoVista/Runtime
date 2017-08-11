@@ -17,6 +17,7 @@ using LagoVista.IoT.Runtime.Core.Services;
 using LagoVista.IoT.DeviceManagement.Core.Models;
 using System.Globalization;
 using LagoVista.IoT.Deployment.Admin.Models;
+using LagoVista.IoT.Pipeline.Admin.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -111,40 +112,29 @@ namespace LagoVista.IoT.Runtime.Core.Module
             /* This needs to be VERY, VERY fast since it will block anyone elses access to writing metrics */
             lock (_pipelineMetrics)
             {
-                var clonedMetrics = new UsageMetrics();
-                clonedMetrics.RowKey = actualDataStamp.ToInverseTicksRowKey();
-                clonedMetrics.HostId = PEMBus.Instance.Host.Id;
-                clonedMetrics.InstanceId = PEMBus.Instance.Id;
-                clonedMetrics.Version = hostVersion;
-                clonedMetrics.PipelineModuleId = Id;
-                clonedMetrics.PartitionKey = Id;
+                var clonedMetrics = new UsageMetrics()
+                {
+                    RowKey = actualDataStamp.ToInverseTicksRowKey(),
+                    HostId = PEMBus.Instance.Host.Id,
+                    InstanceId = PEMBus.Instance.Id,
+                    Version = hostVersion,
+                    PipelineModuleId = Id,
+                    PartitionKey = Id,
 
-                clonedMetrics.EndTimeStamp = actualDataStamp.ToJSONString();
-                clonedMetrics.StartTimeStamp = _pipelineMetrics.StartTimeStamp;                
+                    EndTimeStamp = actualDataStamp.ToJSONString(),
+                    StartTimeStamp = _pipelineMetrics.StartTimeStamp,
 
-                clonedMetrics.ActiveCount = _pipelineMetrics.ActiveCount;
-                clonedMetrics.ErrorCount = _pipelineMetrics.ErrorCount;
-                clonedMetrics.WarningCount = _pipelineMetrics.WarningCount;
-                clonedMetrics.DeadLetterCount = _pipelineMetrics.DeadLetterCount;
-                clonedMetrics.BytesProcessed = _pipelineMetrics.BytesProcessed;
-                clonedMetrics.MessagesProcessed = _pipelineMetrics.MessagesProcessed;
-                clonedMetrics.ProcessingMS = Math.Round(_pipelineMetrics.ProcessingMS, 4);
-
-                var json = JsonConvert.SerializeObject(_pipelineMetrics);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-
-                Console.WriteLine("MODULE: " + Id);
-                Console.WriteLine(json);
-                Console.WriteLine("----------------------------");
-
-                json = JsonConvert.SerializeObject(clonedMetrics);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(json);
-                Console.WriteLine("----------------------------");
-                Console.WriteLine("--");
-                Console.WriteLine("--");
+                    ActiveCount = _pipelineMetrics.ActiveCount,
+                    ErrorCount = _pipelineMetrics.ErrorCount,
+                    WarningCount = _pipelineMetrics.WarningCount,
+                    DeadLetterCount = _pipelineMetrics.DeadLetterCount,
+                    BytesProcessed = _pipelineMetrics.BytesProcessed,
+                    MessagesProcessed = _pipelineMetrics.MessagesProcessed,
+                    ProcessingMS = Math.Round(_pipelineMetrics.ProcessingMS, 4)
+                };
 
                 clonedMetrics.ElapsedMS = Math.Round((clonedMetrics.EndTimeStamp.ToDateTime() - clonedMetrics.StartTimeStamp.ToDateTime()).TotalMilliseconds, 3);
+
                 if (clonedMetrics.ElapsedMS > 1)
                 {
                     clonedMetrics.MessagesPerSecond = clonedMetrics.MessagesProcessed / (clonedMetrics.ElapsedMS * 1000.0);
@@ -404,13 +394,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 NewState = EntityHeader<PipelineModuleStatus>.Create(Status),
             };
 
-            var msg = new Notification();
-            msg.Payload = JsonConvert.SerializeObject(stateChangeNotification);
-            msg.PayloadType = typeof(StateChangeNotification).Name;
-            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
-            msg.ChannelId = Id;
-            msg.Text = "Status Change";
-
+            var msg = new Notification()
+            {
+                Payload = JsonConvert.SerializeObject(stateChangeNotification),
+                PayloadType = typeof(StateChangeNotification).Name,
+                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule),
+                ChannelId = Id,
+                Text = $"Status Change from {stateChangeNotification.OldState.Text} to {stateChangeNotification.NewState.Text}"
+            };
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, msg);
 
             Status = newState;
@@ -423,41 +414,45 @@ namespace LagoVista.IoT.Runtime.Core.Module
         }
         
 
-        protected async void SendNotificationAsync<TPayload>(Targets target, String text, TPayload payload)
+        protected async void SendNotification<TPayload>(Targets target, String text, TPayload payload)
         {
-            var msg = new Notification();
-            msg.Payload = JsonConvert.SerializeObject(payload);
-            msg.PayloadType = typeof(TPayload).Name;
-            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
-            msg.ChannelId = Id;
-            msg.Text = text;
-
+            var msg = new Notification()
+            {
+                Payload = JsonConvert.SerializeObject(payload),
+                PayloadType = typeof(TPayload).Name,
+                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule),
+                ChannelId = Id,
+                Text = text
+            };
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
 
-            msg = new Notification();
-            msg.Payload = JsonConvert.SerializeObject(payload);
-            msg.PayloadType = typeof(TPayload).Name;
-            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance);
-            msg.ChannelId = PEMBus.Instance.Id;
-            msg.Text = text;
-
+            msg = new Notification()
+            {
+                Payload = JsonConvert.SerializeObject(payload),
+                PayloadType = typeof(TPayload).Name,
+                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance),
+                ChannelId = PEMBus.Instance.Id,
+                Text = text
+            };
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
         }
 
-        protected async void SendNotificationAsync(Targets target, String text)
+        protected async void SendNotification(Targets target, String text)
         {
-            var msg = new Notification();
-            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule);
-            msg.ChannelId = Id;
-            msg.Text = text;
-
+            var msg = new Notification()
+            {
+                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule),
+                ChannelId = Id,
+                Text = text
+            };
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
 
-            msg = new Notification();
-            msg.Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance);
-            msg.ChannelId = PEMBus.Instance.Id;
-            msg.Text = text;
-
+            msg = new Notification()
+            {
+                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance),
+                ChannelId = PEMBus.Instance.Id,
+                Text = text
+            };
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
         }
 
@@ -465,5 +460,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             get { return _pipelineModuleConfiguration; }
         }
+
+        public PipelineModuleType ModuleType { get; set; }
+        public string CustomModuleType { get; set; }
     }
 }

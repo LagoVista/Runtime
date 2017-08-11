@@ -104,7 +104,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
             }
         }
-        
+
 
         public UsageMetrics GetAndResetMetrics(DateTime actualDataStamp, string hostVersion)
         {
@@ -160,6 +160,29 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await _outputQueue.EnqueueAsync(message);
         }
 
+        private async Task UpdateDevice(PipelineExectionMessage message)
+        {
+            message.Device.LastContact = message.CreationTimeStamp;
+            message.Device.Status = EntityHeader<DeviceStates>.Create(DeviceStates.Ready);
+            await PEMBus.DeviceManager.UpdateDeviceAsync(PEMBus.Instance.DeviceRepository.Value, message.Device, PEMBus.SystemUsers.SystemOrg, PEMBus.SystemUsers.DeviceManagerUser);
+
+            var notification = new Notification()
+            {
+                Payload = JsonConvert.SerializeObject(message.Device),
+                Channel = EntityHeader<Channels>.Create(Channels.Device),
+                ChannelId = message.Device.Id,
+                PayloadType = typeof(Device).ToString(),
+                DateStamp = DateTime.UtcNow.ToJSONString(),
+                MessageId = Guid.NewGuid().ToId(),
+                Text = "Device Updated",
+                Title = "Device Updated"
+            };
+
+
+            await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
+            await PEMBus.PEMStorage.UpdateMessageAsync(message);
+        }
+
         private async void ExecuteAsync(PipelineExectionMessage message)
         {
             Metrics.ActiveCount++;
@@ -196,9 +219,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         message.CurrentInstruction = null;
                         message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
 
-                        var deviceConfig = PEMBus.Instance.Solution.Value.DeviceConfigurations.Where(cfg => cfg.Id == message.Device.DeviceConfiguration.Id).FirstOrDefault();
-
-                        await PEMBus.PEMStorage.UpdateMessageAsync(message);
+                        await UpdateDevice(message);
                     }
                     else
                     {
@@ -263,7 +284,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 });
 
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Exception in loop " + ex.Message);
+                Console.WriteLine("Uncaught Exception in Excution Step " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
                 Console.ResetColor();
 
                 message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
@@ -321,7 +343,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         }
 
         public async virtual Task<InvokeResult> StopAsync()
-        {            
+        {
             if (_listenerQueue != null)
             {
                 return await _listenerQueue.StopListeningAsync();
@@ -409,10 +431,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public String StateChangeTimeStamp
         {
-            get { return _stateChangeTimeStamp;  }
+            get { return _stateChangeTimeStamp; }
             set { _stateChangeTimeStamp = value; }
         }
-        
+
 
         protected async void SendNotification<TPayload>(Targets target, String text, TPayload payload)
         {

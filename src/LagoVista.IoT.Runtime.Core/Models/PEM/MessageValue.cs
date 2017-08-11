@@ -6,7 +6,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
     public class MessageValue
     {
         private string _value;
-
+        public string Name { get; set; }
         public bool HasValue { get; set; }
         public string Value
         {
@@ -17,8 +17,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
                 HasValue = !string.IsNullOrEmpty(value);
             }
         }
-        public EntityHeader<Unit> Unit {get; set;}
-        public EntityHeader<State> State { get; set; }
+        public EntityHeader<UnitSet> UnitSet {get; set;}
+        public EntityHeader<StateSet> StateSet { get; set; }
         public EntityHeader<ParameterTypes> Type { get; set; }
     }
 }

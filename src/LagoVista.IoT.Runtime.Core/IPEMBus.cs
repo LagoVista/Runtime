@@ -25,7 +25,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         INotificationPublisher NotificationPublisher { get; }
 
-        LagoVista.IoT.DeviceManagement.Core.IDeviceManager DeviceManager { get; set; }
+        LagoVista.IoT.DeviceManagement.Core.IDeviceManagerRemote DeviceManager { get; set; }
 
         void AddError(Error errorCode, params KeyValuePair<string, string>[] extras);
     }

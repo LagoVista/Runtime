@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Storage
 {
+
     public interface IPEMStorage
     {
         Task AddMessageAsync(PipelineExectionMessage message);

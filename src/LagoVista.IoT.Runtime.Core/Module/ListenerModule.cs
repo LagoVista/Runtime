@@ -81,8 +81,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 PEMBus.InstanceLogger.AddException("ListenerModule_AddBinaryMessageAsync", ex);
                 return InvokeResult.FromException("ListenerModule_AddBinaryMessageAsync", ex);
             }
-
         }
+
+        public abstract Task<InvokeResult> SendResponseAsync(PipelineExectionMessage message);
 
         public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", Dictionary<string, string> headers = null)
         {
@@ -108,13 +109,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     {
                         message.Envelope.Topic = headers["topic"];
 
-
                         foreach (var header in headers)
                         {
                             headerLength += header.Key.Length + (String.IsNullOrEmpty(header.Value) ? 0 : header.Value.Length);
                         }
                     }
-
 
                     if (headers != null)
                     {

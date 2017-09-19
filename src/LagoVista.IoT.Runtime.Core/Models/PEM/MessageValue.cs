@@ -7,6 +7,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
     {
         private string _value;
         public string Name { get; set; }
+        public string Key { get; set; }
         public bool HasValue { get; set; }
         public string Value
         {

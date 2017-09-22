@@ -122,7 +122,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             message.Envelope.Headers.Add(hdr.Key, hdr.Value);
                         }
                     }
-
                 }
 
                 message.PayloadLength = String.IsNullOrEmpty(buffer) ? 0 : buffer.Length;
@@ -139,7 +138,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(json);
                 Console.WriteLine("----------------------------");
-
 
                 message.Envelope.DeviceId = deviceId;
                 message.Envelope.Path = path;

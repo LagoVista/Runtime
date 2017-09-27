@@ -1,4 +1,5 @@
-﻿using LagoVista.Core.PlatformSupport;
+﻿using LagoVista.Core.Interfaces;
+using LagoVista.Core.PlatformSupport;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Logging;
 using LagoVista.IoT.Logging.Loggers;
@@ -21,7 +22,11 @@ namespace LagoVista.IoT.Runtime.Core
 
         ISystemUsers SystemUsers { get; set; }
 
+        ISecureStorage SecureStorage { get; set; }
+
         DeploymentInstance Instance { get; set; }
+
+        IConnectionSettings UtilityStorageConnection { get; set; }
 
         INotificationPublisher NotificationPublisher { get; }
 

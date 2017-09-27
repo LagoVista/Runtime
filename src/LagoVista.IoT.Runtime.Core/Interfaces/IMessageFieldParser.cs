@@ -5,7 +5,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 {
     public interface IMessageFieldParser
     {
-        MessageFieldParserResult Parse(PipelineExectionMessage msg);
+        MessageFieldParserResult Parse(PipelineExecutionMessage msg);
 
         ParserTypes ParserType { get; }
      }

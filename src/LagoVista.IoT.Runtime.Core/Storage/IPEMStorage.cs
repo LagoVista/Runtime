@@ -8,15 +8,15 @@ namespace LagoVista.IoT.Runtime.Core.Storage
 
     public interface IPEMStorage
     {
-        Task AddMessageAsync(PipelineExectionMessage message);
+        Task AddMessageAsync(PipelineExecutionMessage message);
 
         Task RemoveMessageAsync(String id);
 
         Task InitAsync(String instanceId);
-        Task<PipelineExectionMessage> GetMessageAsync(String id);
-        Task UpdateMessageAsync(PipelineExectionMessage message);
+        Task<PipelineExecutionMessage> GetMessageAsync(String id);
+        Task UpdateMessageAsync(PipelineExecutionMessage message);
 
-        Task MoveToDeadLetterStorageAsync(PipelineExectionMessage message);
+        Task MoveToDeadLetterStorageAsync(PipelineExecutionMessage message);
 
         Task<IEnumerable<PEMIndex>> GetDeadLetterPEMIndexAsync(string dateStampAfter);
     }

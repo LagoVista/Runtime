@@ -5,6 +5,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 {
     public interface IMessageParser
     {
-        InvokeResult Parse(Runtime.Core.Models.PEM.PipelineExectionMessage pem, DeviceMessageDefinition definition);
+        InvokeResult Parse(Runtime.Core.Models.PEM.PipelineExecutionMessage pem, DeviceMessageDefinition definition);
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
-    public class PipelineExectionInstruction
+    public class PipelineExecutionInstruction
     {
         public string Name { get; set; }
         public string Type { get; set; }

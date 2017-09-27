@@ -34,7 +34,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         UsageMetrics GetAndResetMetrics(DateTime dateStamp, string hostVersion);
 
-        Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
+        Task<ProcessResult> ProcessAsync(PipelineExecutionMessage message);
 
         IPipelineModuleConfiguration Configuration { get; }
 

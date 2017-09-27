@@ -25,9 +25,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         Text
     }
 
-    public class PipelineExectionMessage
+    public class PipelineExecutionMessage
     {
-        public PipelineExectionMessage()
+        public PipelineExecutionMessage()
         {
             Id = Guid.NewGuid().ToId();
 
@@ -42,7 +42,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             WarningMessages = new List<Warning>();
             Log = new List<Info>();
 
-            Instructions = new List<PipelineExectionInstruction>();
+            Instructions = new List<PipelineExecutionInstruction>();
         }
 
 
@@ -57,9 +57,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public Device Device { get; set; }
 
-        public  PipelineExectionInstruction CurrentInstruction { get; set; }
+        public  PipelineExecutionInstruction CurrentInstruction { get; set; }
 
-        public List<PipelineExectionInstruction> Instructions { get; set; }
+        public List<PipelineExecutionInstruction> Instructions { get; set; }
 
         public string CreationTimeStamp { get; set; }
 

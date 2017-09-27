@@ -26,7 +26,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             try
             {
-                var message = new PipelineExectionMessage()
+                var message = new PipelineExecutionMessage()
                 {
                     PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Binary),
                     BinaryPayload = buffer,
@@ -46,7 +46,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.Envelope.DeviceId = deviceId;
                 message.Envelope.Topic = topic;
 
-                var listenerInstruction = new PipelineExectionInstruction()
+                var listenerInstruction = new PipelineExecutionInstruction()
                 {
                     Name = _pipelineModuleConfiguration.Name,
                     Type = GetType().Name,
@@ -59,7 +59,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.Instructions.Add(listenerInstruction);
 
                 var planner = PEMBus.Instance.Solution.Value.Planner.Value;
-                var plannerInstruction = new PipelineExectionInstruction()
+                var plannerInstruction = new PipelineExecutionInstruction()
                 {
                     Name = "Planner",
                     Type = "Planner",
@@ -83,13 +83,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
         }
 
-        public abstract Task<InvokeResult> SendResponseAsync(PipelineExectionMessage message);
+        public abstract Task<InvokeResult> SendResponseAsync(PipelineExecutionMessage message);
 
         public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", Dictionary<string, string> headers = null)
         {
             try
             {
-                var message = new PipelineExectionMessage()
+                var message = new PipelineExecutionMessage()
                 {
                     PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text),
                     TextPayload = buffer,
@@ -134,15 +134,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Metrics.MessagesProcessed++;
 
                 var json = JsonConvert.SerializeObject(Metrics);
+                /*
                 Console.WriteLine("LISTENER => " + Id);
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(json);
                 Console.WriteLine("----------------------------");
+                */
 
                 message.Envelope.DeviceId = deviceId;
                 message.Envelope.Path = path;
 
-                var listenerInstruction = new PipelineExectionInstruction()
+                var listenerInstruction = new PipelineExecutionInstruction()
                 {
                     Name = _pipelineModuleConfiguration.Name,
                     Type = GetType().Name,
@@ -155,21 +157,20 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.Instructions.Add(listenerInstruction);
 
                 var planner = PEMBus.Instance.Solution.Value.Planner.Value;
-                var plannerInstruction = new PipelineExectionInstruction()
+                var plannerInstruction = new PipelineExecutionInstruction()
                 {
-                    Name = "Planner",
+                    Name = planner.Name,
                     Type = "Planner",
-                    QueueId = "N/A",
+                    QueueId = _plannerQueue.InstanceId,
                 };
 
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
                 await PEMBus.PEMStorage.AddMessageAsync(message);
-
                 await _plannerQueue.EnqueueAsync(message);
-                return InvokeResult.Success;
 
+                return InvokeResult.Success;
             }
             catch (Exception ex)
             {

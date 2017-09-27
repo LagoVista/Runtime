@@ -91,7 +91,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public DateTime CreationDate { get; private set; }
 
-        public abstract Task<ProcessResult> ProcessAsync(PipelineExectionMessage message);
+        public abstract Task<ProcessResult> ProcessAsync(PipelineExecutionMessage message);
 
 
         public UsageMetrics Metrics
@@ -150,17 +150,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
         }
 
-        private Task FinalizeMessage(PipelineExectionMessage message)
+        private Task FinalizeMessage(PipelineExecutionMessage message)
         {
             return Task.FromResult(default(object));
         }
 
-        protected async Task QueueForNextExecutionAsync(PipelineExectionMessage message)
+        protected async Task QueueForNextExecutionAsync(PipelineExecutionMessage message)
         {
             await _outputQueue.EnqueueAsync(message);
         }
 
-        private async Task UpdateDevice(PipelineExectionMessage message)
+        private async Task UpdateDevice(PipelineExecutionMessage message)
         {
             message.Device.LastContact = message.CreationTimeStamp;
             message.Device.Status = EntityHeader<DeviceStates>.Create(DeviceStates.Ready);
@@ -183,7 +183,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await PEMBus.PEMStorage.UpdateMessageAsync(message);
         }
 
-        private async void ExecuteAsync(PipelineExectionMessage message)
+        private async void ExecuteAsync(PipelineExecutionMessage message)
         {
             Metrics.ActiveCount++;
 

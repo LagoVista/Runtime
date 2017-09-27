@@ -24,7 +24,7 @@ namespace LagoVista.IoT.Runtime.Core
         Task<InvokeResult> StartListeningAsync();
         Task<InvokeResult> StopListeningAsync();
 
-        Task<PipelineExectionMessage> ReceiveAsync();
+        Task<PipelineExecutionMessage> ReceiveAsync();
 
         /// <summary>
         /// The type of pipeline module this queue supports.
@@ -36,7 +36,7 @@ namespace LagoVista.IoT.Runtime.Core
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task<InvokeResult> EnqueueAsync(PipelineExectionMessage message);
+        Task<InvokeResult> EnqueueAsync(PipelineExecutionMessage message);
 
         /// <summary>
         /// Returns true if nothing in the queue, false if it has at least one item.

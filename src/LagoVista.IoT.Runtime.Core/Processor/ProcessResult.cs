@@ -1,4 +1,5 @@
-﻿using LagoVista.IoT.Logging;
+﻿using LagoVista.Core.Validation;
+using LagoVista.IoT.Logging;
 using System.Collections.Generic;
 
 namespace LagoVista.IoT.Runtime.Core.Processor
@@ -12,7 +13,7 @@ namespace LagoVista.IoT.Runtime.Core.Processor
             InfoMessages = new List<Info>();
         }
 
-        public bool Success { get; set; }
+        public bool Success { get { return ErrorMessages.Count == 0; } }
 
         public List<Error> ErrorMessages { get; private set; }
         public List<Warning> WarningMessages { get; private set; }
@@ -20,7 +21,7 @@ namespace LagoVista.IoT.Runtime.Core.Processor
 
         public static ProcessResult FromSuccess
         {
-            get { return new ProcessResult() { Success = true }; }
+            get { return new ProcessResult(); }
         }
 
         public static ProcessResult FromError(ErrorCode err)
@@ -28,6 +29,28 @@ namespace LagoVista.IoT.Runtime.Core.Processor
             var result = new ProcessResult();
             result.ErrorMessages.Add(err.ToError());
             return result;
+        }
+
+        public static ProcessResult FromInvokeResult(InvokeResult result)
+        {
+            if(result.Successful)
+            {
+                return ProcessResult.FromSuccess;
+            }
+
+            var processResult = new ProcessResult();
+
+            foreach(var err in result.Errors)
+            {
+                processResult.ErrorMessages.Add(new Error() { ErrorCode = err.ErrorCode, Message = err.Message });
+            }
+
+            foreach (var wrn in result.Warnings)
+            {
+                processResult.ErrorMessages.Add(new Error() { ErrorCode = wrn.ErrorCode, Message = wrn.Message });
+            }
+
+            return processResult;
         }
     }
 }

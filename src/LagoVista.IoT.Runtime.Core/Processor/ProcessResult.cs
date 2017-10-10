@@ -42,12 +42,12 @@ namespace LagoVista.IoT.Runtime.Core.Processor
 
             foreach(var err in result.Errors)
             {
-                processResult.ErrorMessages.Add(new Error() { ErrorCode = err.ErrorCode, Message = err.Message });
+                processResult.ErrorMessages.Add(new Error() { ErrorCode = err.ErrorCode, Message = err.Message, Details = err.Details });
             }
 
             foreach (var wrn in result.Warnings)
             {
-                processResult.ErrorMessages.Add(new Error() { ErrorCode = wrn.ErrorCode, Message = wrn.Message });
+                processResult.ErrorMessages.Add(new Error() { ErrorCode = wrn.ErrorCode, Message = wrn.Message, Details = wrn.Details });
             }
 
             return processResult;

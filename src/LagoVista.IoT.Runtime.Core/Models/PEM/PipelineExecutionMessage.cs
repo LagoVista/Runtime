@@ -41,6 +41,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             InfoMessages = new List<Info>();
             WarningMessages = new List<Warning>();
             Log = new List<Info>();
+            OutgoingMessages = new List<OutgoingMessage>();
 
             Instructions = new List<PipelineExecutionInstruction>();
         }
@@ -107,28 +108,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /* Execution Log */
         public List<Info> Log { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public MessageEnvelope OutgoingEnvelope { get; set; }
-
-        /// <summary>
-        /// Type of data sent back to the device
-        /// </summary>
-        public EntityHeader<MessagePayloadTypes> OutputPayloadType { get; set; }
-        /// <summary>
-        /// Size of the outgoing message
-        /// </summary>
-        public int OutgoingPayloadLength { get; set; }
-
-        /// <summary>
-        /// Text Content to be Sent back to the device
-        /// </summary>
-        public string OutgoingTextPaylaod { get; set; }
-
-        /// <summary>
-        /// Binary Content to be sent back to the device
-        /// </summary>
-        public byte[] OutgoingBinaryPayload { get; set; }
+        public List<OutgoingMessage> OutgoingMessages { get; set; }
     }
 }

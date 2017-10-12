@@ -18,6 +18,7 @@ using LagoVista.IoT.DeviceManagement.Core.Models;
 using System.Globalization;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
+using LagoVista.Core.Exceptions;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -271,6 +272,32 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                     await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
                 }
+            }
+            catch(ValidationException ex)
+            {
+                var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
+                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
+                message.ErrorMessages.Add(new Error()
+                {
+                    Message = ex.Message,
+                    Details = ex.StackTrace,
+                    DeviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN",
+                });
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Uncaught Validation Exception in Excution Step " + ex.Message);
+                foreach(var err in ex.Errors)
+                {
+                    Console.WriteLine($"\t{err.ErrorCode} - {err.Message} - {err.Details}");
+                }
+                Console.WriteLine(ex.StackTrace);
+                Console.ResetColor();
+
+                message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
+                message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
+                Metrics.ErrorCount++;
+                Metrics.DeadLetterCount++;
+                await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
             }
             catch (Exception ex)
             {

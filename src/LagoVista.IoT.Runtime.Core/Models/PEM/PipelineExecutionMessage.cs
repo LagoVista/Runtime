@@ -25,6 +25,14 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         Text
     }
 
+    public enum MessageTypes
+    {
+        Unknown,
+        Deadletter,
+        Regular,
+        InputCommand
+    }
+
     public class PipelineExecutionMessage
     {
         public PipelineExecutionMessage()
@@ -44,6 +52,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             OutgoingMessages = new List<OutgoingMessage>();
 
             Instructions = new List<PipelineExecutionInstruction>();
+
+            MessageType = EntityHeader<MessageTypes>.Create(MessageTypes.Unknown);
         }
 
 
@@ -51,6 +61,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// Unique ID assigned to the Message ID
         /// </summary>
         public string Id { get; set; }
+
+        public EntityHeader<MessageTypes> MessageType { get; set; }
 
         public EntityHeader<StatusTypes> Status { get; set; }
 
@@ -95,6 +107,11 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// String that makes up the Text Paylaod
         /// </summary>
         public string TextPayload { get; set; }
+
+        /// <summary>
+        /// A reference to the input command that triggered the message.
+        /// </summary>
+        public EntityHeader InputCommand { get; set; }
 
         /// <summary>
         /// The Message ID as identified by the parser

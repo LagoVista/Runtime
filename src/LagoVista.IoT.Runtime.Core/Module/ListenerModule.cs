@@ -143,7 +143,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 message.Envelope.DeviceId = deviceId;
                 message.Envelope.Path = path;
-
+                
                 var listenerInstruction = new PipelineExecutionInstruction()
                 {
                     Name = _pipelineModuleConfiguration.Name,

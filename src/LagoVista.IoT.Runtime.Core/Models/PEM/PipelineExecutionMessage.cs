@@ -49,7 +49,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             InfoMessages = new List<Info>();
             WarningMessages = new List<Warning>();
             Log = new List<Info>();
-            OutgoingMessages = new List<OutgoingMessage>();
+            OutputCommands = new List<OutputCommand>();
 
             Instructions = new List<PipelineExecutionInstruction>();
 
@@ -125,6 +125,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /* Execution Log */
         public List<Info> Log { get; set; }
 
-        public List<OutgoingMessage> OutgoingMessages { get; set; }
+        public List<OutputCommand> OutputCommands { get; set; }
     }
 }

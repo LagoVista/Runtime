@@ -24,10 +24,12 @@ namespace LagoVista.IoT.Runtime.Core.Processor
             get { return new ProcessResult(); }
         }
 
-        public static ProcessResult FromError(ErrorCode err)
+        public static ProcessResult FromError(ErrorCode errCode, string details = "")
         {
             var result = new ProcessResult();
-            result.ErrorMessages.Add(err.ToError());
+            var err = errCode.ToError();
+            err.Details = details;
+            result.ErrorMessages.Add(err);
             return result;
         }
 

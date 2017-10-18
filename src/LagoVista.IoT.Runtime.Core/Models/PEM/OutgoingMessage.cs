@@ -1,12 +1,27 @@
 ﻿using LagoVista.Core.Models;
 using LagoVista.IoT.DeviceAdmin.Models;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
-    public class OutputCommand
+    public class OutgoingMessage
     {
-        public EntityHeader Command { get; set; }
-        public List<MessageValue> Fields { get; set; } = new List<MessageValue>();
+        public OutgoingMessage()
+        {
+            Headers = new Dictionary<string, string>();
+        }
+
+        public EntityHeader<PayloadTypes> PayloadType { get; set; }
+
+        public Dictionary<string, string> Headers { get; private set; }
+
+        public string ContentType { get; set; }
+        public string Topic { get; set; }
+        public string Method { get; set; }
+        public string Path { get; set; }
+        public byte[] BinaryPayload { get; set; }
+        public string TextPayload { get; set; }
     }
 }

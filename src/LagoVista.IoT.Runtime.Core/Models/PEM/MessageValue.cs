@@ -86,6 +86,19 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             return geo;
         }
 
+        public MessageValue Clone(string key = "", string name = "")
+        {
+            return new MessageValue()
+            {
+                Value = this.Value,
+                Type = this.Type,
+                UnitSet = this.UnitSet,
+                StateSet = this.StateSet,
+                Name = String.IsNullOrEmpty(name) ? this.Name : name,
+                Key = String.IsNullOrEmpty(key) ? this.Key : key,
+            };
+        }
+
         /// <summary>
         ///Make sure that the message value contains valid data based on required fields and parameter type  
         /// </summary>

@@ -5,7 +5,8 @@
     <AssemblyName>LagoVista.IoT.Core.Runtime.Tests</AssemblyName>
     <PackageId>LagoVista.IoT.Core.Runtime.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.4;portable-net451+win8</PackageTargetFallback>  </PropertyGroup>
+    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.4;portable-net451+win8</PackageTargetFallback>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170425-07" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />

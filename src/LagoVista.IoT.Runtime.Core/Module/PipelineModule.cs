@@ -352,6 +352,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public virtual async Task<InvokeResult> StartAsync()
         {
+            if(_listenerQueue == null)
+            {
+                throw new NullReferenceException("Listener Queue is Null");
+            }
+
             CreationDate = DateTime.Now;
             await StateChanged(PipelineModuleStatus.Running);
             var result = await _listenerQueue.StartListeningAsync();
@@ -432,6 +437,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         protected async Task StateChanged(PipelineModuleStatus newState)
         {
+            if(newState == Status)
+            {
+                return;
+            }
+
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
                 new KeyValuePair<string, string>("oldState", Status.ToString()),
                 new KeyValuePair<string, string>("newState", newState.ToString()),
@@ -453,7 +463,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
             };
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, msg);
 
+            StateChangeTimeStamp = DateTime.Now.ToJSONString();
+
             Status = newState;
+        }
+
+        protected async Task SendChangeStateMessageAsync(string msg, PipelineModuleStatus newState)
+        {
+            SendNotification(Runtime.Core.Services.Targets.WebSocket, msg);
+            LogMessage(this.GetType().Name, msg);
+            await StateChanged(newState);
         }
 
         public String StateChangeTimeStamp
@@ -461,7 +480,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
             get { return _stateChangeTimeStamp; }
             set { _stateChangeTimeStamp = value; }
         }
-
 
         protected async void SendNotification<TPayload>(Targets target, String text, TPayload payload)
         {

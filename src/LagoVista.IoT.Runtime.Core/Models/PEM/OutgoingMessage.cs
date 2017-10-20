@@ -1,10 +1,7 @@
 ﻿using LagoVista.Core.Models;
 using LagoVista.IoT.DeviceAdmin.Models;
 using LagoVista.IoT.DeviceMessaging.Admin.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
@@ -25,5 +22,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         public string PathAndQueryString { get; set; }
         public byte[] BinaryPayload { get; set; }
         public string TextPayload { get; set; }
+        public string DeviceId { get; set; }
     }
 }

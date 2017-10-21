@@ -12,7 +12,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             Headers = new ObservableCollection<Header>();
         }
 
-        public EntityHeader<PayloadTypes> PayloadType { get; set; }
+        public EntityHeader<MessagePayloadTypes> PayloadType { get; set; }
 
         public ObservableCollection<Header> Headers { get; private set; }
 

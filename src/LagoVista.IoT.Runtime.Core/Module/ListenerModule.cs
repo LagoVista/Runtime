@@ -85,7 +85,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public abstract Task<InvokeResult> SendResponseAsync(PipelineExecutionMessage message);
 
-        public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", Dictionary<string, string> headers = null)
+        public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null)
         {
             try
             {
@@ -143,6 +143,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 message.Envelope.DeviceId = deviceId;
                 message.Envelope.Path = path;
+                message.Envelope.Topic = topic;
                 
                 var listenerInstruction = new PipelineExecutionInstruction()
                 {

@@ -470,9 +470,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         protected async Task SendChangeStateMessageAsync(string msg, PipelineModuleStatus newState)
         {
-            SendNotification(Runtime.Core.Services.Targets.WebSocket, msg);
-            LogMessage(this.GetType().Name, msg);
-            await StateChanged(newState);
+            try
+            {
+                SendNotification(Runtime.Core.Services.Targets.WebSocket, msg);
+                LogMessage(this.GetType().Name, msg);
+                await StateChanged(newState);
+            }
+            catch(Exception ex)
+            {
+                LogException("PipelineModule_SendChangeStateMessageAsync", ex);
+            }
         }
 
         public String StateChangeTimeStamp

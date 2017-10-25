@@ -212,6 +212,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 if (result.Success)
                 {
+                    
+
                     var instructionIndex = message.Instructions.IndexOf(message.CurrentInstruction);
                     instructionIndex++;
                     if (instructionIndex == message.Instructions.Count) /* We are done processing the pipe line */

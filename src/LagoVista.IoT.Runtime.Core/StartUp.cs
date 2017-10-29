@@ -1,8 +1,5 @@
-﻿using LagoVista.IoT.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using LagoVista.Core.Interfaces;
+using LagoVista.IoT.Logging;
 
 namespace LagoVista.IoT.Runtime.Core
 {

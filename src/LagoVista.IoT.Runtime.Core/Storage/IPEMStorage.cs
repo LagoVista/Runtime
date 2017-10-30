@@ -1,4 +1,5 @@
-﻿using LagoVista.IoT.Runtime.Core.Models.PEM;
+﻿using LagoVista.Core.Interfaces;
+using LagoVista.IoT.Runtime.Core.Models.PEM;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
 
         Task RemoveMessageAsync(String id);
 
-        Task InitAsync(String instanceId);
+        Task InitAsync(String instanceId, IConnectionSettings settings);
         Task<PipelineExecutionMessage> GetMessageAsync(String id);
         Task UpdateMessageAsync(PipelineExecutionMessage message);
 

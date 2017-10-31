@@ -18,7 +18,5 @@ namespace LagoVista.IoT.Runtime.Core.Storage
         Task UpdateMessageAsync(PipelineExecutionMessage message);
 
         Task MoveToDeadLetterStorageAsync(PipelineExecutionMessage message);
-
-        Task<IEnumerable<PEMIndex>> GetDeadLetterPEMIndexAsync(string dateStampAfter);
     }
 }

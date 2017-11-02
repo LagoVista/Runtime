@@ -22,13 +22,15 @@ namespace LagoVista.IoT.Runtime.Core
 
         List<IPipelineModule> Modules { get; }
 
-        Task<InvokeResult> InitAsync(string instanceId, string versionId);
+        Task<InvokeResult> InitAsync(string hostId, string instanceId, string versionId = null);
 
         Task<InvokeResult> CleanupAsync();
 
         DeploymentInstance Instance { get;  }
 
         InstanceRuntimeSummary CreateSummary();
+
+        Task<InvokeResult> SetStateAsync(DeploymentInstanceStates state);
 
         Task<InvokeResult> PauseAsync();
         Task<InvokeResult> StartListeningAsync();

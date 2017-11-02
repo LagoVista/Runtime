@@ -1,6 +1,7 @@
 ﻿using LagoVista.Core.Interfaces;
 using LagoVista.Core.PlatformSupport;
 using LagoVista.IoT.Deployment.Admin.Models;
+using LagoVista.IoT.DeviceManagement.Core;
 using LagoVista.IoT.Logging;
 using LagoVista.IoT.Logging.Loggers;
 using LagoVista.IoT.Runtime.Core.Services;
@@ -20,17 +21,17 @@ namespace LagoVista.IoT.Runtime.Core
 
         IPEMStorage PEMStorage { get; set; }
 
+        IDeviceArchiveManager DeviceArchiveManager { get; set; }
+
         ISystemUsers SystemUsers { get; set; }
 
         ISecureStorage SecureStorage { get; set; }
 
         DeploymentInstance Instance { get; set; }
-
-        IConnectionSettings UtilityStorageConnection { get; set; }
-
+       
         INotificationPublisher NotificationPublisher { get; }
 
-        LagoVista.IoT.DeviceManagement.Core.IDeviceManagerRemote DeviceManager { get; set; }
+        DeviceManagement.Core.IDeviceManager DeviceManager { get; set; }
 
         void AddError(Error errorCode, params KeyValuePair<string, string>[] extras);
     }

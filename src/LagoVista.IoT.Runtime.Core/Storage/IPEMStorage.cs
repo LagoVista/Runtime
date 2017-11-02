@@ -13,7 +13,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
 
         Task RemoveMessageAsync(String id);
 
-        Task InitAsync(String instanceId, IConnectionSettings settings);
+        Task InitAsync(String instanceId);
         Task<PipelineExecutionMessage> GetMessageAsync(String id);
         Task UpdateMessageAsync(PipelineExecutionMessage message);
 

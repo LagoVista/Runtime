@@ -44,7 +44,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _secondaryOutputQueues = secondaryOutputQueues;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
         }
 
@@ -56,7 +56,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _secondaryOutputQueues = secondaryOutputQueues;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
 
         }
@@ -68,7 +68,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
         }
 
@@ -78,7 +78,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             ModuleHost = moduleHost;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.Host.Id, pemBus.Instance.Id, Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
         }
 
@@ -116,7 +116,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var clonedMetrics = new UsageMetrics()
                 {
                     RowKey = actualDataStamp.ToInverseTicksRowKey(),
-                    HostId = PEMBus.Instance.Host.Id,
+                    HostId = PEMBus.Instance.PrimaryHost.Id,
                     InstanceId = PEMBus.Instance.Id,
                     Version = hostVersion,
                     PipelineModuleId = Id,
@@ -124,7 +124,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                     EndTimeStamp = actualDataStamp.ToJSONString(),
                     StartTimeStamp = _pipelineMetrics.StartTimeStamp,
-
+                    Status = this.Status.ToString(),
                     ActiveCount = _pipelineMetrics.ActiveCount,
                     ErrorCount = _pipelineMetrics.ErrorCount,
                     WarningCount = _pipelineMetrics.WarningCount,

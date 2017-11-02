@@ -16,7 +16,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         IPipelineModuleConfiguration _pipelineModuleConfiguration;
         IPEMQueue _plannerQueue;
 
-        public ListenerModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleHost moduleHost, IPEMQueue plannerQueue) : base(pipelineModuleConfiguration, pemBus, moduleHost)
+        public ListenerModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue plannerQueue) : base(pipelineModuleConfiguration, pemBus, moduleHost)
         {
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             _plannerQueue = plannerQueue;

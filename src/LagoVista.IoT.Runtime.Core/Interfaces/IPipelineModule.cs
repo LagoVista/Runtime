@@ -16,7 +16,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         String Id { get; set; }
         UsageMetrics Metrics { get; }
 
-        IPipelineModuleHost ModuleHost { get; }
+        IPipelineModuleRuntime ModuleHost { get; }
 
         PipelineModuleStatus Status { get; }
 

@@ -35,7 +35,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         //TODO: SHould condolidate constructors with call to this(....);
 
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleHost moduleHost, IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues)
+        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues)
         {
             _listenerQueue = listenerQueue;
             _outputQueue = outputQueue;
@@ -48,7 +48,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pipelineMetrics.Reset();
         }
 
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleHost moduleHost, IPEMQueue listenerQueue, List<IPEMQueue> secondaryOutputQueues)
+        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, List<IPEMQueue> secondaryOutputQueues)
         {
             _listenerQueue = listenerQueue;
             _pemBus = pemBus;
@@ -61,7 +61,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         }
 
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleHost moduleHost, IPEMQueue listenerQueue)
+        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue)
         {
             _listenerQueue = listenerQueue;
             _pemBus = pemBus;
@@ -72,7 +72,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pipelineMetrics.Reset();
         }
 
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleHost moduleHost)
+        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost)
         {
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
@@ -84,7 +84,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public string Id { get; set; }
 
-        public IPipelineModuleHost ModuleHost { get; private set; }
+        public IPipelineModuleRuntime ModuleHost { get; private set; }
 
         public PipelineModuleStatus Status { get; private set; }
 

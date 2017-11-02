@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core
 {
-    public interface IInstanceHost : IDisposable
+    public interface IInstanceRuntime : IDisposable
     {
         String Id { get; }
 
@@ -22,7 +22,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         List<IPipelineModule> Modules { get; }
 
-        Task<InvokeResult> InitAsync(string instanceId);
+        Task<InvokeResult> InitAsync(string instanceId, string versionId);
 
         Task<InvokeResult> CleanupAsync();
 

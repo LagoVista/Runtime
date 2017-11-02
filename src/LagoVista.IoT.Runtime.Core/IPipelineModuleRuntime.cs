@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core
 {
-    public interface IPipelineModuleHost
+    public interface IPipelineModuleRuntime
     {
         string Id { get; }
 

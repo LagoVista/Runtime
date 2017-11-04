@@ -7,6 +7,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
     public class OutgoingMessage
     {
+        public string MessageDefinitionId { get; set; }
+
         public OutgoingMessage()
         {
             Headers = new ObservableCollection<Header>();

@@ -7,6 +7,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 {
     public interface IMessageParserVerifierRuntime
     {
-        Task<VerificationResults> VerifyAsync(VerificationRequest<DeviceMessageDefinition> request, EntityHeader requestedBy);
+        Task<VerificationResults> VerifyAsync(VerificationRequest<DeviceMessageDefinition> request, EntityHeader org, EntityHeader user);
     }
 }

@@ -452,7 +452,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             var stateChangeNotification = new StateChangeNotification()
             {
                 OldState = EntityHeader<PipelineModuleStatus>.Create(Status),
-                NewState = EntityHeader<PipelineModuleStatus>.Create(Status),
+                NewState = EntityHeader<PipelineModuleStatus>.Create(newState),
             };
 
             var msg = new Notification()

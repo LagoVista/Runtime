@@ -13,9 +13,9 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
 
         String HostId { get; set; }
         /* Used for starring out a host  with many instances */
-        Task InitAsync();
+        Task<InvokeResult> InitAsync();
         /* Used for starting out a host with only once instance */
-        Task InitAsync(String instanceId);
+        Task<InvokeResult> InitAsync(String instanceId);
 
         DeploymentHost Host { get; }
         ConcurrentDictionary<string, IInstanceRuntime> ActiveInstances { get; }

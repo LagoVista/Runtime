@@ -30,7 +30,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         InstanceRuntimeSummary CreateSummary();
 
-        Task<InvokeResult> SetStateAsync(DeploymentInstanceStates state);
+        Task<InvokeResult> SetStateAsync(DeploymentInstanceStates state, string details = "");
 
         Task<InvokeResult> PauseAsync();
         Task<InvokeResult> StartListeningAsync();

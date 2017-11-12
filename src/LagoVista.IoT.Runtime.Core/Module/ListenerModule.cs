@@ -8,17 +8,18 @@ using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using Newtonsoft.Json;
+using LagoVista.IoT.Pipeline.Admin.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
     public abstract class ListenerModule : PipelineModule
     {
-        IPipelineModuleConfiguration _pipelineModuleConfiguration;
+        ListenerConfiguration _listenerConfiguration;
         IPEMQueue _plannerQueue;
 
-        public ListenerModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue plannerQueue) : base(pipelineModuleConfiguration, pemBus, moduleHost)
+        public ListenerModule(ListenerConfiguration listenerConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue plannerQueue) : base(listenerConfiguration, pemBus, moduleHost)
         {
-            _pipelineModuleConfiguration = pipelineModuleConfiguration;
+            _listenerConfiguration = listenerConfiguration;
             _plannerQueue = plannerQueue;
         }
 
@@ -48,7 +49,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 var listenerInstruction = new PipelineExecutionInstruction()
                 {
-                    Name = _pipelineModuleConfiguration.Name,
+                    Name = _listenerConfiguration.Name,
                     Type = GetType().Name,
                     QueueId = "N/A",
                     StartDateStamp = startTimeStamp.ToJSONString(),
@@ -80,6 +81,33 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 PEMBus.InstanceLogger.AddException("ListenerModule_AddBinaryMessageAsync", ex);
                 return InvokeResult.FromException("ListenerModule_AddBinaryMessageAsync", ex);
+            }
+        }
+
+        public async override Task<InvokeResult> StartAsync()
+        {
+            if (_listenerConfiguration.RESTListenerType != RESTListenerTypes.AcmeListener)
+            {
+                return await base.StartAsync();
+            }
+            else
+            {
+                /* ACME Listeners don't participate in the pipline and thus we don't start and stop the work loop in the base class */
+                return InvokeResult.Success;
+            }
+        }
+
+        
+        public async override Task<InvokeResult> StopAsync()
+        {
+            if (_listenerConfiguration.RESTListenerType != RESTListenerTypes.AcmeListener)
+            {
+                return await base.StopAsync();
+            }
+            else
+            {
+                /* ACME Listeners don't participate in the pipline and thus we don't start and stop the work loop in the base class */
+                return InvokeResult.Success;
             }
         }
 
@@ -147,7 +175,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 
                 var listenerInstruction = new PipelineExecutionInstruction()
                 {
-                    Name = _pipelineModuleConfiguration.Name,
+                    Name = _listenerConfiguration.Name,
                     Type = GetType().Name,
                     QueueId = "N/A",
                     StartDateStamp = startTimeStamp.ToJSONString(),

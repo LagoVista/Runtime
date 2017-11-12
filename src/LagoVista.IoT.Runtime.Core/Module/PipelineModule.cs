@@ -33,10 +33,12 @@ namespace LagoVista.IoT.Runtime.Core.Module
         UsageMetrics _pipelineMetrics;
         string _stateChangeTimeStamp;
 
+        ListenerConfiguration _listenerConfiguration;
+
         //TODO: SHould condolidate constructors with call to this(....);
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues)
-        {
+        {         
             _listenerQueue = listenerQueue;
             _outputQueue = outputQueue;
             _pemBus = pemBus;
@@ -354,6 +356,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public virtual async Task<InvokeResult> StartAsync()
         {
+            /* ACME Listeners are dedicated port 80 listeners that only listen for very special requests to verify domain ownership
+             * if we have a port 80 listener in addition to the AcmeListener, it will not be an AcmeListener and should have a
+             * a listener queue */
             if(_listenerQueue == null)
             {
                 throw new NullReferenceException("Listener Queue is Null");

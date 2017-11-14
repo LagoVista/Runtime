@@ -46,6 +46,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _secondaryOutputQueues = secondaryOutputQueues;
             ModuleHost = moduleHost;
 
+            _listenerConfiguration = pipelineModuleConfiguration as ListenerConfiguration;
+
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
         }

@@ -203,8 +203,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Metrics.MessagesProcessed++;
                 Metrics.BytesProcessed += message.PayloadLength;
 
-                PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}.execution", sw.Elapsed);
-                PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}");
+                //we are capturing this in aggregate, don't need to do per request...for now
+                //PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}.execution", sw.Elapsed);
+                //PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}");
 
                 message.ErrorMessages.AddRange(result.ErrorMessages);
                 message.InfoMessages.AddRange(result.InfoMessages);
@@ -216,8 +217,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 if (result.Success)
                 {
-                    
-
                     var instructionIndex = message.Instructions.IndexOf(message.CurrentInstruction);
                     instructionIndex++;
                     if (instructionIndex == message.Instructions.Count) /* We are done processing the pipe line */
@@ -225,6 +224,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         message.Status = EntityHeader<StatusTypes>.Create(message.WarningMessages.Count > 0 ? StatusTypes.CompletedWithWarnings : StatusTypes.Completed);
                         message.CurrentInstruction = null;
                         message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
+                        //For now since we are working on the same instance we don't have to write this to external storage while enqueing, will need to when we run on different nodes
+                        await PEMBus.PEMStorage.AddMessageAsync(message);
 
                         await UpdateDevice(message);
                     }
@@ -239,7 +240,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                             Metrics.ErrorCount++;
                             Metrics.DeadLetterCount++;
-                            await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
+                            await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
                             return;
                         }
 
@@ -255,18 +256,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                             Metrics.ErrorCount++;
                             Metrics.DeadLetterCount++;
-                            await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
+                            await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
                             return;
                         }
-
-                        await PEMBus.PEMStorage.UpdateMessageAsync(message);
+                        
                         await nextQueue.EnqueueAsync(message);
                     }
                 }
                 else /* Processing Failed*/
                 {
                     var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                    LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
                     foreach (var err in result.ErrorMessages)
                     {
                         message.ErrorMessages.Add(err);
@@ -276,7 +275,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Metrics.ErrorCount++;
                     Metrics.DeadLetterCount++;
                     message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
-                    await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
+                    await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
                 }
             }
             catch(ValidationException ex)
@@ -303,7 +302,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.ErrorCount++;
                 Metrics.DeadLetterCount++;
-                await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
+                await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
             }
             catch (Exception ex)
             {
@@ -402,6 +401,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             var newArgs = args.ToList();
             newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleName", Configuration.Name));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleType", ModuleType.ToString()));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, tag, message, newArgs.ToArray());
         }
 
@@ -410,6 +411,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             Metrics.ErrorCount++;
             var newArgs = args.ToList();
             newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleName", Configuration.Name));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleType", ModuleType.ToString()));
             PEMBus.InstanceLogger.AddException(tag, ex, newArgs.ToArray());
         }
 
@@ -418,6 +421,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             Metrics.ErrorCount++;
             var newArgs = args.ToList();
             newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleName", Configuration.Name));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleType", ModuleType.ToString()));
             PEMBus.InstanceLogger.AddError(err, newArgs.ToArray());
         }
 
@@ -425,6 +430,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             var newArgs = args.ToList();
             newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleName", Configuration.Name));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleType", ModuleType.ToString()));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Verbose, tag, message, newArgs.ToArray());
         }
 
@@ -433,6 +440,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             Metrics.WarningCount++;
             var newArgs = args.ToList();
             newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleName", Configuration.Name));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleType", ModuleType.ToString()));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Warning, tag, message, newArgs.ToArray());
         }
 
@@ -441,6 +450,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             Metrics.ErrorCount++;
             var newArgs = args.ToList();
             newArgs.Add(new KeyValuePair<string, string>("pipelineModuleId", Id));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleName", Configuration.Name));
+            newArgs.Add(new KeyValuePair<string, string>("pipelineModuleType", ModuleType.ToString()));
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Error, tag, message, newArgs.ToArray());
         }
 

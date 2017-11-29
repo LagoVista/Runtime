@@ -17,6 +17,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
         Task<PipelineExecutionMessage> GetMessageAsync(String id);
         Task UpdateMessageAsync(PipelineExecutionMessage message);
 
+        Task AddToDeadLetterStorageAsync(PipelineExecutionMessage message);
         Task MoveToDeadLetterStorageAsync(PipelineExecutionMessage message);
     }
 }

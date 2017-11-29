@@ -70,7 +70,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
-                await PEMBus.PEMStorage.AddMessageAsync(message);
+                //right now just keep these in memory until we finish processing.
+                //await PEMBus.PEMStorage.AddMessageAsync(message);
 
                 await _plannerQueue.EnqueueAsync(message);
 
@@ -196,7 +197,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
-                await PEMBus.PEMStorage.AddMessageAsync(message);
+                //right now just keep these in memory until we finish processing.
+                //await PEMBus.PEMStorage.AddMessageAsync(message);
                 await _plannerQueue.EnqueueAsync(message);
 
                 return InvokeResult.Success;

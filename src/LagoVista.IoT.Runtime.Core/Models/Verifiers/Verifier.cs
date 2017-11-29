@@ -59,6 +59,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_InputType, EnumType: (typeof(InputTypes)), FieldType: FieldTypes.Picker, ResourceType: typeof(RuntimeCoreResources), WaterMark: RuntimeCoreResources.Names.Verifier_InputType_Select, HelpResource: RuntimeCoreResources.Names.Verifier_InputType_Help, IsRequired: true, IsUserEditable: true)]
         public EntityHeader<InputTypes> InputType { get; set; }
 
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_VerifierType, EnumType: (typeof(VerifierTypes)), FieldType: FieldTypes.Picker, ResourceType: typeof(RuntimeCoreResources), IsRequired: true, IsUserEditable: false)]
         public EntityHeader<VerifierTypes> VerifierType { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ShouldSucceed, HelpResource: RuntimeCoreResources.Names.Verifier_ShouldSucceed_Help, ResourceType: typeof(RuntimeCoreResources), FieldType: FieldTypes.CheckBox)]

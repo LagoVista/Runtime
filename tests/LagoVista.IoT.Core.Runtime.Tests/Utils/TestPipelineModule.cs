@@ -1,0 +1,37 @@
+﻿using LagoVista.IoT.Runtime.Core.Module;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LagoVista.Core.Validation;
+using LagoVista.IoT.Deployment.Admin.Models;
+using LagoVista.IoT.DeviceAdmin.Interfaces;
+using LagoVista.IoT.Pipeline.Admin.Models;
+using LagoVista.IoT.Runtime.Core;
+using LagoVista.IoT.Runtime.Core.Models.PEM;
+using LagoVista.IoT.Runtime.Core.Processor;
+
+namespace LagoVista.IoT.Core.Runtime.Tests.Utils
+{
+    public class TestPipelineModule : PipelineModule
+    {
+        string _pipelineModuleId;
+
+        public TestPipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, 
+            IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues) : base(pipelineModuleConfiguration, pemBus, moduleHost, listenerQueue, outputQueue, secondaryOutputQueues)
+        {
+            ResultToReturn = new ProcessResult()
+            {
+                 
+            };
+        }
+
+        public ProcessResult ResultToReturn { get; set; }
+
+        public override Task<ProcessResult> ProcessAsync(PipelineExecutionMessage message)
+        {
+            return Task.FromResult(ResultToReturn);
+        }
+    }
+}

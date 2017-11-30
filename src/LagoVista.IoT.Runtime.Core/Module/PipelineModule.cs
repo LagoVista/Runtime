@@ -183,7 +183,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Title = "Device Updated"
             };
 
-
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
             await PEMBus.PEMStorage.UpdateMessageAsync(message);
         }
@@ -307,24 +306,25 @@ namespace LagoVista.IoT.Runtime.Core.Module
             catch (Exception ex)
             {
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
-                message.ErrorMessages.Add(new Error()
-                {
-                    Message = ex.Message,
-                    Details = ex.StackTrace,
-                    DeviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN",
-                });
 
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Uncaught Exception in Excution Step " + ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.ResetColor();
 
+                message.ErrorMessages.Add(new Error()
+                {
+                    Message = ex.Message,
+                    Details = ex.StackTrace,
+                    DeviceId = deviceId,
+                });
+
                 message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.ErrorCount++;
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
+                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"));
             }
             finally
             {
@@ -386,7 +386,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             if (_listenerQueue != null)
             {
-                return await _listenerQueue.StopListeningAsync();
+                var queueStopResult = await _listenerQueue.StopListeningAsync();
+                await StateChanged(PipelineModuleStatus.Idle);
+                return queueStopResult;
             }
             else
             {

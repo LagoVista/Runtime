@@ -184,7 +184,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
             };
 
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
-            await PEMBus.PEMStorage.UpdateMessageAsync(message);
         }
 
         private async void ExecuteAsync(PipelineExecutionMessage message)
@@ -323,7 +322,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.ErrorCount++;
                 Metrics.DeadLetterCount++;
-                await PEMBus.PEMStorage.MoveToDeadLetterStorageAsync(message);
+                await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
                 LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"));
             }
             finally

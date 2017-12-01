@@ -113,42 +113,20 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public UsageMetrics GetAndResetMetrics(DateTime actualDataStamp, string hostVersion)
         {
+            _pipelineMetrics.Version = hostVersion;
             //TODO: This __could__ be a bottle neck, not sure though.
             /* This needs to be VERY, VERY fast since it will block anyone elses access to writing metrics */
             lock (_pipelineMetrics)
             {
-                var clonedMetrics = new UsageMetrics()
-                {
-                    RowKey = actualDataStamp.ToInverseTicksRowKey(),
-                    HostId = PEMBus.Instance.PrimaryHost.Id,
-                    InstanceId = PEMBus.Instance.Id,
-                    Version = hostVersion,
-                    PipelineModuleId = Id,
-                    PartitionKey = Id,
+                var clonedMetrics = _pipelineMetrics.Clone();
+                clonedMetrics.RowKey = actualDataStamp.ToInverseTicksRowKey();
+                clonedMetrics.PartitionKey = Id;
 
-                    EndTimeStamp = actualDataStamp.ToJSONString(),
-                    StartTimeStamp = _pipelineMetrics.StartTimeStamp,
-                    Status = this.Status.ToString(),
-                    ActiveCount = _pipelineMetrics.ActiveCount,
-                    ErrorCount = _pipelineMetrics.ErrorCount,
-                    WarningCount = _pipelineMetrics.WarningCount,
-                    DeadLetterCount = _pipelineMetrics.DeadLetterCount,
-                    BytesProcessed = _pipelineMetrics.BytesProcessed,
-                    MessagesProcessed = _pipelineMetrics.MessagesProcessed,
-                    ProcessingMS = Math.Round(_pipelineMetrics.ProcessingMS, 4)
-                };
-
-                clonedMetrics.ElapsedMS = Math.Round((clonedMetrics.EndTimeStamp.ToDateTime() - clonedMetrics.StartTimeStamp.ToDateTime()).TotalMilliseconds, 3);
-
-                if (clonedMetrics.ElapsedMS > 1)
-                {
-                    clonedMetrics.MessagesPerSecond = clonedMetrics.MessagesProcessed / (clonedMetrics.ElapsedMS * 1000.0);
-                }
-
-                if (clonedMetrics.MessagesProcessed > 0)
-                {
-                    clonedMetrics.AvergeProcessingMs = Math.Round(clonedMetrics.ProcessingMS / clonedMetrics.MessagesProcessed, 3);
-                }
+                clonedMetrics.EndTimeStamp = actualDataStamp.ToJSONString();
+                clonedMetrics.StartTimeStamp = _pipelineMetrics.StartTimeStamp;
+                clonedMetrics.Status = this.Status.ToString();
+                
+                clonedMetrics.Calculate();
 
                 _pipelineMetrics.Reset(clonedMetrics.EndTimeStamp);
                 return clonedMetrics;
@@ -189,16 +167,18 @@ namespace LagoVista.IoT.Runtime.Core.Module
         private async void ExecuteAsync(PipelineExecutionMessage message)
         {
             Metrics.ActiveCount++;
+            var sw = new Stopwatch();
 
             try
             {
-                var sw = new Stopwatch();
                 sw.Start();
                 message.CurrentInstruction.StartDateStamp = DateTime.UtcNow.ToJSONString();
                 var result = await ProcessAsync(message);
                 sw.Stop();
-                Metrics.ProcessingMS += sw.Elapsed.TotalMilliseconds;
-                Metrics.MessagesProcessed++;
+
+                message.CurrentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);
+                message.CurrentInstruction.ProcessByHostId = ModuleHost.Id;
+
                 Metrics.BytesProcessed += message.PayloadLength;
 
                 //we are capturing this in aggregate, don't need to do per request...for now
@@ -208,10 +188,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.ErrorMessages.AddRange(result.ErrorMessages);
                 message.InfoMessages.AddRange(result.InfoMessages);
                 message.WarningMessages.AddRange(result.WarningMessages);
-
-                message.ExecutionTimeMS += Math.Round(sw.Elapsed.TotalMilliseconds, 3);
-                message.CurrentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);
-                message.CurrentInstruction.ProcessByHostId = ModuleHost.Id;
 
                 if (result.Success)
                 {
@@ -232,33 +208,34 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         if (instructionIndex > message.Instructions.Count) /* Somehow we overrun the index for the pipeline steps */
                         {
                             var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                            LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
+                            LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"));
                             message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex.ToError());
                             message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
                             message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                             Metrics.ErrorCount++;
                             Metrics.DeadLetterCount++;
                             await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
-                            return;
                         }
-
-                        message.CurrentInstruction = message.Instructions[instructionIndex];
-
-                        var nextQueue = PEMBus.Queues.Where(que => que.PipelineModuleId == message.CurrentInstruction.QueueId).FirstOrDefault();
-                        if (nextQueue == null) /* We couldn't find the queue for the next step */
+                        else
                         {
-                            var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                            LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
-                            message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.MissingPipelineQueue.ToError());
-                            message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
-                            message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
-                            Metrics.ErrorCount++;
-                            Metrics.DeadLetterCount++;
-                            await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
-                            return;
+                            message.CurrentInstruction = message.Instructions[instructionIndex];
+
+                            var nextQueue = PEMBus.Queues.Where(que => que.PipelineModuleId == message.CurrentInstruction.QueueId).FirstOrDefault();
+                            if (nextQueue == null) /* We couldn't find the queue for the next step */
+                            {
+                                var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
+                                LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"));
+                                message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.MissingPipelineQueue.ToError());
+                                message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
+                                message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
+                                Metrics.DeadLetterCount++;
+                                await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
+                            }
+                            else
+                            {
+                                await nextQueue.EnqueueAsync(message);
+                            }
                         }
-                        
-                        await nextQueue.EnqueueAsync(message);
                     }
                 }
                 else /* Processing Failed*/
@@ -278,8 +255,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
             catch(ValidationException ex)
             {
+                if (sw.IsRunning) sw.Stop();
+
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, new KeyValuePair<string, string>("pemid", message.Id), new KeyValuePair<string, string>("deviceId", deviceId));
+                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"));
                 message.ErrorMessages.Add(new Error()
                 {
                     Message = ex.Message,
@@ -298,12 +277,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
-                Metrics.ErrorCount++;
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
             }
             catch (Exception ex)
             {
+                if (sw.IsRunning) sw.Stop();
+
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
 
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -320,13 +300,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
-                Metrics.ErrorCount++;
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
                 LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"));
             }
             finally
             {
+                Metrics.ProcessingMS += sw.Elapsed.TotalMilliseconds;
+                message.ExecutionTimeMS += Math.Round(sw.Elapsed.TotalMilliseconds, 3);
+
+                Metrics.MessagesProcessed++;
+                Console.WriteLine("Message Processed");
                 Metrics.ActiveCount--;
             }
         }

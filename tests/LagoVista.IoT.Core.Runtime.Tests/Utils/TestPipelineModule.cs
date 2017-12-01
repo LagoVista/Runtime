@@ -16,22 +16,33 @@ namespace LagoVista.IoT.Core.Runtime.Tests.Utils
 {
     public class TestPipelineModule : PipelineModule
     {
-        string _pipelineModuleId;
-
         public TestPipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, 
             IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues) : base(pipelineModuleConfiguration, pemBus, moduleHost, listenerQueue, outputQueue, secondaryOutputQueues)
         {
+            Id = "mypipelinemoduleid";
             ResultToReturn = new ProcessResult()
             {
                  
             };
+
+            ProcessHandler = null;
+            
         }
+
+        public Func<PipelineExecutionMessage, Task<ProcessResult>> ProcessHandler;
 
         public ProcessResult ResultToReturn { get; set; }
 
         public override Task<ProcessResult> ProcessAsync(PipelineExecutionMessage message)
         {
-            return Task.FromResult(ResultToReturn);
+            if (ProcessHandler == null)
+            {
+                return Task.FromResult(ResultToReturn);
+            }
+            else
+            {
+                return ProcessHandler(message);
+            }
         }
     }
 }

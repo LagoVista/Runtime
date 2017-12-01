@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <NetStandardImplicitPackageVersion>2.0.1</NetStandardImplicitPackageVersion>
+    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LagoVista.Core" Version="1.2.184-alpha1030" />

@@ -13,7 +13,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
             resources.RowKey = $"{(DateTime.MaxValue.Ticks - endTimeStamp.Ticks).ToString("D19")}.{Guid.NewGuid().ToId()}";
             resources.StartTimeStamp = startTimeStamp.ToJSONString();
             resources.EndTimeStamp = endTimeStamp.ToString();
-            resources.ElapsedMS = (endTimeStamp - startTimeStamp).TotalMilliseconds;
+            resources.ElapsedMS = Math.Round((endTimeStamp - startTimeStamp).TotalMilliseconds,2);
 
             return resources;
         }

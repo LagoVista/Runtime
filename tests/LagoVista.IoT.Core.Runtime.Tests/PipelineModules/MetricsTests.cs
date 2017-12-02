@@ -104,17 +104,12 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
             PipelineModule.ProcessHandler = (PipelineExecutionMessage msg) =>
             {
-                Console.WriteLine("hi");
                 throw new Exception("Doesn't really matter.");
             };
 
             await ProcessMessageAsync(pem);
 
-            Console.WriteLine("e4");
-
             Assert.AreEqual(28, PipelineModule.Metrics.ErrorCount);
-
-            Console.WriteLine("e5");
         }
 
         [TestMethod]
@@ -190,7 +185,6 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             var pem = GetMessage();
 
             PipelineModule.Metrics.DeadLetterCount = 15;
-
 
             PipelineModule.ResultToReturn = new IoT.Runtime.Core.Processor.ProcessResult();
             var failedError = new Logging.Error() { Message = "IT FAILED!", ErrorCode = "ERR001" };

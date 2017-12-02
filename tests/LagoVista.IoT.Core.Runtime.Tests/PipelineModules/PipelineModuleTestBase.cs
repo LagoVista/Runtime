@@ -90,7 +90,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             await _pipelineModule.StartAsync();
             await _listenerQueue.EnqueueAsync(pem);
             // Give it time to process on a different thread
-            await Task.Delay(150);
+            await Task.Delay(500);
 
             await _pipelineModule.StopAsync();
         }

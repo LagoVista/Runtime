@@ -204,7 +204,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
             var result = PipelineModule.GetAndResetMetrics(rollupTime, "1.2.3.4");
 
-            Assert.AreEqual(result.ProcessingMS / result.MessagesProcessed, result.AvergeProcessingMs, 0.01);
+            Assert.AreEqual(result.ProcessingMS / result.MessagesProcessed, result.AverageProcessingMS, 0.01);
         }
 
 

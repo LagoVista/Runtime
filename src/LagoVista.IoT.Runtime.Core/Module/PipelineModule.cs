@@ -199,9 +199,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         message.CurrentInstruction = null;
                         message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                         //For now since we are working on the same instance we don't have to write this to external storage while enqueing, will need to when we run on different nodes
-                        await PEMBus.PEMStorage.AddMessageAsync(message);
 
                         await UpdateDevice(message);
+
+                        await PEMBus.PEMStorage.AddMessageAsync(message);
                     }
                     else
                     {
@@ -219,7 +220,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         else
                         {
                             message.CurrentInstruction = message.Instructions[instructionIndex];
-
+                            message.CurrentInstruction.Enqueued = DateTime.UtcNow.ToJSONString();
                             var nextQueue = PEMBus.Queues.Where(que => que.PipelineModuleId == message.CurrentInstruction.QueueId).FirstOrDefault();
                             if (nextQueue == null) /* We couldn't find the queue for the next step */
                             {
@@ -310,7 +311,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.ExecutionTimeMS += Math.Round(sw.Elapsed.TotalMilliseconds, 3);
 
                 Metrics.MessagesProcessed++;
-                Console.WriteLine("Message Processed");
                 Metrics.ActiveCount--;
             }
         }
@@ -331,8 +331,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     }
                 }
 
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Cancelled out " + this.GetType().Name.ToLower() + " " + Status.ToString());
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"Workloop on module {this.Configuration.Name} of type {this.ModuleType.ToString()} exiting.");
                 Console.ResetColor();
             });
         }

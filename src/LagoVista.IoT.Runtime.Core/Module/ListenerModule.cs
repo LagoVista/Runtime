@@ -181,6 +181,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     QueueId = "N/A",
                     StartDateStamp = startTimeStamp.ToJSONString(),
                     ProcessByHostId = ModuleHost.Id,
+                    Enqueued = startTimeStamp.ToJSONString(),
                     ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
                 };
 
@@ -192,6 +193,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Name = planner.Name,
                     Type = "Planner",
                     QueueId = _plannerQueue.InstanceId,
+                    Enqueued = DateTime.UtcNow.ToJSONString()
                 };
 
                 message.CurrentInstruction = plannerInstruction;

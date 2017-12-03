@@ -19,5 +19,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         public String LastUpdatedTimeStamp { get; set; }
         public String AttributesJSON { get; set; }
         public int TotalProcessingMS { get; set; }
+        public string PEMJSON { get; set; }
     }
 }

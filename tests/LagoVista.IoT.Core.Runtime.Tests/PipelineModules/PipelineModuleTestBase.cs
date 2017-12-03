@@ -77,7 +77,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
                 },
                 Instructions = new List<PipelineExecutionInstruction>(),
-                Status = LagoVista.Core.Models.EntityHeader<StatusTypes>.Create(StatusTypes.PendingExecution)
+                Status = StatusTypes.PendingExecution
             };
 
             msg.Instructions.Add(msg.CurrentInstruction);

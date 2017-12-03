@@ -3,9 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using LagoVista.Core;
+using System.Linq;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Logging;
 using LagoVista.IoT.DeviceManagement.Core.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
@@ -16,6 +19,18 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         Completed,
         CompletedWithWarnings,
         Failed,
+    }
+
+    public enum ErrorReason
+    {
+        None,
+        UnexepctedError,
+        Unspecified,
+        SeeErrorLog,
+        CouldNotDetermineDeviceId,
+        CouldNotDetermineMessageId,
+        CouldNotFindDevice,
+        CouldNotFindMessage
     }
 
     public enum MessagePayloadTypes
@@ -39,9 +54,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         {
             Id = Guid.NewGuid().ToId();
 
-            Status = EntityHeader<StatusTypes>.Create(StatusTypes.Created);
+            Status = StatusTypes.Created;
 
-            PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Unknown);
+            PayloadType = MessagePayloadTypes.Unknown;
 
             Envelope = new MessageEnvelope();
 
@@ -54,80 +69,129 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
             Instructions = new List<PipelineExecutionInstruction>();
 
-            MessageType = EntityHeader<MessageTypes>.Create(MessageTypes.Unknown);
+            MessageType = MessageTypes.Unknown;
         }
 
 
         /// <summary>
         /// Unique ID assigned to the Message ID
         /// </summary>
+        [JsonProperty("pemId")]
         public string Id { get; set; }
 
-        public EntityHeader<MessageTypes> MessageType { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("messageType")]
+        public MessageTypes MessageType { get; set; }
 
-        public EntityHeader<StatusTypes> Status { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("status")]
+        public StatusTypes Status { get; set; }
 
-        public EntityHeader<MessagePayloadTypes> PayloadType { get; set; }        
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("errorReason")]
+        public ErrorReason ErrorReason { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("payloadType")]
+        public MessagePayloadTypes PayloadType { get; set; }        
 
+        [JsonProperty("device", NullValueHandling=NullValueHandling.Ignore)]
         public Device Device { get; set; }
 
+        [JsonProperty("currentInstruction", NullValueHandling = NullValueHandling.Ignore)]
         public  PipelineExecutionInstruction CurrentInstruction { get; set; }
 
+        [JsonProperty("instructions")]
         public List<PipelineExecutionInstruction> Instructions { get; set; }
 
+        [JsonProperty("creationTimeStamp")]
         public string CreationTimeStamp { get; set; }
 
-        public string CompletionTimeStamp { get; set; }
 
-        /// <summary>
-        /// Total of MS (better by subsecond) required to parse the message.
-        /// </summary>
-        public double ParsingExecutionTimeMS { get; set; }
+        [JsonProperty("completionTimeStamp")]
+        public string CompletionTimeStamp { get; set; }
 
         /// <summary>
         /// Time Stamp in MS from when the Message was Created to when it was completed.
         /// </summary>
+        [JsonProperty("executionTimeMS")]
         public double ExecutionTimeMS { get; set; }
 
         /// <summary>
         /// Contains Information about the message
         /// </summary>
+        [JsonProperty("envelope", NullValueHandling = NullValueHandling.Ignore)]
         public MessageEnvelope Envelope { get; set; }
 
         /// <summary>
         /// Length of either the Binary or Text Payload
         /// </summary>
-       public int PayloadLength { get; set; }
+        [JsonProperty("payloadLength")]
+        public int PayloadLength { get; set; }
 
         /// <summary>
         /// Byte Array that makes up the Binary Payload
         /// </summary>
+        [JsonProperty("binaryPayload", NullValueHandling = NullValueHandling.Ignore)]
         public byte[] BinaryPayload { get; set; }
 
         /// <summary>
         /// String that makes up the Text Paylaod
         /// </summary>
+        [JsonProperty("textPayload", NullValueHandling = NullValueHandling.Ignore)]
         public string TextPayload { get; set; }
 
         /// <summary>
         /// A reference to the input command that triggered the message.
         /// </summary>
+        [JsonProperty("inputCommand", NullValueHandling = NullValueHandling.Ignore)]
         public EntityHeader InputCommand { get; set; }
 
         /// <summary>
         /// The Message ID as identified by the parser
         /// </summary>
-        public String MessageId { get; set; }    
+        [JsonProperty("messageId", NullValueHandling = NullValueHandling.Ignore)]
+        public String MessageId { get; set; }
 
+        [JsonProperty("errorMessages", NullValueHandling = NullValueHandling.Ignore)]
         public List<Error> ErrorMessages {get; set;}
+        [JsonProperty("infoMessages", NullValueHandling = NullValueHandling.Ignore)]
         public List<Info> InfoMessages { get; set; }
+        [JsonProperty("warningMessages", NullValueHandling = NullValueHandling.Ignore)]
         public List<Warning> WarningMessages { get; set; }
 
         /* Execution Log */
+        [JsonProperty("log", NullValueHandling = NullValueHandling.Ignore)]
         public List<Info> Log { get; set; }
 
+        [JsonProperty("outputCommands", NullValueHandling = NullValueHandling.Ignore)]
         public List<OutputCommand> OutputCommands { get; set; }
 
+        [JsonProperty("outgoingMessages", NullValueHandling = NullValueHandling.Ignore)]
         public List<OutgoingMessage> OutgoingMessages { get; set; }
+        
+        /// <summary>
+        /// This should be call before doing final storage, will reduce the size of 
+        /// unused fields
+        /// </summary>
+        public void SetEmptyValueToNull()
+        {
+            foreach(var err in ErrorMessages)
+            {
+                err.SetEmptyValueToNull();
+            }
+
+            if (String.IsNullOrEmpty(MessageId)) MessageId = null;
+            if (!Log.Any()) Log = null;
+            if (!OutputCommands.Any()) OutputCommands = null;
+            if (!OutgoingMessages.Any()) OutgoingMessages = null;
+            if (!ErrorMessages.Any()) ErrorMessages = null;
+            if (!InfoMessages.Any()) InfoMessages = null;
+            if (!WarningMessages.Any()) WarningMessages = null;
+            if(Envelope.SetEmptyValueToNull())
+            {
+                Envelope = null;
+            }
+
+        }
     }
 }

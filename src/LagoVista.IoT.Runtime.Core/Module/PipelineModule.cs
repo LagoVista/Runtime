@@ -38,7 +38,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         //TODO: SHould condolidate constructors with call to this(....);
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues)
-        {         
+        {
             _listenerQueue = listenerQueue;
             _outputQueue = outputQueue;
             _pemBus = pemBus;
@@ -125,7 +125,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 clonedMetrics.EndTimeStamp = actualDataStamp.ToJSONString();
                 clonedMetrics.StartTimeStamp = _pipelineMetrics.StartTimeStamp;
                 clonedMetrics.Status = this.Status.ToString();
-                
+
                 clonedMetrics.Calculate();
 
                 _pipelineMetrics.Reset(clonedMetrics.EndTimeStamp);
@@ -195,7 +195,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     instructionIndex++;
                     if (instructionIndex == message.Instructions.Count) /* We are done processing the pipe line */
                     {
-                        message.Status = EntityHeader<StatusTypes>.Create(message.WarningMessages.Count > 0 ? StatusTypes.CompletedWithWarnings : StatusTypes.Completed);
+                        message.Status = message.WarningMessages.Count > 0 ? StatusTypes.CompletedWithWarnings : StatusTypes.Completed;
                         message.CurrentInstruction = null;
                         message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                         //For now since we are working on the same instance we don't have to write this to external storage while enqueing, will need to when we run on different nodes
@@ -211,8 +211,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
                             LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"));
                             message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex.ToError());
-                            message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
+                            message.Status = StatusTypes.Failed;
+                            message.ErrorReason = ErrorReason.UnexepctedError;
                             message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
+                            message.CurrentInstruction = null;
                             Metrics.ErrorCount++;
                             Metrics.DeadLetterCount++;
                             await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
@@ -227,7 +229,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
                                 LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"));
                                 message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.MissingPipelineQueue.ToError());
-                                message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
+                                message.Status = StatusTypes.Failed;
+                                message.ErrorReason = ErrorReason.UnexepctedError;
+                                message.CurrentInstruction = null;
                                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                                 Metrics.DeadLetterCount++;
                                 await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
@@ -242,19 +246,21 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 else /* Processing Failed*/
                 {
                     var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                    foreach (var err in result.ErrorMessages)
+
+                    if (message.ErrorReason == ErrorReason.None)
                     {
-                        message.ErrorMessages.Add(err);
+                        message.ErrorReason = ErrorReason.SeeErrorLog;
                     }
 
-                    message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
+                    message.Status = StatusTypes.Failed;
                     Metrics.ErrorCount++;
                     Metrics.DeadLetterCount++;
+                    message.CurrentInstruction = null;
                     message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                     await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
                 }
             }
-            catch(ValidationException ex)
+            catch (ValidationException ex)
             {
                 if (sw.IsRunning) sw.Stop();
 
@@ -269,14 +275,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Uncaught Validation Exception in Excution Step " + ex.Message);
-                foreach(var err in ex.Errors)
+                foreach (var err in ex.Errors)
                 {
                     Console.WriteLine($"\t{err.ErrorCode} - {err.Message} - {err.Details}");
                 }
                 Console.WriteLine(ex.StackTrace);
                 Console.ResetColor();
 
-                message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
+                message.CurrentInstruction = null;
+                message.ErrorReason = ErrorReason.UnexepctedError;
+                message.Status = StatusTypes.Failed;
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
@@ -286,6 +294,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (sw.IsRunning) sw.Stop();
 
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
+                message.CurrentInstruction = null;
 
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Uncaught Exception in Excution Step " + ex.Message);
@@ -299,7 +308,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     DeviceId = deviceId,
                 });
 
-                message.Status = EntityHeader<StatusTypes>.Create(StatusTypes.Failed);
+                message.ErrorReason = ErrorReason.UnexepctedError;
+                message.Status = StatusTypes.Failed;
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
@@ -343,7 +353,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             /* ACME Listeners are dedicated port 80 listeners that only listen for very special requests to verify domain ownership
              * if we have a port 80 listener in addition to the AcmeListener, it will not be an AcmeListener and should have a
              * a listener queue */
-            if(_listenerQueue == null)
+            if (_listenerQueue == null)
             {
                 throw new NullReferenceException("Listener Queue is Null");
             }
@@ -442,7 +452,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         protected async Task StateChanged(PipelineModuleStatus newState)
         {
-            if(newState == Status)
+            if (newState == Status)
             {
                 return;
             }
@@ -481,7 +491,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 LogMessage(this.GetType().Name, msg);
                 await StateChanged(newState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogException("PipelineModule_SendChangeStateMessageAsync", ex);
             }

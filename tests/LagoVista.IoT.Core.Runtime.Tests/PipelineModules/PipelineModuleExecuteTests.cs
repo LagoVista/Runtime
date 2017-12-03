@@ -37,7 +37,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
             await ProcessMessageAsync(pem);
 
-            Assert.AreEqual(StatusTypes.Completed, pem.Status.Value);
+            Assert.AreEqual(StatusTypes.Completed, pem.Status);
         }
 
 
@@ -64,7 +64,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
             await ProcessMessageAsync(pem);
 
-            Assert.AreEqual(StatusTypes.PendingExecution, pem.Status.Value);
+            Assert.AreEqual(StatusTypes.PendingExecution, pem.Status);
             Assert.IsTrue(OutputQueue.ContainsMessage(pem.Id));
         }
 
@@ -95,7 +95,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
             await ProcessMessageAsync(pem);
 
-            Assert.AreEqual(StatusTypes.Failed, pem.Status.Value);
+            Assert.AreEqual(StatusTypes.Failed, pem.Status);
         }
 
         [TestMethod]

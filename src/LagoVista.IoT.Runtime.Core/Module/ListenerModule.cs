@@ -29,7 +29,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 var message = new PipelineExecutionMessage()
                 {
-                    PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Binary),
+                    PayloadType = MessagePayloadTypes.Binary,
                     BinaryPayload = buffer,
                     CreationTimeStamp = startTimeStamp.ToJSONString()
                 };
@@ -120,7 +120,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 var message = new PipelineExecutionMessage()
                 {
-                    PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text),
+                    PayloadType = MessagePayloadTypes.Text,
                     TextPayload = buffer,
                     CreationTimeStamp = startTimeStamp.ToJSONString()
                 };

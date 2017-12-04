@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using LagoVista.Core;
 using Newtonsoft.Json;
 
@@ -6,6 +7,13 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
     public class PipelineExecutionInstruction
     {
+        Stopwatch _stopWatch = new Stopwatch();
+
+        public PipelineExecutionInstruction()
+        {
+
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("type")]
@@ -14,8 +22,18 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         public string QueueUri { get; set; }
         [JsonProperty("queueId")]
         public string QueueId { get; set; }
+
+        private string _enqueued;
         [JsonProperty("enqueued")]
-        public string Enqueued { get; set; }
+        public string Enqueued
+        {
+            get { return _enqueued; }
+            set
+            {
+                _enqueued = value;
+                _stopWatch.Start();
+            }
+        }
 
         private string _startDateStamp { get; set; }
         [JsonProperty("startDateStamp")]
@@ -25,14 +43,15 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             set
             {
                 _startDateStamp = value;
-                if (!String.IsNullOrEmpty(Enqueued))
+                if(_stopWatch.IsRunning)
                 {
-                    TimeInQueueMS = Math.Round((value.ToDateTime() - Enqueued.ToDateTime()).TotalMilliseconds, 2);
+                    _stopWatch.Stop();
+                    TimeInQueueMS = Math.Round(_stopWatch.Elapsed.TotalMilliseconds, 2);
                 }
             }
         }
 
-        [JsonProperty("timeInQueuemMS")]
+        [JsonProperty("timeInQueueMS")]
         public double TimeInQueueMS { get; set; }
 
         [JsonProperty("processByHostId")]

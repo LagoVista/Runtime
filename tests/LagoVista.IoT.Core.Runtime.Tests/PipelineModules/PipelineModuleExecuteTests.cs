@@ -109,7 +109,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
             await ProcessMessageAsync(pem);
 
-            PemStorageMock.Verify(pms => pms.AddToDeadLetterStorageAsync(pem), Times.Once);
+            PemStorageMock.Verify(pms => pms.AddMessageAsync(pem), Times.Once);
         }
     }
 }

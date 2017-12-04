@@ -176,14 +176,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var result = await ProcessAsync(message);
                 sw.Stop();
 
-                message.CurrentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);
+                message.ExecutionTimeMS += Math.Round(sw.Elapsed.TotalMilliseconds, 3);
+                message.CurrentInstruction.ExecutionTimeMS = message.ExecutionTimeMS;
                 message.CurrentInstruction.ProcessByHostId = ModuleHost.Id;
 
                 Metrics.BytesProcessed += message.PayloadLength;
-
-                //we are capturing this in aggregate, don't need to do per request...for now
-                //PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}.execution", sw.Elapsed);
-                //PEMBus.InstanceLogger.AddMetric($"pipeline.{this.GetType().Name.ToLower()}");
 
                 message.ErrorMessages.AddRange(result.ErrorMessages);
                 message.InfoMessages.AddRange(result.InfoMessages);
@@ -217,7 +214,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             message.CurrentInstruction = null;
                             Metrics.ErrorCount++;
                             Metrics.DeadLetterCount++;
-                            await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
+                            await PEMBus.PEMStorage.AddMessageAsync(message);
                         }
                         else
                         {
@@ -234,7 +231,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 message.CurrentInstruction = null;
                                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                                 Metrics.DeadLetterCount++;
-                                await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
+                                await PEMBus.PEMStorage.AddMessageAsync(message);
                             }
                             else
                             {
@@ -252,12 +249,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         message.ErrorReason = ErrorReason.SeeErrorLog;
                     }
 
+                    message.ExecutionTimeMS += Math.Round(sw.Elapsed.TotalMilliseconds, 3);
                     message.Status = StatusTypes.Failed;
                     Metrics.ErrorCount++;
                     Metrics.DeadLetterCount++;
                     message.CurrentInstruction = null;
                     message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
-                    await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
+                    await PEMBus.PEMStorage.AddMessageAsync(message);
                 }
             }
             catch (ValidationException ex)
@@ -287,7 +285,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.Status = StatusTypes.Failed;
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.DeadLetterCount++;
-                await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
+                await PEMBus.PEMStorage.AddMessageAsync(message);
             }
             catch (Exception ex)
             {
@@ -312,13 +310,12 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.Status = StatusTypes.Failed;
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.DeadLetterCount++;
-                await PEMBus.PEMStorage.AddToDeadLetterStorageAsync(message);
+                await PEMBus.PEMStorage.AddMessageAsync(message);
                 LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"));
             }
             finally
             {
-                Metrics.ProcessingMS += sw.Elapsed.TotalMilliseconds;
-                message.ExecutionTimeMS += Math.Round(sw.Elapsed.TotalMilliseconds, 3);
+                Metrics.ProcessingMS += sw.Elapsed.TotalMilliseconds;                
 
                 Metrics.MessagesProcessed++;
                 Metrics.ActiveCount--;

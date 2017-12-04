@@ -42,7 +42,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
 
                 var bytesProcessed = message.PayloadLength + (String.IsNullOrEmpty(topic) ? 0 : topic.Length);
-                LogMessage("addbinarymessage", "New Message Created.", new KeyValuePair<string, string>("messageid", message.Id));
 
                 message.Envelope.DeviceId = deviceId;
                 message.Envelope.Topic = topic;
@@ -156,8 +155,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.PayloadLength = String.IsNullOrEmpty(buffer) ? 0 : buffer.Length;
 
                 var bytesProcessed = message.PayloadLength + (String.IsNullOrEmpty(path) ? 0 : path.Length) + headerLength;
-
-                LogMessage("addtextmessage", "New Message Created.", new KeyValuePair<string, string>("messageid", message.Id), new KeyValuePair<string, string>("bytes", bytesProcessed.ToString()));
 
                 Metrics.BytesProcessed += bytesProcessed;
                 Metrics.MessagesProcessed++;

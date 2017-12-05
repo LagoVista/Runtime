@@ -164,7 +164,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
         }
 
-        private async void ExecuteAsync(PipelineExecutionMessage message)
+        protected async Task ExecuteAsync(PipelineExecutionMessage message)
         {
             Metrics.ActiveCount++;
             var sw = new Stopwatch();
@@ -176,8 +176,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var result = await ProcessAsync(message);
                 sw.Stop();
 
-                message.ExecutionTimeMS += Math.Round(sw.Elapsed.TotalMilliseconds, 3);
-                message.CurrentInstruction.ExecutionTimeMS = message.ExecutionTimeMS;
+                message.CurrentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);;
+                message.ExecutionTimeMS += message.CurrentInstruction.ExecutionTimeMS;
                 message.CurrentInstruction.ProcessByHostId = ModuleHost.Id;
 
                 Metrics.BytesProcessed += message.PayloadLength;
@@ -322,6 +322,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
         }
 
+        protected void Execute(PipelineExecutionMessage pem)
+        {
+            Task.Run(async () =>
+            {
+                await ExecuteAsync(pem);
+            });
+        }
+
         private void WorkLoop()
         {
             Task.Run(async () =>
@@ -329,12 +337,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 while (Status == PipelineModuleStatus.Running)
                 {
                     var msg = await _listenerQueue.ReceiveAsync();
-
                     /* queue will return a null message when it's "turned off", should probably change the logic to use cancellation tokens, not today though KDW 5/3/2017 */
                     //TODO Use cancellation token rather than return null when queue is no longer listenting.
                     if (msg != null)
                     {
-                        ExecuteAsync(msg);
+                        Execute(msg);
                     }
                 }
 

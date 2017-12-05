@@ -1,13 +1,8 @@
 ﻿using LagoVista.IoT.Runtime.Core.Module;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using LagoVista.Core.Validation;
-using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceAdmin.Interfaces;
-using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Processor;
@@ -43,6 +38,11 @@ namespace LagoVista.IoT.Core.Runtime.Tests.Utils
             {
                 return ProcessHandler(message);
             }
+        }
+
+        public Task PorcessMessageForTestAsync(PipelineExecutionMessage pem)
+        {
+            return base.ExecuteAsync(pem);
         }
     }
 }

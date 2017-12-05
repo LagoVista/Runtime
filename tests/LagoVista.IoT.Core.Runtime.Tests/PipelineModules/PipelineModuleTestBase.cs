@@ -87,12 +87,12 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
         protected async Task ProcessMessageAsync(PipelineExecutionMessage pem)
         {
-            await _pipelineModule.StartAsync();
-            await _listenerQueue.EnqueueAsync(pem);
+            await _pipelineModule.PorcessMessageForTestAsync(pem);
+      //      await _listenerQueue.EnqueueAsync(pem);
             // Give it time to process on a different thread
-            await Task.Delay(500);
+        //    await Task.Delay(500);
 
-            await _pipelineModule.StopAsync();
+          //  await _pipelineModule.StopAsync();
         }
 
         protected LogWriter LogWriter { get { return _logWriter; } }

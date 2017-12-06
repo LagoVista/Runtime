@@ -5,13 +5,13 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LagoVista.Core" Version="1.2.201-alpha1006" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="1.2.201-alpha1006" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin" Version="1.2.201-alpha1006" />
-    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Admin" Version="1.2.201-alpha1006" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="1.2.201-alpha1006" />
-    <PackageReference Include="LagoVista.IoT.Logging" Version="1.2.201-alpha1006" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="1.2.201-alpha1006" />
+    <PackageReference Include="LagoVista.Core" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Admin" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.Logging" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="1.2.202-alpha0849" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

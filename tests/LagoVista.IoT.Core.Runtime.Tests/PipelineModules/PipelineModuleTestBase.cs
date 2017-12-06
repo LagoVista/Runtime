@@ -29,7 +29,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
         Mock<INotificationPublisher> _notificationPublisher = new Mock<INotificationPublisher>();
         LogWriter _logWriter = new LogWriter();
         Mock<ISystemUsers> _systemUsers = new Mock<ISystemUsers>();
-        Mock<IDeviceManager> _deviceManager = new Mock<IDeviceManager>();
+        Mock<IDeviceStorage> _deviceManager = new Mock<IDeviceStorage>();
 
         List<IPEMQueue> _queues = new List<IPEMQueue>();
 
@@ -47,7 +47,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             };
 
             _pemBus.Setup(pmb => pmb.Instance).Returns(Instance);
-            _pemBus.Setup(pmb => pmb.DeviceManager).Returns(_deviceManager.Object);
+            _pemBus.Setup(pmb => pmb.DeviceStorage).Returns(_deviceManager.Object);
             _pemBus.Setup(pmb => pmb.SystemUsers).Returns(_systemUsers.Object);
             _pemBus.Setup(pmb => pmb.Queues).Returns(_queues);
             _pemBus.Setup(pmb => pmb.PEMStorage).Returns(_pemStorage.Object);

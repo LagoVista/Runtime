@@ -98,7 +98,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public abstract Task<ProcessResult> ProcessAsync(PipelineExecutionMessage message);
 
-
         public UsageMetrics Metrics
         {
             get
@@ -109,7 +108,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
             }
         }
-
 
         public UsageMetrics GetAndResetMetrics(DateTime actualDataStamp, string hostVersion)
         {
@@ -147,7 +145,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             message.Device.LastContact = message.CreationTimeStamp;
             message.Device.Status = EntityHeader<DeviceStates>.Create(DeviceStates.Ready);
-            await PEMBus.DeviceManager.UpdateDeviceAsync(PEMBus.Instance.DeviceRepository.Value, message.Device, PEMBus.SystemUsers.SystemOrg, PEMBus.SystemUsers.DeviceManagerUser);
+            await PEMBus.DeviceStorage.UpdateDeviceAsync(message.Device);
 
             var notification = new Notification()
             {

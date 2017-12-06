@@ -21,7 +21,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         IPEMStorage PEMStorage { get; set; }
 
-        IDeviceArchiveManager DeviceArchiveManager { get; set; }
+        IDeviceArchiveStorage DeviceArchiveStorage { get; set; }
 
         ISystemUsers SystemUsers { get; set; }
 
@@ -31,7 +31,7 @@ namespace LagoVista.IoT.Runtime.Core
        
         INotificationPublisher NotificationPublisher { get; }
 
-        DeviceManagement.Core.IDeviceManager DeviceManager { get; set; }
+        IDeviceStorage DeviceStorage { get; set; }
 
         void AddError(Error errorCode, params KeyValuePair<string, string>[] extras);
     }

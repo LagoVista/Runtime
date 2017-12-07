@@ -269,15 +269,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     DeviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN",
                 });
 
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Uncaught Validation Exception in Excution Step " + ex.Message);
-                foreach (var err in ex.Errors)
-                {
-                    Console.WriteLine($"\t{err.ErrorCode} - {err.Message} - {err.Details}");
-                }
-                Console.WriteLine(ex.StackTrace);
-                Console.ResetColor();
-
                 message.CurrentInstruction = null;
                 message.ErrorReason = ErrorReason.UnexepctedError;
                 message.Status = StatusTypes.Failed;
@@ -290,12 +281,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (sw.IsRunning) sw.Stop();
 
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                message.CurrentInstruction = null;
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Uncaught Exception in Excution Step " + ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                Console.ResetColor();
+                message.CurrentInstruction = null;                
 
                 message.ErrorMessages.Add(new Error()
                 {
@@ -342,10 +328,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         Execute(msg);
                     }
                 }
-
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"Workloop on module {this.Configuration.Name} of type {this.ModuleType.ToString()} exiting.");
-                Console.ResetColor();
             });
         }
 

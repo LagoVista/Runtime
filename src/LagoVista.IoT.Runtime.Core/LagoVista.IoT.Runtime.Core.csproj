@@ -6,12 +6,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LagoVista.Core" Version="1.2.202-alpha0849" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="1.2.202-alpha0849" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin" Version="1.2.202-alpha0849" />
-    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Admin" Version="1.2.202-alpha0849" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="1.2.211-alpha0847" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="1.2.211-alpha0847" />
+    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="1.2.211-alpha0847" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="1.2.211-alpha0847" />
     <PackageReference Include="LagoVista.IoT.Logging" Version="1.2.202-alpha0849" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="1.2.202-alpha0849" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="1.2.211-alpha0847" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta1" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

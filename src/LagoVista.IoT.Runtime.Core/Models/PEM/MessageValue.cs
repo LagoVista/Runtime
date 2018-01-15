@@ -6,6 +6,7 @@ using System.Linq;
 using LagoVista.Core;
 using System.Text.RegularExpressions;
 using System;
+using LagoVista.Core.Models.Geo;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {

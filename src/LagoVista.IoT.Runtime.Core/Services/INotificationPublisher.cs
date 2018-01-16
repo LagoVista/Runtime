@@ -14,6 +14,7 @@ namespace LagoVista.IoT.Runtime.Core.Services
 
         Host,
         Instance,
+        DeviceRepository,
         DeviceGroup,
         Device,
         PipelineModule,
@@ -21,7 +22,8 @@ namespace LagoVista.IoT.Runtime.Core.Services
         DeviceConfiguration,
         MessageType,
 
-        Dependency
+        Dependency,
+    
     }
 
     public enum NotificationVerbosity

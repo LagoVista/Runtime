@@ -1,4 +1,5 @@
-﻿using LagoVista.IoT.Core.Runtime.Tests.Utils;
+﻿using LagoVista.Core.Models;
+using LagoVista.IoT.Core.Runtime.Tests.Utils;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceAdmin.Interfaces;
 using LagoVista.IoT.DeviceManagement.Core;
@@ -74,8 +75,9 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
                 },
                 Device = new DeviceManagement.Core.Models.Device()
                 {
-
+                    DeviceRepository = EntityHeader.Create("id", "text")
                 },
+               
                 Instructions = new List<PipelineExecutionInstruction>(),
                 Status = StatusTypes.PendingExecution
             };

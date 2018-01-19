@@ -78,13 +78,27 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public GeoLocation GetGeoLocation()
         {
+            if(String.IsNullOrEmpty(Value))
+            {
+                return null;
+            }
+
             var regEx = new Regex(@"^(?'lat'-?\d{1,2}\.\d{6}),(?'lon'-?\d{1,3}\.\d{6})$");
             var match = regEx.Match(Value);
 
-            var geo = new GeoLocation();
-            geo.Latitude = double.Parse(match.Groups["lat"].Value);
-            geo.Longitude = double.Parse(match.Groups["lon"].Value);
-            return geo;
+            
+            if(double.TryParse(match.Groups["lat"].Value, out double lat) &&
+               double.TryParse(match.Groups["lon"].Value, out double lon))
+            {
+                var geo = new GeoLocation()
+                {
+                    Latitude = lat,
+                    Longitude = lon
+                };
+                return geo;
+            }
+
+            return null;
         }
 
         public MessageValue Clone(string key = "", string name = "")

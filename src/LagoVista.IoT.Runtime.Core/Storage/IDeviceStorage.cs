@@ -16,6 +16,8 @@ namespace LagoVista.IoT.Runtime.Core.Storage
 
         Task<Device> GetDeviceByDeviceIdAsync(string deviceId);
 
+        Task<List<DeviceSummary>> GetDevicesForConfiugrationAsync(string deviceConfigurationid);
+
         Task UpdateDeviceAsync(Device device);
 
         string Id { get; }       

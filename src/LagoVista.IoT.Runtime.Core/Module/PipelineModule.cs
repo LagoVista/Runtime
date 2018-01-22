@@ -334,6 +334,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 while (Status == PipelineModuleStatus.Running)
                 {
+                    SendNotification(Targets.WebSocket, $"Waiting for messages on {Configuration.Name}");
                     var msg = await _listenerQueue.ReceiveAsync();
                     /* queue will return a null message when it's "turned off", should probably change the logic to use cancellation tokens, not today though KDW 5/3/2017 */
                     //TODO Use cancellation token rather than return null when queue is no longer listenting.
@@ -359,6 +360,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             CreationDate = DateTime.Now;
             await StateChanged(PipelineModuleStatus.Running);
             var result = await _listenerQueue.StartListeningAsync();
+
             if (result.Successful)
             {
                 WorkLoop();

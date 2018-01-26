@@ -260,8 +260,8 @@ namespace LagoVista.IoT.Core.Runtime.Tests.Messaging
             };
 
             AssertValid(msgValue.Validate());
-            Assert.AreEqual(22.234512, msgValue.GetGeoLocation().Latitude);
-            Assert.AreEqual(-122.423413, msgValue.GetGeoLocation().Longitude);
+            Assert.AreEqual(22.234512, msgValue.GetGeoLocation().latitude);
+            Assert.AreEqual(-122.423413, msgValue.GetGeoLocation().longitude);
         }
 
         [TestMethod]

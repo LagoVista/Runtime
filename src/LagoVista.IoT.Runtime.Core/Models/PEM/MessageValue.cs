@@ -10,6 +10,13 @@ using LagoVista.Core.Models.Geo;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
+    /* We don't use our standard version because we want to user camelcase in script */
+    public class SimpleGeoCode
+    {
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+    }
+
     public class MessageValue
     {
         public MessageValue(ParameterTypes value)
@@ -76,7 +83,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             return Value.ToString();
         }
 
-        public GeoLocation GetGeoLocation()
+        public SimpleGeoCode GetGeoLocation()
         {
             if(String.IsNullOrEmpty(Value))
             {
@@ -90,10 +97,10 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             if(double.TryParse(match.Groups["lat"].Value, out double lat) &&
                double.TryParse(match.Groups["lon"].Value, out double lon))
             {
-                var geo = new GeoLocation()
+                var geo = new SimpleGeoCode()
                 {
-                    Latitude = lat,
-                    Longitude = lon
+                    latitude = lat,
+                    longitude = lon
                 };
                 return geo;
             }

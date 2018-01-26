@@ -275,7 +275,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (sw.IsRunning) sw.Stop();
 
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"));
+                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"), (string.IsNullOrEmpty(message.MessageId) ? "????".ToKVP("messageId") : message.MessageId.ToKVP("messageId")));
                 message.ErrorMessages.Add(new Error()
                 {
                     Message = ex.Message,
@@ -309,7 +309,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.AddMessageAsync(message);
-                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"));
+                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"), (string.IsNullOrEmpty(message.MessageId) ? "????".ToKVP("messageId") : message.MessageId.ToKVP("messageId")));
             }
             finally
             {

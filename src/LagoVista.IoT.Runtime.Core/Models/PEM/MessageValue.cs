@@ -6,11 +6,14 @@ using System.Linq;
 using LagoVista.Core;
 using System.Text.RegularExpressions;
 using System;
-using LagoVista.Core.Models.Geo;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
-    /* We don't use our standard version because we want to user camelcase in script */
+    /* 
+     * We don't use our standard version because we want to user camelcase in script, 
+     * can't use Newtonsoft JsonProperty since these are used in script, bottom line
+     * just use as-is
+     * */
     public class SimpleGeoCode
     {
         public double latitude { get; set; }

@@ -12,7 +12,7 @@
     <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="1.2.288-alpha0733" />
     <PackageReference Include="LagoVista.IoT.Logging" Version="1.2.288-alpha0733" />
     <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="1.2.288-alpha0733" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

@@ -1,7 +1,6 @@
-﻿using LagoVista.Core.Validation;
-using LagoVista.IoT.Deployment.Admin.Models;
+﻿using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceManagement.Core.Models;
-using LagoVista.IoT.DeviceManagement.Models;
+using LagoVista.IoT.Pipeline.Admin.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -14,7 +13,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
         UsageMetrics GetAndResetMetrics(DateTime dateStamp, string hostVersion);
         Task AddArchiveAsync(DeviceArchive logEntry);
 
-        Task AddDeviceStreamAsync(DeviceStreamRecord entry);
+        Task AddDeviceStreamAsync(DataStreamRecord entry);
         
         string Id { get; }
     }

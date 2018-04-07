@@ -174,6 +174,23 @@ namespace LagoVista.IoT.Runtime.Core.Module
             };
 
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
+
+            foreach(var group in message.Device.DeviceGroups)
+            {
+                notification = new Notification()
+                {
+                    Payload = JsonConvert.SerializeObject(message.Device),
+                    Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup),
+                    ChannelId = group.Id,
+                    PayloadType = typeof(Device).ToString(),
+                    DateStamp = DateTime.UtcNow.ToJSONString(),
+                    MessageId = Guid.NewGuid().ToId(),
+                    Text = "Device Updated",
+                    Title = "Device Updated"
+                };
+
+                await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
+            }
         }
 
         protected async Task ExecuteAsync(PipelineExecutionMessage message)

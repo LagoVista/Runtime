@@ -25,7 +25,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
     public abstract class PipelineModule : IPipelineModule
     {
-        IPEMQueue _listenerQueue;
+        IPEMQueue _inputMessageQueue;
         IPEMQueue _outputQueue;
         IPEMBus _pemBus;
         IPipelineModuleConfiguration _pipelineModuleConfiguration;
@@ -39,7 +39,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues)
         {
-            _listenerQueue = listenerQueue;
+            _inputMessageQueue = listenerQueue;
             _outputQueue = outputQueue;
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
@@ -54,7 +54,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, List<IPEMQueue> secondaryOutputQueues)
         {
-            _listenerQueue = listenerQueue;
+            _inputMessageQueue = listenerQueue;
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             _secondaryOutputQueues = secondaryOutputQueues;
@@ -67,7 +67,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue)
         {
-            _listenerQueue = listenerQueue;
+            _inputMessageQueue = listenerQueue;
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
             ModuleHost = moduleHost;
@@ -351,7 +351,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 while (Status == PipelineModuleStatus.Running)
                 {
-                    var msg = await _listenerQueue.ReceiveAsync();
+                    var msg = await _inputMessageQueue.ReceiveAsync();
                     /* queue will return a null message when it's "turned off", should probably change the logic to use cancellation tokens, not today though KDW 5/3/2017 */
                     //TODO Use cancellation token rather than return null when queue is no longer listenting.
                     if (msg != null)
@@ -368,14 +368,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
             /* ACME Listeners are dedicated port 80 listeners that only listen for very special requests to verify domain ownership
              * if we have a port 80 listener in addition to the AcmeListener, it will not be an AcmeListener and should have a
              * a listener queue */
-            if (_listenerQueue == null)
+            if (_inputMessageQueue == null)
             {
-                throw new NullReferenceException("Listener Queue is Null");
+                throw new NullReferenceException("Input Message Queue is Null");
             }
 
             CreationDate = DateTime.Now;
             await StateChanged(PipelineModuleStatus.Running);
-            var result = await _listenerQueue.StartListeningAsync();
+            var result = await _inputMessageQueue.StartListeningAsync();
 
             if (result.Successful)
             {
@@ -393,9 +393,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public async virtual Task<InvokeResult> StopAsync()
         {
-            if (_listenerQueue != null)
+            if (_inputMessageQueue != null)
             {
-                var queueStopResult = await _listenerQueue.StopListeningAsync();
+                var queueStopResult = await _inputMessageQueue.StopListeningAsync();
                 await StateChanged(PipelineModuleStatus.Idle);
                 return queueStopResult;
             }

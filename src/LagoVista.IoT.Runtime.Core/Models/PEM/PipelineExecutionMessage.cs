@@ -95,7 +95,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         public MessagePayloadTypes PayloadType { get; set; }        
 
         [JsonProperty("device", NullValueHandling=NullValueHandling.Ignore)]
-        public Device Device { get; set; }
+        public LagoVista.IoT.DeviceManagement.Core.Models.Device Device { get; set; }
 
         [JsonProperty("currentInstruction", NullValueHandling = NullValueHandling.Ignore)]
         public  PipelineExecutionInstruction CurrentInstruction { get; set; }

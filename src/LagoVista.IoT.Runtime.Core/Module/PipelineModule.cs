@@ -19,6 +19,7 @@ using System.Globalization;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.Core.Exceptions;
+using Newtonsoft.Json.Serialization;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -35,6 +36,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         ListenerConfiguration _listenerConfiguration;
 
+        JsonSerializerSettings _camelCaseSettings;
+
         //TODO: SHould condolidate constructors with call to this(....);
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues)
@@ -50,6 +53,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
+
+            _camelCaseSettings = new Newtonsoft.Json.JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            };
         }
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, List<IPEMQueue> secondaryOutputQueues)
@@ -147,12 +155,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
             message.Device.Status = EntityHeader<DeviceStates>.Create(DeviceStates.Ready);
             await PEMBus.DeviceStorage.UpdateDeviceAsync(message.Device);
 
+            var json = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(message.Device), _camelCaseSettings);
+
             var notification = new Notification()
             {
-                Payload = JsonConvert.SerializeObject(message.Device),
+                Payload = json,
                 Channel = EntityHeader<Channels>.Create(Channels.Device),
                 ChannelId = message.Device.Id,
-                PayloadType = typeof(Device).ToString(),
+                PayloadType = "Device",
                 DateStamp = DateTime.UtcNow.ToJSONString(),
                 MessageId = Guid.NewGuid().ToId(),
                 Text = "Device Updated",
@@ -163,10 +173,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             notification = new Notification()
             {
-                Payload = JsonConvert.SerializeObject(message.Device),
+                Payload = json,
                 Channel = EntityHeader<Channels>.Create(Channels.DeviceRepository),
                 ChannelId = message.Device.DeviceRepository.Id,
-                PayloadType = typeof(Device).ToString(),
+                PayloadType = "Device",
                 DateStamp = DateTime.UtcNow.ToJSONString(),
                 MessageId = Guid.NewGuid().ToId(),
                 Text = "Device Updated",
@@ -179,10 +189,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 notification = new Notification()
                 {
-                    Payload = JsonConvert.SerializeObject(message.Device),
+                    Payload = json,
                     Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup),
                     ChannelId = group.Id,
-                    PayloadType = typeof(Device).ToString(),
+                    PayloadType = "Device",
                     DateStamp = DateTime.UtcNow.ToJSONString(),
                     MessageId = Guid.NewGuid().ToId(),
                     Text = "Device Updated",

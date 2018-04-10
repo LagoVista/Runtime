@@ -36,7 +36,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         ListenerConfiguration _listenerConfiguration;
 
-        JsonSerializerSettings _camelCaseSettings;
+        JsonSerializerSettings _camelCaseSettings = new Newtonsoft.Json.JsonSerializerSettings()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+        };
 
         //TODO: SHould condolidate constructors with call to this(....);
 
@@ -53,11 +56,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
-
-            _camelCaseSettings = new Newtonsoft.Json.JsonSerializerSettings()
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            };
         }
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, List<IPEMQueue> secondaryOutputQueues)
@@ -70,7 +68,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
-
         }
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue)
@@ -156,7 +153,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await PEMBus.DeviceStorage.UpdateDeviceAsync(message.Device);
 
             var json = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(message.Device), _camelCaseSettings);
-
+            Console.WriteLine(json);
             var notification = new Notification()
             {
                 Payload = json,

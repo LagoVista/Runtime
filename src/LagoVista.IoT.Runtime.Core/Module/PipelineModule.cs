@@ -235,6 +235,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                         await UpdateDevice(message);
 
+                        if(message.PayloadType == MessagePayloadTypes.Media)
+                        {
+                            await PEMBus.DeviceMediaStorage.AttachToDevice(PEMBus.Instance.DeviceRepository.Value, message.Id, message.Device.Id);
+                        }
+
                         await PEMBus.PEMStorage.AddMessageAsync(message);
                     }
                     else

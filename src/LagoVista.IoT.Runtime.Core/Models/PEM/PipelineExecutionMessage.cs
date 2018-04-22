@@ -37,6 +37,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
     {
         Unknown,
         Binary,
+        Media,
         Text
     }
 
@@ -126,7 +127,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// Length of either the Binary or Text Payload
         /// </summary>
         [JsonProperty("payloadLength")]
-        public int PayloadLength { get; set; }
+        public long PayloadLength { get; set; }
 
         /// <summary>
         /// Byte Array that makes up the Binary Payload

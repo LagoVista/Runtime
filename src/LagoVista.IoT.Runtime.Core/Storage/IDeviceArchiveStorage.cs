@@ -1,4 +1,5 @@
-﻿using LagoVista.IoT.Deployment.Admin.Models;
+﻿using LagoVista.Core.Validation;
+using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceManagement.Core.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using System;
@@ -8,7 +9,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
 {
     public interface IDeviceArchiveStorage
     {
-        Task InitAsync(DeviceRepository deviceRepo, string hostId, string instanceId);
+        Task<InvokeResult> InitAsync(DeviceRepository deviceRepo, string hostId, string instanceId);
 
         UsageMetrics GetAndResetMetrics(DateTime dateStamp, string hostVersion);
         Task AddArchiveAsync(DeviceArchive logEntry);

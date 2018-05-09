@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using LagoVista.IoT.DeviceAdmin.Interfaces;
 using System.Threading.Tasks;
 using LagoVista.Core;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
-using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using Newtonsoft.Json;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using System.IO;
+using System.Linq;
+using LagoVista.IoT.Deployment.Admin.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -17,8 +16,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
     {
         ListenerConfiguration _listenerConfiguration;
         IPEMQueue _plannerQueue;
+        IPEMQueue _outgoingMessageQueue;
 
-        public ListenerModule(ListenerConfiguration listenerConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue plannerQueue) : base(listenerConfiguration, pemBus, moduleHost)
+        public ListenerModule(ListenerConfiguration listenerConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue outgoingMessageQueue, IPEMQueue plannerQueue) : base(listenerConfiguration, pemBus, moduleHost)
         {
             _listenerConfiguration = listenerConfiguration;
             _plannerQueue = plannerQueue;
@@ -166,6 +166,23 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
         }
 
+        private void WorkLoop()
+        {
+            Task.Run(async () =>
+            {
+                while (Status == PipelineModuleStatus.Running)
+                {
+                    var msg = await _outgoingMessageQueue.ReceiveAsync();
+                    /* queue will return a null message when it's "turned off", should probably change the logic to use cancellation tokens, not today though KDW 5/3/2017 */
+                    //TODO Use cancellation token rather than return null when queue is no longer listenting.
+                    if (msg != null)
+                    {
+                        await SendResponseAsync(msg, msg.OutgoingMessages.First());
+                    }
+                }
+            });
+        }
+
         public async override Task<InvokeResult> StartAsync()
         {
             if (_listenerConfiguration.RESTListenerType != RESTListenerTypes.AcmeListener)
@@ -178,7 +195,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 return InvokeResult.Success;
             }
         }
-
 
         public async override Task<InvokeResult> StopAsync()
         {
@@ -193,7 +209,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
         }
 
-        public abstract Task<InvokeResult> SendResponseAsync(PipelineExecutionMessage message);
+        public abstract Task<InvokeResult> SendResponseAsync(PipelineExecutionMessage message, OutgoingMessage msg);
 
         public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null)
         {

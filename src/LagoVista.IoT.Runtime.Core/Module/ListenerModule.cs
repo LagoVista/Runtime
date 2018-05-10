@@ -273,7 +273,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     Name = _listenerConfiguration.Name,
                     Type = GetType().Name,
-                    QueueId = "N/A",
+                    QueueId = _listenerConfiguration.Id,
                     StartDateStamp = startTimeStamp.ToJSONString(),
                     ProcessByHostId = ModuleHost.Id,
                     Enqueued = startTimeStamp.ToJSONString(),

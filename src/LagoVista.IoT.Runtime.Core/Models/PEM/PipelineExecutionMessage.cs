@@ -169,6 +169,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         [JsonProperty("outgoingMessages", NullValueHandling = NullValueHandling.Ignore)]
         public List<OutgoingMessage> OutgoingMessages { get; set; }
+
+        [JsonProperty("responseMessage", NullValueHandling = NullValueHandling.Ignore)]
+        public OutgoingMessage ResponseMessage { get; set; }
         
         /// <summary>
         /// This should be call before doing final storage, will reduce the size of 
@@ -180,6 +183,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             {
                 err.SetEmptyValueToNull();
             }
+
 
             if (String.IsNullOrEmpty(MessageId)) MessageId = null;
             if (!Log.Any()) Log = null;

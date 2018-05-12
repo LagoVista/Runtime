@@ -573,6 +573,18 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await PEMBus.NotificationPublisher.PublishAsync(target, msg);
         }
 
+        protected async void SendDeviceNotification(Targets target, string deviceId, String text)
+        {
+            var msg = new Notification()
+            {
+                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Device),
+                ChannelId = deviceId,
+                Text = text
+            };
+            await PEMBus.NotificationPublisher.PublishAsync(target, msg);
+        }
+
+
         public IPipelineModuleConfiguration Configuration
         {
             get { return _pipelineModuleConfiguration; }

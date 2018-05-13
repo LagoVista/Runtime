@@ -153,7 +153,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
             await PEMBus.DeviceStorage.UpdateDeviceAsync(message.Device);
 
             var json = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(message.Device), _camelCaseSettings);
-            Console.WriteLine(json);
             var notification = new Notification()
             {
                 Payload = json,
@@ -234,12 +233,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         //For now since we are working on the same instance we don't have to write this to external storage while enqueing, will need to when we run on different nodes
 
                         await UpdateDevice(message);
-
-                        if(message.PayloadType == MessagePayloadTypes.Media)
-                        {
-                            await PEMBus.DeviceMediaStorage.AttachToDevice(PEMBus.Instance.DeviceRepository.Value, message.Id, message.Device.Id);
-                        }
-
                         await PEMBus.PEMStorage.AddMessageAsync(message);
                     }
                     else

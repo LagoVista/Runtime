@@ -152,7 +152,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
-                await PEMBus.DeviceMediaStorage.StoreMediaItemAsync(PEMBus.Instance.DeviceRepository.Value, stream, message.Id, contentType, contentLength);
+                var insertResult = await PEMBus.DeviceMediaStorage.StoreMediaItemAsync(PEMBus.Instance.DeviceRepository.Value, stream, message.Id, contentType, contentLength);
+                if (!insertResult.Successful) return insertResult.ToInvokeResult();
+
+                message.MediaItemId = insertResult.Result;
 
                 await _plannerQueue.EnqueueAsync(message);
 

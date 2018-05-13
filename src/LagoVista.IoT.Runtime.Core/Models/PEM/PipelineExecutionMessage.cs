@@ -172,7 +172,13 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         [JsonProperty("responseMessage", NullValueHandling = NullValueHandling.Ignore)]
         public OutgoingMessage ResponseMessage { get; set; }
-        
+
+        /// <summary>
+        /// The Message ID as identified by the parser
+        /// </summary>
+        [JsonProperty("mediaItemId", NullValueHandling = NullValueHandling.Ignore)]
+        public String MediaItemId { get; set; }
+
         /// <summary>
         /// This should be call before doing final storage, will reduce the size of 
         /// unused fields
@@ -184,6 +190,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
                 err.SetEmptyValueToNull();
             }
 
+
+            if (String.IsNullOrEmpty(MediaItemId)) MediaItemId = null;
 
             if (String.IsNullOrEmpty(MessageId)) MessageId = null;
             if (!Log.Any()) Log = null;

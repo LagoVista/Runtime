@@ -1,6 +1,7 @@
 ﻿using LagoVista.Core.Models;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,6 +15,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             Values = new Dictionary<string, MessageValue>();
         }
 
+        /* Note if additional fields are added, make sure the Clone method is updated */
         [JsonProperty("deviceRepoId", NullValueHandling = NullValueHandling.Ignore)]
         public string DeviceRepoId { get; set; }
         [JsonProperty("deviceid", NullValueHandling = NullValueHandling.Ignore)]
@@ -61,6 +63,45 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
                 return true;
             else
                 return false;
+        }
+
+        public MessageEnvelope Clone()
+        {
+            var env = new MessageEnvelope()
+            {
+                DeviceId = DeviceId,
+                DeviceRepoId = DeviceRepoId,
+                FromAddress = FromAddress,
+                MessageType = MessageType,
+                Method = Method,
+                Path = Path,
+                ReceivedOnPort = ReceivedOnPort,
+                Topic = Topic
+            };
+
+            if (Headers != null)
+            {
+                foreach (var hdr in Headers)
+                {
+                    env.Headers.Add(hdr.Key, hdr.Value);
+                }
+            }
+
+            if (Values != null)
+            {
+                foreach (var val in Values)
+                {
+                    if (val.Value != null)
+                    {
+                        if (val.Value != null)
+                        {
+                            env.Values.Add(val.Key, val.Value.Clone());
+                        }
+                    }
+                }
+            }
+
+            return env;
         }
     }
 }

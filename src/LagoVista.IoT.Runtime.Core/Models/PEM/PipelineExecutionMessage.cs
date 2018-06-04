@@ -93,13 +93,13 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         public ErrorReason ErrorReason { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("payloadType")]
-        public MessagePayloadTypes PayloadType { get; set; }        
+        public MessagePayloadTypes PayloadType { get; set; }
 
-        [JsonProperty("device", NullValueHandling=NullValueHandling.Ignore)]
+        [JsonProperty("device", NullValueHandling = NullValueHandling.Ignore)]
         public LagoVista.IoT.DeviceManagement.Core.Models.Device Device { get; set; }
 
         [JsonProperty("currentInstruction", NullValueHandling = NullValueHandling.Ignore)]
-        public  PipelineExecutionInstruction CurrentInstruction { get; set; }
+        public PipelineExecutionInstruction CurrentInstruction { get; set; }
 
         [JsonProperty("instructions")]
         public List<PipelineExecutionInstruction> Instructions { get; set; }
@@ -154,7 +154,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         public String MessageId { get; set; }
 
         [JsonProperty("errorMessages", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Error> ErrorMessages {get; set;}
+        public List<Error> ErrorMessages { get; set; }
         [JsonProperty("infoMessages", NullValueHandling = NullValueHandling.Ignore)]
         public List<Info> InfoMessages { get; set; }
         [JsonProperty("warningMessages", NullValueHandling = NullValueHandling.Ignore)]
@@ -185,7 +185,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// </summary>
         public void SetEmptyValueToNull()
         {
-            foreach(var err in ErrorMessages)
+            foreach (var err in ErrorMessages)
             {
                 err.SetEmptyValueToNull();
             }
@@ -200,11 +200,57 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             if (!ErrorMessages.Any()) ErrorMessages = null;
             if (!InfoMessages.Any()) InfoMessages = null;
             if (!WarningMessages.Any()) WarningMessages = null;
-            if(Envelope.SetEmptyValueToNull())
+            if (Envelope.SetEmptyValueToNull())
             {
                 Envelope = null;
             }
+        }
 
+        public PipelineExecutionMessage Clone()
+        {
+            var pem = new PipelineExecutionMessage()
+            {
+                BinaryPayload = BinaryPayload,
+                CompletionTimeStamp = CompletionTimeStamp,
+                CreationTimeStamp = CreationTimeStamp,
+                Envelope = Envelope.Clone(),
+                Device = Device,
+                ErrorMessages = ErrorMessages,
+                ErrorReason = ErrorReason,
+                ExecutionTimeMS = ExecutionTimeMS,
+                Id = Id,
+                InfoMessages = InfoMessages,
+                InputCommand = InputCommand,
+                Log = Log,
+                MediaItemId = MediaItemId,
+                MessageId = MessageId,
+                MessageType = MessageType,
+                OutgoingMessages = OutgoingMessages,
+                OutputCommands = OutputCommands,
+                PayloadLength = PayloadLength,
+                PayloadType = PayloadType,
+                ResponseMessage = ResponseMessage,
+                Status = Status,
+                TextPayload = TextPayload,
+                WarningMessages = WarningMessages,
+            };
+            
+            foreach(var instruction in Instructions)
+            {
+                pem.Instructions.Add(instruction);
+            }
+
+            if(CurrentInstruction != null)
+            {
+                pem.CurrentInstruction = CurrentInstruction.Clone();
+            }
+
+            if(Envelope != null)
+            {
+                pem.Envelope = Envelope.Clone();
+            }
+
+            return pem;
         }
     }
 }

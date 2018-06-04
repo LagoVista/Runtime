@@ -43,7 +43,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             set
             {
                 _startDateStamp = value;
-                if(_stopWatch.IsRunning)
+                if (_stopWatch.IsRunning)
                 {
                     _stopWatch.Stop();
                     TimeInQueueMS = Math.Round(_stopWatch.Elapsed.TotalMilliseconds, 2);
@@ -58,5 +58,21 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         public string ProcessByHostId { get; set; }
         [JsonProperty("executionTimeMS")]
         public double ExecutionTimeMS { get; set; }
+
+        public PipelineExecutionInstruction Clone()
+        {
+            return new PipelineExecutionInstruction()
+            {
+                Enqueued = Enqueued,
+                ExecutionTimeMS = ExecutionTimeMS,
+                Name = Name,
+                ProcessByHostId = ProcessByHostId,
+                QueueId = QueueId,
+                QueueUri = QueueUri,
+                Type = Type,
+                TimeInQueueMS = TimeInQueueMS,
+                StartDateStamp = StartDateStamp
+            };
+        }
     }
 }

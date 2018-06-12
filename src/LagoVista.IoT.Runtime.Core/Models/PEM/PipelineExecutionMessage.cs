@@ -9,6 +9,7 @@ using LagoVista.IoT.Logging;
 using LagoVista.IoT.DeviceManagement.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using LagoVista.Core.Interfaces;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
@@ -49,7 +50,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         InputCommand
     }
 
-    public class PipelineExecutionMessage
+    public class PipelineExecutionMessage : IIDEntity
     {
         public PipelineExecutionMessage()
         {

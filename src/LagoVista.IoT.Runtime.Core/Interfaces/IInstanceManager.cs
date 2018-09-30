@@ -27,7 +27,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// </summary>
         /// <param name="instanceId"></param>
         /// <returns></returns>
-        Task<InvokeResult> InitAsync(String instanceId);
+        Task<InvokeResult> InitAsync(String instanceId, string versionid = "");
 
 
         DeploymentHost Host { get; }

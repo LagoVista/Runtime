@@ -17,6 +17,7 @@ namespace LagoVista.IoT.Runtime.Core
         IPEMQueue PlannerQueue { get; }
 
         List<IListenerModule> Listeners { get; }
+        List<IPipelineModule> Transmitters { get; }
 
         IPipelineModule Planner { get; }
 

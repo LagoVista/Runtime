@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using LagoVista.Core;
-using LagoVista.IoT.Runtime.Core.Models.PEM;
+﻿using LagoVista.Core;
 using LagoVista.Core.Validation;
-using Newtonsoft.Json;
+using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
+using LagoVista.IoT.Runtime.Core.Models.PEM;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LagoVista.IoT.Deployment.Admin.Models;
+using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -22,6 +22,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             _listenerConfiguration = listenerConfiguration;
             _plannerQueue = plannerQueue;
+            _outgoingMessageQueue = outgoingMessageQueue;
         }
 
         public async Task<InvokeResult> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")
@@ -153,7 +154,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.Instructions.Add(plannerInstruction);
 
                 var insertResult = await PEMBus.DeviceMediaStorage.StoreMediaItemAsync(PEMBus.Instance.DeviceRepository.Value, stream, message.Id, contentType, contentLength);
-                if (!insertResult.Successful) return insertResult.ToInvokeResult();
+                if (!insertResult.Successful)
+                {
+                    return insertResult.ToInvokeResult();
+                }
 
                 message.MediaItemId = insertResult.Result;
 
@@ -169,11 +173,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
         }
 
-        private void WorkLoop()
+
+        protected void WorkLoop()
         {
             Task.Run(async () =>
             {
-                while (Status == PipelineModuleStatus.Running)
+                await _outgoingMessageQueue.StartListeningAsync();
+
+                while (Status == PipelineModuleStatus.Running || Status == PipelineModuleStatus.Listening)
                 {
                     var msg = await _outgoingMessageQueue.ReceiveAsync();
                     /* queue will return a null message when it's "turned off", should probably change the logic to use cancellation tokens, not today though KDW 5/3/2017 */
@@ -190,7 +197,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             if (_listenerConfiguration.RESTListenerType != RESTListenerTypes.AcmeListener)
             {
-                return await base.StartAsync();
+                var result = await base.StartAsync();
+                if (result.Successful)
+                {
+                    WorkLoop();
+                }
+
+                return result;
             }
             else
             {

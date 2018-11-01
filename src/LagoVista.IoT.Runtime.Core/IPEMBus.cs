@@ -22,7 +22,9 @@ namespace LagoVista.IoT.Runtime.Core
         IPEMStorage PEMStorage { get; set; }
 
         IDeviceArchiveStorage DeviceArchiveStorage { get; set; }
-        
+
+        IDataStreamServices DataStreamServices { get; set; }
+
         IDeviceMediaStorage DeviceMediaStorage { get; set; }
 
         ISystemUsers SystemUsers { get; set; }

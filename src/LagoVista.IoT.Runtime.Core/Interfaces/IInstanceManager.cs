@@ -33,8 +33,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         DeploymentHost Host { get; }
 
         ConcurrentDictionary<string, IInstanceRuntime> ActiveInstances { get; }
-        // added for RPC
-        List<InstanceRuntimeSummary> GetActiveInstanceRuntimeSummaries();
 
         /// <summary>
         /// Return a full spec of the instance

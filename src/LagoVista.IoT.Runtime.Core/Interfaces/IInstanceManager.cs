@@ -1,8 +1,8 @@
 ﻿using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models;
-using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
@@ -14,7 +14,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// <summary>
         /// The version of the host that is handling the runtime(s)
         /// </summary>
-        String HostId { get; set; }
+        string HostId { get; set; }
 
         /// <summary>
         /// Used for starring out a host  with many instances 
@@ -27,12 +27,14 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// </summary>
         /// <param name="instanceId"></param>
         /// <returns></returns>
-        Task<InvokeResult> InitAsync(String instanceId, string versionid = "");
+        Task<InvokeResult> InitAsync(string instanceId, string versionid = "");
 
 
         DeploymentHost Host { get; }
 
         ConcurrentDictionary<string, IInstanceRuntime> ActiveInstances { get; }
+        // added for RPC
+        List<InstanceRuntimeSummary> GetActiveInstanceRuntimeSummaries();
 
         /// <summary>
         /// Return a full spec of the instance

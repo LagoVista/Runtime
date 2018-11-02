@@ -2,7 +2,6 @@
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces

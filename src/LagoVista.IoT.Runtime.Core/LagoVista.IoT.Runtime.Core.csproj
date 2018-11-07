@@ -1,18 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <NetStandardImplicitPackageVersion>2.0.3</NetStandardImplicitPackageVersion>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LagoVista.Core" Version="2.1.534-beta1653" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="2.1.534-beta1653" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="2.1.534-beta1653" />
-    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="2.1.534-beta1653" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="2.1.534-beta1653" />
-    <PackageReference Include="LagoVista.IoT.Logging" Version="2.1.534-beta1653" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="2.1.534-beta1653" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="2.1.534-beta1653" />
+    <PackageReference Include="LagoVista.Core" Version="2.1.540-beta1400" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="2.1.540-beta1400" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="2.1.540-beta1400" />
+    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="2.1.540-beta1400" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="2.1.540-beta1400" />
+    <PackageReference Include="LagoVista.IoT.Logging" Version="2.1.540-beta1400" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="2.1.540-beta1400" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="2.1.540-beta1400" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>

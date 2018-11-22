@@ -23,7 +23,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         List<IPipelineModule> Modules { get; }
 
-        Task<InvokeResult> InitAsync(string hostId, string instanceId, string versionId = null);
+        Task<InvokeResult> InitAsync(DeploymentInstance instance);
 
         Task<InvokeResult> CleanupAsync();
 

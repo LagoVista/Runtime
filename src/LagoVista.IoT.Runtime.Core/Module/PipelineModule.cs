@@ -28,8 +28,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
     {
         IPEMQueue _inputMessageQueue;
         IPEMQueue _outputQueue;
-        IPEMBus _pemBus;
-        IPipelineModuleConfiguration _pipelineModuleConfiguration;
+        readonly IPEMBus _pemBus;
+        readonly IPipelineModuleConfiguration _pipelineModuleConfiguration;
         List<IPEMQueue> _secondaryOutputQueues;
         UsageMetrics _pipelineMetrics;
         string _stateChangeTimeStamp;
@@ -89,6 +89,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
+        }
+
+        public PipelineModule()
+        {
+
         }
 
         public string Id { get; set; }

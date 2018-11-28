@@ -12,12 +12,8 @@ namespace LagoVista.IoT.Runtime.Core
         /// Instance ID of the queue doing the processing
         /// </summary>
         String InstanceId { get; }
-
-        
-
         
         String PipelineModuleId { get; }
-
 
         String Key { get; }
 

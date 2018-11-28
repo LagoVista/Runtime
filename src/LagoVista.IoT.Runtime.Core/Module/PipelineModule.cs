@@ -11,11 +11,9 @@ using LagoVista.Core;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.Core.Models;
 using LagoVista.IoT.Logging;
-using LagoVista.IoT.Runtime.Core.Models;
 using Newtonsoft.Json;
 using LagoVista.IoT.Runtime.Core.Services;
 using LagoVista.IoT.DeviceManagement.Core.Models;
-using System.Globalization;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.Core.Exceptions;
@@ -27,14 +25,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
     public abstract class PipelineModule : IPipelineModule
     {
         IPEMQueue _inputMessageQueue;
-        IPEMQueue _outputQueue;
         readonly IPEMBus _pemBus;
         readonly IPipelineModuleConfiguration _pipelineModuleConfiguration;
-        List<IPEMQueue> _secondaryOutputQueues;
         UsageMetrics _pipelineMetrics;
         string _stateChangeTimeStamp;
 
-        ListenerConfiguration _listenerConfiguration;
 
         JsonSerializerSettings _camelCaseSettings = new Newtonsoft.Json.JsonSerializerSettings()
         {
@@ -42,63 +37,24 @@ namespace LagoVista.IoT.Runtime.Core.Module
         };
 
         //TODO: SHould condolidate constructors with call to this(....);
+        
 
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues)
+        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus)
         {
-            _inputMessageQueue = listenerQueue;
-            _outputQueue = outputQueue;
+            _inputMessageQueue = pemBus.Queues.Where(queue => queue.PipelineModuleId == pipelineModuleConfiguration.Id).FirstOrDefault();
+            if (_inputMessageQueue == null) throw new Exception($"Output queue for listener module {pipelineModuleConfiguration.Id} - {pipelineModuleConfiguration.Name} was never created.");
+
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
-            _secondaryOutputQueues = secondaryOutputQueues;
-            ModuleHost = moduleHost;
 
-            _listenerConfiguration = pipelineModuleConfiguration as ListenerConfiguration;
 
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
-        }
-
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue, List<IPEMQueue> secondaryOutputQueues)
-        {
-            _inputMessageQueue = listenerQueue;
-            _pemBus = pemBus;
-            _pipelineModuleConfiguration = pipelineModuleConfiguration;
-            _secondaryOutputQueues = secondaryOutputQueues;
-            ModuleHost = moduleHost;
-
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
-            _pipelineMetrics.Reset();
-        }
-
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue listenerQueue)
-        {
-            _inputMessageQueue = listenerQueue;
-            _pemBus = pemBus;
-            _pipelineModuleConfiguration = pipelineModuleConfiguration;
-            ModuleHost = moduleHost;
-
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
-            _pipelineMetrics.Reset();
-        }
-
-        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost)
-        {
-            _pemBus = pemBus;
-            _pipelineModuleConfiguration = pipelineModuleConfiguration;
-            ModuleHost = moduleHost;
-
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
-            _pipelineMetrics.Reset();
-        }
-
-        public PipelineModule()
-        {
-
-        }
+        }        
 
         public string Id { get; set; }
 
-        public IPipelineModuleRuntime ModuleHost { get; private set; }
+        //public IPipelineModuleRuntime ModuleHost { get; private set; }
 
         public PipelineModuleStatus Status { get; private set; }
 
@@ -144,11 +100,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
         private Task FinalizeMessage(PipelineExecutionMessage message)
         {
             return Task.FromResult(default(object));
-        }
-
-        protected async Task QueueForNextExecutionAsync(PipelineExecutionMessage message)
-        {
-            await _outputQueue.EnqueueAsync(message);
         }
 
         private async Task UpdateDevice(PipelineExecutionMessage message)
@@ -218,7 +169,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 message.CurrentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);;
                 message.ExecutionTimeMS += message.CurrentInstruction.ExecutionTimeMS;
-                message.CurrentInstruction.ProcessByHostId = ModuleHost.Id;
+                message.CurrentInstruction.ProcessByHostId = PEMBus.Instance.Id;
 
                 Metrics.BytesProcessed += message.PayloadLength;
 

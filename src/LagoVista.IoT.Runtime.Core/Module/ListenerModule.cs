@@ -15,14 +15,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
     public abstract class ListenerModule : PipelineModule
     {
         ListenerConfiguration _listenerConfiguration;
-        IPEMQueue _plannerQueue;
         IPEMQueue _outgoingMessageQueue;
 
-        public ListenerModule(ListenerConfiguration listenerConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, IPEMQueue outgoingMessageQueue, IPEMQueue plannerQueue) : base(listenerConfiguration, pemBus, moduleHost)
+        public ListenerModule(ListenerConfiguration listenerConfiguration, IPEMBus pemBus) : base(listenerConfiguration, pemBus)
         {
             _listenerConfiguration = listenerConfiguration;
-            _plannerQueue = plannerQueue;
-            _outgoingMessageQueue = outgoingMessageQueue;
+
+            _outgoingMessageQueue = pemBus.Queues.Where(queue => queue.PipelineModuleId == listenerConfiguration.Id).FirstOrDefault();
+            if (_outgoingMessageQueue == null) throw new Exception($"Output queue for listener module {_listenerConfiguration.Id} - {_listenerConfiguration.Name} was never created.");
         }
 
         public async Task<InvokeResult> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")
@@ -54,7 +54,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Type = GetType().Name,
                     QueueId = "N/A",
                     StartDateStamp = startTimeStamp.ToJSONString(),
-                    ProcessByHostId = ModuleHost.Id,
+                    ProcessByHostId = PEMBus.Instance.PrimaryHost.Id,
                     ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
                 };
 
@@ -71,10 +71,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
-                await _plannerQueue.EnqueueAsync(message);
+                var plannerQueue = PEMBus.Queues.Where(queue => queue.ForModuleType == PipelineModuleType.Planner).FirstOrDefault();
+                await plannerQueue.EnqueueAsync(message);
 
                 return InvokeResult.Success;
-
             }
             catch (Exception ex)
             {
@@ -136,7 +136,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Type = GetType().Name,
                     QueueId = "N/A",
                     StartDateStamp = startTimeStamp.ToJSONString(),
-                    ProcessByHostId = ModuleHost.Id,
+                    ProcessByHostId = PEMBus.Instance.PrimaryHost.Id,
                     ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
                 };
 
@@ -161,7 +161,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 message.MediaItemId = insertResult.Result;
 
-                await _plannerQueue.EnqueueAsync(message);
+                var plannerQueue = PEMBus.Queues.Where(queue => queue.ForModuleType == PipelineModuleType.Planner).FirstOrDefault();
+                await plannerQueue.EnqueueAsync(message);
 
                 return InvokeResult.Success;
 
@@ -291,26 +292,28 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Type = GetType().Name,
                     QueueId = _listenerConfiguration.Id,
                     StartDateStamp = startTimeStamp.ToJSONString(),
-                    ProcessByHostId = ModuleHost.Id,
+                    ProcessByHostId = PEMBus.Instance.PrimaryHost.Id,
                     Enqueued = startTimeStamp.ToJSONString(),
                     ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds,
                 };
 
                 message.Instructions.Add(listenerInstruction);
 
+                var plannerQueue = PEMBus.Queues.Where(queue => queue.ForModuleType == PipelineModuleType.Planner).FirstOrDefault();
+
                 var planner = PEMBus.Instance.Solution.Value.Planner.Value;
                 var plannerInstruction = new PipelineExecutionInstruction()
                 {
                     Name = planner.Name,
                     Type = "Planner",
-                    QueueId = _plannerQueue.InstanceId,
+                    QueueId = plannerQueue.InstanceId,
                     Enqueued = DateTime.UtcNow.ToJSONString()
                 };
 
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
-                await _plannerQueue.EnqueueAsync(message);
+                await plannerQueue.EnqueueAsync(message);
 
                 return InvokeResult.Success;
             }

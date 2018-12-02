@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LagoVista.Core.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
@@ -20,24 +21,32 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
 
     public interface ICache
     {
+        /// <summary>
+        /// Can provide multiple end points if necessary
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        Task InitAsync(params IConnectionSettings[] settings);
 
         Task<bool> HasItemAsync(CacheItemType itemType, string id, string key);
-        Task SetItemAsync<T>(CacheItemType itemType, string id, string key, T item, TimeSpan? expires);
-        Task<T> GetItemAsync<T>(CacheItemType itemType, string id, string key);
+        Task SetItemAsync<T>(CacheItemType itemType, string id, string key, T item, TimeSpan? expires) where T : class;
+        Task<T> GetItemAsync<T>(CacheItemType itemType, string id, string key) where T : class;
 
         Task RemoveItemAsync(CacheItemType itemType, string id, string key);
 
-        Task SetItemAsync<T>(string key, TimeSpan? expires = null);
+        Task SetItemAsync<T>(string key, T item, TimeSpan? expires = null) where T : class;
 
 
-        Task HasItemAsync(string key);
+        Task<bool> HasItemAsync(string key);
 
-        Task<T> GetItemAsync<T>(string key0);
+        Task<Object> Exec(string cacheCommand);
 
-        Task RemvoeItemAsync(string key);
+        Task<T> GetItemAsync<T>(string key) where T : class;
 
-        Task SubscribeAsync<T>(SubscriptionType subscriptionType, string key, Action<T> action);
+        Task RemoveItemAsync(string key);
 
-        Task SubscribeAsync<T>(CacheItemType itemType, string id, string key, SubscriptionType subscriptionType, Action<T> action);
+        Task SubscribeAsync<T>(SubscriptionType subscriptionType, string key, Action<T> action) where T : class;
+
+        Task SubscribeAsync<T>(SubscriptionType subscriptionType, CacheItemType itemType, string id, string key, Action<T> action) where T : class;
     }
 }

@@ -11,18 +11,7 @@ namespace LagoVista.IoT.Runtime.Core
     public interface IInstanceRuntime : IDisposable
     {
         String Id { get; }
-
-        IPEMBus PemBus { get; }
-
-        IPEMQueue PlannerQueue { get; }
-
-        List<IListenerModule> Listeners { get; }
-        List<IPipelineModule> Transmitters { get; }
-
-        IPipelineModule Planner { get; }
-
-        List<IPipelineModule> Modules { get; }
-
+        
         Task<InvokeResult> InitAsync(DeploymentInstance instance);
 
         Task<InvokeResult> CleanupAsync();
@@ -31,8 +20,6 @@ namespace LagoVista.IoT.Runtime.Core
 
         InstanceRuntimeSummary CreateSummary();
 
-        Task<InvokeResult> SetStateAsync(DeploymentInstanceStates state, string details = "");
-
         Task<InvokeResult> PauseAsync();
         Task<InvokeResult> StartListeningAsync();
         Task<InvokeResult> StopListeningAsync();
@@ -40,6 +27,6 @@ namespace LagoVista.IoT.Runtime.Core
         Task<InvokeResult> StopAsync();
         Task<InvokeResult> StartAsync();
         Task<UsageMetrics> GetAndResetMetricsAsync(DateTime dateStamp, string hostVersion);
-        void PopulateInstanceDetails(InstanceRuntimeDetails details);
+        InstanceRuntimeDetails GetInstanceDetails();
     }
 }

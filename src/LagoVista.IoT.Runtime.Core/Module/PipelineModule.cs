@@ -36,21 +36,33 @@ namespace LagoVista.IoT.Runtime.Core.Module
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
-        //TODO: SHould condolidate constructors with call to this(....);
-        
-
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus)
         {
             _inputMessageQueue = pemBus.Queues.Where(queue => queue.PipelineModuleId == pipelineModuleConfiguration.Id).FirstOrDefault();
-            if (_inputMessageQueue == null) throw new Exception($"Output queue for listener module {pipelineModuleConfiguration.Id} - {pipelineModuleConfiguration.Name} was never created.");
+            if (_inputMessageQueue == null) throw new Exception($"Incoming queue for module {pipelineModuleConfiguration.Id} - {pipelineModuleConfiguration.Name} could not be found.");
+
+            ModuleType = _inputMessageQueue.ForModuleType;
+
+            _pemBus = pemBus;
+            _pipelineModuleConfiguration = pipelineModuleConfiguration;
+             
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
+            _pipelineMetrics.Reset();
+        }
+
+        public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, string routeModuleId, IPEMBus pemBus)
+        {            
+            _inputMessageQueue = pemBus.Queues.Where(queue => queue.PipelineModuleId == routeModuleId).FirstOrDefault();
+            if (_inputMessageQueue == null) throw new Exception($"Incoming queue for module {pipelineModuleConfiguration.Id} - {pipelineModuleConfiguration.Name} could not be found.");
+
+            ModuleType = _inputMessageQueue.ForModuleType;
 
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
 
-
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
             _pipelineMetrics.Reset();
-        }        
+        }
 
         public string Id { get; set; }
 

@@ -5,7 +5,14 @@ using System;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core
-{
+{ 
+    public enum PEMQueueTypes
+    {
+        Incoming,
+        Outgoing,
+        IncomingAndOutgoing
+    }
+
     public interface IPEMQueue
     {
         /// <summary>
@@ -16,6 +23,8 @@ namespace LagoVista.IoT.Runtime.Core
         String PipelineModuleId { get; }
 
         String Key { get; }
+
+        PEMQueueTypes QueueType { get; }
 
         Task<InvokeResult> StartListeningAsync();
         Task<InvokeResult> StopListeningAsync();

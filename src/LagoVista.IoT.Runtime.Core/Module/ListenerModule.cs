@@ -22,7 +22,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _listenerConfiguration = listenerConfiguration;
 
             _outgoingMessageQueue = pemBus.Queues.Where(queue => queue.PipelineModuleId == listenerConfiguration.Id).FirstOrDefault();
-            if (_outgoingMessageQueue == null) throw new Exception($"Output queue for listener module {_listenerConfiguration.Id} - {_listenerConfiguration.Name} was never created.");
+            if (_outgoingMessageQueue == null) throw new Exception($"Incoming queue for listener module {_listenerConfiguration.Id} - {_listenerConfiguration.Name} could not be found.");
         }
 
         public async Task<InvokeResult> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")

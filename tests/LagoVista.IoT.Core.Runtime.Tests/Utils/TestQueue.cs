@@ -36,6 +36,8 @@ namespace LagoVista.IoT.Core.Runtime.Tests.Utils
 
         public PipelineModuleType ForModuleType { get; set; }
 
+        public PEMQueueTypes QueueType { get; set; }
+
         public Task<bool> CheckIfEmptyAsync()
         {
             return Task.FromResult(!_messageQueue.Any());

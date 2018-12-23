@@ -47,6 +47,8 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
                 },
             };
 
+            _pipelineModuleConfiguration.Setup(mod => mod.Id).Returns("MODULE1");
+
             _pemBus.Setup(pmb => pmb.Instance).Returns(Instance);
             _pemBus.Setup(pmb => pmb.DeviceStorage).Returns(_deviceManager.Object);
             _pemBus.Setup(pmb => pmb.SystemUsers).Returns(_systemUsers.Object);
@@ -57,8 +59,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             _queues.Add(_listenerQueue);
             _queues.Add(_outputQueue);
 
-            _pipelineModule = new Utils.TestPipelineModule(_pipelineModuleConfiguration.Object, _pemBus.Object, _moduleHost.Object,
-                _listenerQueue, _outputQueue, _secondaryOutputQueues);
+            _pipelineModule = new Utils.TestPipelineModule(_pipelineModuleConfiguration.Object, _pemBus.Object);
         }
 
         protected PipelineExecutionMessage GetMessage()

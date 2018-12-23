@@ -11,8 +11,8 @@ namespace LagoVista.IoT.Core.Runtime.Tests.Utils
 {
     public class TestPipelineModule : PipelineModule
     {
-        public TestPipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus, IPipelineModuleRuntime moduleHost, 
-            IPEMQueue listenerQueue, IPEMQueue outputQueue, List<IPEMQueue> secondaryOutputQueues) : base(pipelineModuleConfiguration, pemBus)
+        public TestPipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, IPEMBus pemBus) 
+            : base(pipelineModuleConfiguration, pemBus)
         {
             Id = "mypipelinemoduleid";
             ResultToReturn = new ProcessResult()

@@ -21,8 +21,8 @@ namespace LagoVista.IoT.Runtime.Core.Storage
         /// <param name="contentType"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        Task<InvokeResult<string>> StoreMediaItemAsync(DeviceRepository repo, Stream mediaStream, string pemId, string contentType, long length);
+        Task<InvokeResult<string>> StoreMediaItemAsync(Stream mediaStream, string pemId, string contentType, long length);
 
-        Task<InvokeResult> AttachToDevice(DeviceRepository repo, string pemId, string title, string id, string deviceId);
+        Task<InvokeResult> AttachToDevice(string pemId, string title, string id, string deviceId);
     }
 }

@@ -188,11 +188,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.ErrorMessages.AddRange(result.ErrorMessages);
                 message.InfoMessages.AddRange(result.InfoMessages);
                 message.WarningMessages.AddRange(result.WarningMessages);
-
+                
                 if (result.Success)
                 {
-                    var instructionIndex = message.Instructions.IndexOf(message.CurrentInstruction);
+                    var instruction = message.Instructions.Where(pm => pm.QueueId == message.CurrentInstruction.QueueId).FirstOrDefault();
+                    var instructionIndex = message.Instructions.IndexOf(instruction);
                     instructionIndex++;
+
                     if (instructionIndex == message.Instructions.Count) /* We are done processing the pipe line */
                     {
                         message.Status = message.WarningMessages.Count > 0 ? StatusTypes.CompletedWithWarnings : StatusTypes.Completed;

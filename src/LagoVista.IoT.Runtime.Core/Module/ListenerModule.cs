@@ -141,13 +141,15 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 };
 
                 message.Instructions.Add(listenerInstruction);
+                var plannerQueue = PEMBus.Queues.Where(queue => queue.ForModuleType == PipelineModuleType.Planner).FirstOrDefault();
 
                 var planner = PEMBus.Instance.Solution.Value.Planner.Value;
                 var plannerInstruction = new PipelineExecutionInstruction()
                 {
                     Name = "Planner",
                     Type = "Planner",
-                    QueueId = "N/A",
+                    QueueId = plannerQueue.PipelineModuleId,
+                    Enqueued = DateTime.UtcNow.ToJSONString()
                 };
 
                 message.CurrentInstruction = plannerInstruction;
@@ -161,7 +163,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 message.MediaItemId = insertResult.Result;
 
-                var plannerQueue = PEMBus.Queues.Where(queue => queue.ForModuleType == PipelineModuleType.Planner).FirstOrDefault();
                 await plannerQueue.EnqueueAsync(message);
 
                 return InvokeResult.Success;
@@ -312,7 +313,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     Name = planner.Name,
                     Type = "Planner",
-                    QueueId = plannerQueue.InstanceId,
+                    QueueId = plannerQueue.PipelineModuleId,
                     Enqueued = DateTime.UtcNow.ToJSONString()
                 };
 

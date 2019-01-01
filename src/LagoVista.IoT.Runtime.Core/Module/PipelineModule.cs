@@ -174,14 +174,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             try
             {
+                var currentInstruction = message.Instructions.Where(pm => pm.QueueId == message.CurrentInstruction.QueueId).FirstOrDefault();
+
                 sw.Start();
-                message.CurrentInstruction.StartDateStamp = DateTime.UtcNow.ToJSONString();
+                currentInstruction.StartDateStamp = DateTime.UtcNow.ToJSONString();
                 var result = await ProcessAsync(message);
                 sw.Stop();
 
-                message.CurrentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);;
-                message.ExecutionTimeMS += message.CurrentInstruction.ExecutionTimeMS;
-                message.CurrentInstruction.ProcessByHostId = PEMBus.Instance.Id;
+                currentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);;
+                message.ExecutionTimeMS += currentInstruction.ExecutionTimeMS;
+                currentInstruction.ProcessByHostId = PEMBus.Instance.Id;
 
                 Metrics.BytesProcessed += message.PayloadLength;
 
@@ -191,8 +193,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 
                 if (result.Success)
                 {
-                    var instruction = message.Instructions.Where(pm => pm.QueueId == message.CurrentInstruction.QueueId).FirstOrDefault();
-                    var instructionIndex = message.Instructions.IndexOf(instruction);
+                    
+                    var instructionIndex = message.Instructions.IndexOf(currentInstruction);
                     instructionIndex++;
 
                     if (instructionIndex == message.Instructions.Count) /* We are done processing the pipe line */
@@ -222,8 +224,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         }
                         else
                         {
+                            //Find and set the next instruction.
                             message.CurrentInstruction = message.Instructions[instructionIndex];
-                            message.CurrentInstruction.Enqueued = DateTime.UtcNow.ToJSONString();
+                            
                             var nextQueue = PEMBus.Queues.Where(que => que.PipelineModuleId == message.CurrentInstruction.QueueId).FirstOrDefault();
                             if (nextQueue == null) /* We couldn't find the queue for the next step */
                             {
@@ -239,6 +242,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             }
                             else
                             {
+                                message.CurrentInstruction.Enqueued = DateTime.UtcNow.ToJSONString();
                                 await nextQueue.EnqueueAsync(message);
                             }
                         }

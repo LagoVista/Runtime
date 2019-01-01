@@ -7,8 +7,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
     public class PipelineExecutionInstruction
     {
-        Stopwatch _stopWatch = new Stopwatch();
-
         public PipelineExecutionInstruction()
         {
 
@@ -31,7 +29,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             set
             {
                 _enqueued = value;
-                _stopWatch.Start();
             }
         }
 
@@ -43,10 +40,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             set
             {
                 _startDateStamp = value;
-                if (_stopWatch.IsRunning)
+                if(!String.IsNullOrEmpty(Enqueued) && !String.IsNullOrEmpty(value))
                 {
-                    _stopWatch.Stop();
-                    TimeInQueueMS = Math.Round(_stopWatch.Elapsed.TotalMilliseconds, 2);
+                    TimeInQueueMS = Math.Round((value.ToDateTime() - Enqueued.ToDateTime()).TotalMilliseconds, 3);
                 }
             }
         }

@@ -11,5 +11,7 @@ namespace LagoVista.IoT.Runtime.Core.Services
     {
         void Init(DeploymentInstance instance);
         Task<InvokeResult> SetInstanceStateAsync(DeploymentInstanceStates state, string details = "");
+
+        Task<InvokeResult> SetHostStateAsync(HostStatus state, string details = "");
     }
 }

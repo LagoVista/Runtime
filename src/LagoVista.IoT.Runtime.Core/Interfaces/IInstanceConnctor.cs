@@ -17,6 +17,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<ConnectionSettings>> GetPEMStorageSettingsAsync();
         Task<InvokeResult<RPCSettings>> GetRPCConnectionAsync();
         Task<InvokeResult<string>> GetSolutionVersionAsync();
+        Task<InvokeResult> UpdateHostStatusAsync(string hostId, HostStatus status, string version);
         Task<InvokeResult> UpdateInstanceStatusAsync(DeploymentInstanceStates status, bool isDeployed, string version);
         Task<InvokeResult<ConnectionSettings>> GetUsageStorageSettingsAsync();
     }

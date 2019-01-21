@@ -43,8 +43,6 @@ namespace LagoVista.IoT.Runtime.Core.Services
 
     public interface INotificationPublisher
     {
-        bool BatchMode { get; set; }
-        Task FlushAsync();
         Task PublishAsync(Targets target, Notification notification, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
         Task PublishAsync<TPayload>(Targets target, Channels channel, string channelId, TPayload message, NotificationVerbosity verbosity = NotificationVerbosity.Normal);
         Task PublishAsync<TPayload>(Targets target, Channels channel, string channelId, String text, TPayload message, NotificationVerbosity verbosity = NotificationVerbosity.Normal);

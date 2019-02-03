@@ -11,5 +11,6 @@ namespace LagoVista.IoT.Runtime.Core.Storage
     public interface IApplicationCacheServices
     {
         Task<ICache> GetApplicationCacheConnectorAsync(ApplicationCache cache);
+        Task<ICache> GetApplicationCacheConnectorAsync(string cacheKey);
     }
 }

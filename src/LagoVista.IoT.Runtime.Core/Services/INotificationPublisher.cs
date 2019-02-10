@@ -23,7 +23,8 @@ namespace LagoVista.IoT.Runtime.Core.Services
         MessageType,
 
         Dependency,
-    
+
+        Simulator,    
     }
 
     public enum NotificationVerbosity

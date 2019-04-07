@@ -38,6 +38,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         ISecureStorage SecureStorage { get; set; }
 
+        LagoVista.Core.Interfaces.IWatchdog Watchdog { get; set; }
 
        
         INotificationPublisher NotificationPublisher { get; }

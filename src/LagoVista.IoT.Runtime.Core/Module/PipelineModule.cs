@@ -174,6 +174,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             try
             {
+                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Start processing {this.Configuration.Name}");
+
                 var currentInstruction = message.Instructions.Where(pm => pm.QueueId == message.CurrentInstruction.QueueId).FirstOrDefault();
 
                 sw.Start();
@@ -193,7 +195,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 
                 if (result.Success)
                 {
-                    
+                    if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Success processing {this.Configuration.Name}");
+
                     var instructionIndex = message.Instructions.IndexOf(currentInstruction);
                     instructionIndex++;
 
@@ -206,6 +209,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                         await UpdateDevice(message);
                         await PEMBus.PEMStorage.AddMessageAsync(message);
+
+                        if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Completed processing {this.Configuration.Name}");
                     }
                     else
                     {
@@ -221,6 +226,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             Metrics.ErrorCount++;
                             Metrics.DeadLetterCount++;
                             await PEMBus.PEMStorage.AddMessageAsync(message);
+
+                            if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Invalid Message Index {this.Configuration.Name}");
                         }
                         else
                         {
@@ -239,9 +246,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                                 Metrics.DeadLetterCount++;
                                 await PEMBus.PEMStorage.AddMessageAsync(message);
+
+                                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Could not find next message {this.Configuration.Name}");
                             }
                             else
                             {
+                                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Enqueued for next {this.Configuration.Name}");
+
                                 message.CurrentInstruction.Enqueued = DateTime.UtcNow.ToJSONString();
                                 await nextQueue.EnqueueAsync(message);
                             }
@@ -250,6 +261,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
                 else /* Processing Failed*/
                 {
+                    if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Failed processing {this.Configuration.Name} - {message.ErrorReason}");
+
                     var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
 
                     if (message.ErrorReason == ErrorReason.None)
@@ -270,6 +283,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 if (sw.IsRunning) sw.Stop();
 
+                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Failed processing {this.Configuration.Name} - Validation Exception {ex.Message}");
+
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
                 LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"), (string.IsNullOrEmpty(message.MessageId) ? "????".ToKVP("messageId") : message.MessageId.ToKVP("messageId")));
                 message.ErrorMessages.Add(new Error()
@@ -289,6 +304,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             catch (Exception ex)
             {
                 if (sw.IsRunning) sw.Stop();
+
+                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Failed processing {this.Configuration.Name} - Exception {ex.Message}");
 
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
                 message.CurrentInstruction = null;                

@@ -10,6 +10,8 @@ namespace LagoVista.IoT.Runtime.Core
 {
     public interface IInstanceRuntime : IDisposable
     {
+
+        event EventHandler<DeploymentInstanceStates> StateChanged;
         String Id { get; }
         
         Task<InvokeResult> InitAsync(DeploymentInstance instance);

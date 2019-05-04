@@ -238,7 +238,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
 
             PipelineModule.ProcessHandler = async (PipelineExecutionMessage msg) =>
             {
-                await Task.Delay(250);
+                await Task.Delay(260);
                 return ProcessResult.FromSuccess;
             };
 

@@ -33,6 +33,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         ICache SystemCache { get; set; }
         
+        IDataMaintenance DataMaintence { get; set; }
 
         ISystemUsers SystemUsers { get; set; }
 

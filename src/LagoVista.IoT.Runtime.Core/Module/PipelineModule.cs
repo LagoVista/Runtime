@@ -46,7 +46,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
              
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, pipelineModuleConfiguration.Id);
             _pipelineMetrics.Reset();
         }
 
@@ -60,7 +60,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
 
-            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, Id);
+            _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, pipelineModuleConfiguration.Id);
             _pipelineMetrics.Reset();
         }
 

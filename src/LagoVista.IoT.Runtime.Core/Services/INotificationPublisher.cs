@@ -17,6 +17,7 @@ namespace LagoVista.IoT.Runtime.Core.Services
         DeviceRepository,
         DeviceGroup,
         Device,
+        DeviceLog,
         PipelineModule,
         Route,
         DeviceConfiguration,

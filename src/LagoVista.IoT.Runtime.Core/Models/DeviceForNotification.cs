@@ -24,6 +24,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public IEnumerable<AttributeValue> Attributes { get; set; }
         public IEnumerable<AttributeValue> States { get; set; }
         public IEnumerable<AttributeValue> Properties { get; set; }
+        public IEnumerable<DeviceNote> Notes { get; set; }
 
         public static DeviceForNotification FromDevice(LagoVista.IoT.DeviceManagement.Core.Models.Device device)
         {
@@ -42,6 +43,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 PropertyBag = device.PropertyBag,
                 Status = device.Status,
                 States = device.States,
+                Notes = device.Notes,
                 LastContact = device.LastContact
             };
         }

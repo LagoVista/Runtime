@@ -46,6 +46,8 @@ namespace LagoVista.IoT.Runtime.Core
 
         IDeviceStorage DeviceStorage { get; set; }
 
+        IInstanceConnector InstanceConnector { get; set; }
+
         void AddError(Error errorCode, params KeyValuePair<string, string>[] extras);
     }
 }

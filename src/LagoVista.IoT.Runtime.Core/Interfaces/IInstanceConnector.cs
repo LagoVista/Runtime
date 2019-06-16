@@ -25,5 +25,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult> UpdateHostStatusAsync(string hostId, HostStatus status, string version);
         Task<InvokeResult> UpdateInstanceStatusAsync(DeploymentInstanceStates status, bool isDeployed, string version);
         Task<InvokeResult<ConnectionSettings>> GetUsageStorageSettingsAsync();
+        Task<InvokeResult<string>> CreateServiceTicket(string ticketTemplateId, string repoId, string deviceId);
     }
 }

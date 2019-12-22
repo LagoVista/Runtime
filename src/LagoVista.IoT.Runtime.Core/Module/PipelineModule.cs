@@ -31,7 +31,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         string _stateChangeTimeStamp;
 
 
-        JsonSerializerSettings _camelCaseSettings = new Newtonsoft.Json.JsonSerializerSettings()
+        protected JsonSerializerSettings _camelCaseSettings = new Newtonsoft.Json.JsonSerializerSettings()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
@@ -72,7 +72,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public List<IPEMQueue> OutgoingQueues { get; set; }
 
-        public DateTime CreationDate { get; private set; }
+        public DateTime CreationDate { get; protected set; }
 
         public abstract Task<ProcessResult> ProcessAsync(PipelineExecutionMessage message);
 
@@ -286,7 +286,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Failed processing {this.Configuration.Name} - Validation Exception {ex.Message}");
 
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"), (string.IsNullOrEmpty(message.MessageId) ? "????".ToKVP("messageId") : message.MessageId.ToKVP("messageId")));
+                LogException($"pipeline_{this.GetType().Name.ToLower()}_ExecuteAsync", ex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"), (string.IsNullOrEmpty(message.MessageId) ? "????".ToKVP("messageId") : message.MessageId.ToKVP("messageId")));
                 message.ErrorMessages.Add(new Error()
                 {
                     Message = ex.Message,
@@ -300,6 +300,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.AddMessageAsync(message);
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
             catch (Exception ex)
             {
@@ -322,7 +324,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CompletionTimeStamp = DateTime.UtcNow.ToJSONString();
                 Metrics.DeadLetterCount++;
                 await PEMBus.PEMStorage.AddMessageAsync(message);
-                LogException($"pipeline.{this.GetType().Name.ToLower()}", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"), (string.IsNullOrEmpty(message.MessageId) ? "????".ToKVP("messageId") : message.MessageId.ToKVP("messageId")));
+                LogException($"pipeline_{this.GetType().Name.ToLower()}_ExecuteAsync", ex, message.Id.ToKVP("pemid"), deviceId.ToKVP("deviceId"), (string.IsNullOrEmpty(message.MessageId) ? "????".ToKVP("messageId") : message.MessageId.ToKVP("messageId")));
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
             finally
             {

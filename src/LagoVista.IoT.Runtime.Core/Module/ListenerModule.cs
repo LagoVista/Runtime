@@ -1,8 +1,11 @@
 ﻿using LagoVista.Core;
+using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
+using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
+using LagoVista.IoT.Runtime.Core.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -187,7 +190,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     var msg = await _outgoingMessageQueue.ReceiveAsync();
                     /* queue will return a null message when it's "turned off", should probably change the logic to use cancellation tokens, not today though KDW 5/3/2017 */
                     //TODO Use cancellation token rather than return null when queue is no longer listenting.
-                    if (msg != null)
+                    // don't have the ACME listener process the message, even though it will likely do nothing.
+                    if (msg != null && _listenerConfiguration.RESTListenerType != RESTListenerTypes.AcmeListener)
                     {
                         await SendResponseAsync(msg, msg.OutgoingMessages.First());
                     }
@@ -197,42 +201,122 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public async override Task<InvokeResult> StartAsync()
         {
-            if (_listenerConfiguration.RESTListenerType != RESTListenerTypes.AcmeListener)
+            /* ACME Listeners are dedicated port 80 listeners that only listen for very special requests to verify domain ownership
+            * if we have a port 80 listener in addition to the AcmeListener, it will not be an AcmeListener and should have a
+            * a listener queue */
+            if (_outgoingMessageQueue == null)
             {
-                var result = await base.StartAsync();
-                if (result.Successful)
-                {
-                    WorkLoop();
-                }
+                throw new NullReferenceException("Input Message Queue is Null");
+            }
 
-                return result;
-            }
-            else
-            {
-                /* ACME Listeners don't participate in the pipline and thus we don't start and stop the work loop in the base class */
-                return InvokeResult.Success;
-            }
+            CreationDate = DateTime.Now;
+            await StateChanged(PipelineModuleStatus.Running);
+
+            WorkLoop();
+
+            return InvokeResult.Success;
         }
 
         public async override Task<InvokeResult> StopAsync()
         {
-            if (_listenerConfiguration.RESTListenerType != RESTListenerTypes.AcmeListener)
-            {
-                return await base.StopAsync();
-            }
-            else
-            {
-                /* ACME Listeners don't participate in the pipline and thus we don't start and stop the work loop in the base class */
-                return InvokeResult.Success;
-            }
+            return await base.StopAsync();
         }
 
         public abstract Task<InvokeResult> SendResponseAsync(PipelineExecutionMessage message, OutgoingMessage msg);
+
+        private async Task<InvokeResult> HandleSystemMessageAsync(string path, string payload)
+        {
+            var parts = path.Split('/');
+            if (parts.Length < 5)
+            {
+                var errMsg = $"NuvIoT service messages must be at least 5 segments {path} is {parts.Length} segments";
+                PEMBus.InstanceLogger.AddError("ListenerModule__HandleSystemMessage", errMsg);
+                return InvokeResult.FromError(errMsg);
+            }
+
+            var deviceId = parts[3];
+
+            var device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
+            if (device == null)
+            {
+                var errMsg = $"Could not find device with device id {deviceId}.";
+                PEMBus.InstanceLogger.AddError("ListenerModule__HandleSystemMessage", errMsg);
+                return InvokeResult.FromError(errMsg);
+            }
+
+            device.LastContact = DateTime.UtcNow.ToJSONString();
+            device.DeviceTwinDetails.Insert(0, new DeviceManagement.Models.DeviceTwinDetails()
+            {
+                Timestamp = DateTime.UtcNow.ToJSONString(),
+                Details = payload
+            });
+
+            await PEMBus.DeviceStorage.UpdateDeviceAsync(device);
+
+            var json = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(device), _camelCaseSettings);
+            var notification = new Notification()
+            {
+                Payload = json,
+                Channel = EntityHeader<Channels>.Create(Channels.Device),
+                ChannelId = device.Id,
+                PayloadType = "Device",
+                DateStamp = DateTime.UtcNow.ToJSONString(),
+                MessageId = Guid.NewGuid().ToId(),
+                Text = "Device Updated",
+                Title = "Device Updated"
+            };
+
+            await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
+
+            notification = new Notification()
+            {
+                Payload = json,
+                Channel = EntityHeader<Channels>.Create(Channels.DeviceRepository),
+                ChannelId = device.DeviceRepository.Id,
+                PayloadType = "Device",
+                DateStamp = DateTime.UtcNow.ToJSONString(),
+                MessageId = Guid.NewGuid().ToId(),
+                Text = "Device Updated",
+                Title = "Device Updated"
+            };
+
+            await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
+
+            foreach (var group in device.DeviceGroups)
+            {
+                notification = new Notification()
+                {
+                    Payload = json,
+                    Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup),
+                    ChannelId = group.Id,
+                    PayloadType = "Device",
+                    DateStamp = DateTime.UtcNow.ToJSONString(),
+                    MessageId = Guid.NewGuid().ToId(),
+                    Text = "Device Updated",
+                    Title = "Device Updated"
+                };
+
+                await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
+            }
+
+            return InvokeResult.Success;
+
+        }
 
         public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null)
         {
             try
             {
+                if (!String.IsNullOrEmpty(topic) && topic.StartsWith("nuviot/srvr/dvcssrvcs"))
+                {
+                    return await HandleSystemMessageAsync(topic, buffer);
+                }
+
+                if (!String.IsNullOrEmpty(path) && path.StartsWith("/nuviot/srvr/dvcssrvcs"))
+                {
+                    return await HandleSystemMessageAsync(path.TrimStart('/'), buffer);
+                }
+
                 var message = new PipelineExecutionMessage()
                 {
                     PayloadType = MessagePayloadTypes.Text,
@@ -302,7 +386,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 var plannerQueue = PEMBus.Queues.Where(queue => queue.ForModuleType == PipelineModuleType.Planner).FirstOrDefault();
 
-                if(plannerQueue == null)
+                if (plannerQueue == null)
                 {
                     PEMBus.InstanceLogger.AddError("ListenerModule_AddStringMessageAsync", "Could not find planner queue.");
                     return InvokeResult.FromError("Could not find planner queue.");

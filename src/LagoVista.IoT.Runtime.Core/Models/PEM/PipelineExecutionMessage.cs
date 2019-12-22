@@ -214,7 +214,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
                 BinaryPayload = BinaryPayload,
                 CompletionTimeStamp = CompletionTimeStamp,
                 CreationTimeStamp = CreationTimeStamp,
-                Envelope = Envelope.Clone(),
                 Device = Device,
                 ErrorMessages = ErrorMessages,
                 ErrorReason = ErrorReason,

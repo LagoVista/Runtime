@@ -15,7 +15,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
         UsageMetrics GetAndResetWriteMetrics(DateTime dateStamp, string hostVersion);
 
         Task<Device> GetDeviceByDeviceIdAsync(string deviceId);
-
+        Task<Device> GetDeviceByIdAsync(string id);
         Task<List<DeviceSummary>> GetDevicesForConfiugrationAsync(string deviceConfigurationid);
 
         Task<List<DeviceSummary>> GetDevicesForDevicesByDeviceGroupKeyAsync(string deviceGroupKey);

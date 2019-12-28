@@ -1,6 +1,7 @@
 ﻿using LagoVista.Core.Models;
 using LagoVista.Core.Models.Geo;
 using LagoVista.IoT.DeviceManagement.Core.Models;
+using LagoVista.IoT.DeviceManagement.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,14 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public string LastContact { get; set; }
         public EntityHeader Status { get; set; }
         public EntityHeader CustomStatus { get; set; }
-        public string FirmwareVersion { get; set; }
+        public string ActualFirmware { get; set; }
+        public string ActualFirmwareRevision { get; set; }
         public Dictionary<string, object> PropertyBag { get; set; }
         public IEnumerable<AttributeValue> Attributes { get; set; }
         public IEnumerable<AttributeValue> States { get; set; }
         public IEnumerable<AttributeValue> Properties { get; set; }
         public IEnumerable<DeviceNote> Notes { get; set; }
+        public IEnumerable<DeviceTwinDetails> DeviceTwinDetails { get; set; }
 
         public static DeviceForNotification FromDevice(LagoVista.IoT.DeviceManagement.Core.Models.Device device)
         {
@@ -38,7 +41,9 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 Attributes = device.Attributes,
                 Properties = device.Properties,
                 SerialNumber = device.SerialNumber,
-                FirmwareVersion = device.FirmwareVersion,
+                ActualFirmware = device.ActualFirmware,
+                ActualFirmwareRevision = device.ActualFirmwareRevision,
+                DeviceTwinDetails = device.DeviceTwinDetails,
                 CustomStatus = device.CustomStatus,
                 PropertyBag = device.PropertyBag,
                 Status = device.Status,

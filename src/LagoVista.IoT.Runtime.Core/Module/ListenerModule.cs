@@ -226,6 +226,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         private async Task<InvokeResult> HandleSystemMessageAsync(string path, string payload)
         {
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, "ListenerMOdule_HandleSystemMessageAsync", "Received System Message", path.ToKVP("topic"), payload.ToKVP("body"));
+
             var parts = path.Split('/');
             if (parts.Length < 5)
             {
@@ -307,12 +309,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             try
             {
-                if (!String.IsNullOrEmpty(topic) && topic.StartsWith("nuviot/srvr/dvcssrvcs"))
+                if (!String.IsNullOrEmpty(topic))
+                {
+                    Console.WriteLine($"Received Message with topic [{topic}]");
+                }
+
+                if (!String.IsNullOrEmpty(topic) && topic.StartsWith("nuviot/srvr/dvcsrvc"))
                 {
                     return await HandleSystemMessageAsync(topic, buffer);
                 }
 
-                if (!String.IsNullOrEmpty(path) && path.StartsWith("/nuviot/srvr/dvcssrvcs"))
+                if (!String.IsNullOrEmpty(path) && path.StartsWith("/nuviot/srvr/dvcsrvc"))
                 {
                     return await HandleSystemMessageAsync(path.TrimStart('/'), buffer);
                 }

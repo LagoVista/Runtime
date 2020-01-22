@@ -158,7 +158,21 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
-                var insertResult = await PEMBus.DeviceMediaStorage.StoreMediaItemAsync(stream, message.Id, contentType, contentLength);
+                double? lat = null, lon = null;
+
+                if (headers.ContainsKey("x-latitude") && headers.ContainsKey("x-longitude"))
+                {
+                    double tmpLatitude, tmpLongitude;
+
+                    if(double.TryParse(headers["x-latitude"], out tmpLatitude) &&
+                       double.TryParse(headers["x-longitude"], out tmpLongitude))
+                    {
+                        lat = tmpLatitude;
+                        lon = tmpLongitude;
+                    }
+                }
+
+                var insertResult = await PEMBus.DeviceMediaStorage.StoreMediaItemAsync(stream, message.Id, contentType, contentLength, lat, lon);
                 if (!insertResult.Successful)
                 {
                     return insertResult.ToInvokeResult();

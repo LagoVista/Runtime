@@ -63,7 +63,12 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public double GetDouble()
         {
-            return double.Parse(Value);
+            if(double.TryParse(Value, out double returnValue))
+            {
+                return returnValue;
+            }
+
+            return 0.0;
         }
 
         public DateTime GetUniversalDateTime()
@@ -73,12 +78,22 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public int GetIntValue()
         {
-            return int.Parse(Value);
+            if (int.TryParse(Value, out int returnValue))
+            {
+                return returnValue;
+            }
+
+            return 0;
         }
 
         public bool GetBooleanValue()
         {
-            return bool.Parse(Value);
+            if(bool.TryParse(Value, out bool returnValue))
+            {
+                return returnValue;
+            }
+
+            return false;
         }
 
         public string GetString()

@@ -260,12 +260,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 return InvokeResult.FromError(errMsg);
             }
 
+
             device.LastContact = DateTime.UtcNow.ToJSONString();
-            device.DeviceTwinDetails.Insert(0, new DeviceManagement.Models.DeviceTwinDetails()
+
+            if (parts[4] == "state")
             {
-                Timestamp = DateTime.UtcNow.ToJSONString(),
-                Details = payload
-            });
+                device.DeviceTwinDetails.Insert(0, new DeviceManagement.Models.DeviceTwinDetails()
+                {
+                    Timestamp = DateTime.UtcNow.ToJSONString(),
+                    Details = payload
+                });
+            }
 
             await PEMBus.DeviceStorage.UpdateDeviceAsync(device);
 

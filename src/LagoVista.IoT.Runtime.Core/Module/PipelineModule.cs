@@ -209,9 +209,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                         await UpdateDevice(message);
                         await PEMBus.PEMStorage.AddMessageAsync(message);
-
-
-                        await PEMBus.Watchdog.DeviceUpdatedAsync(message.Device);
+                        await PEMBus.DeviceWatchdog.DeviceUpdatedAsync(message.Device);
 
                         //await PEMBus.Watchdog.DeviceUpdatedAsync(message.Device, message.Device.WatchdogSecondsOverride)
                         if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Completed processing {this.Configuration.Name}");

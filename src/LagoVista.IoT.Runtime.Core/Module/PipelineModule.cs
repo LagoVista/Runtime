@@ -45,13 +45,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             _pemBus = pemBus;
             _pipelineModuleConfiguration = pipelineModuleConfiguration;
-             
+
             _pipelineMetrics = new UsageMetrics(pemBus.Instance.PrimaryHost.Id, pemBus.Instance.Id, pipelineModuleConfiguration.Id);
             _pipelineMetrics.Reset();
         }
 
         public PipelineModule(IPipelineModuleConfiguration pipelineModuleConfiguration, string routeModuleId, IPEMBus pemBus)
-        {            
+        {
             _inputMessageQueue = pemBus.Queues.Where(queue => queue.PipelineModuleId == routeModuleId).FirstOrDefault();
             if (_inputMessageQueue == null) throw new Exception($"Incoming queue for module {pipelineModuleConfiguration.Id} - {pipelineModuleConfiguration.Name} could not be found.");
 
@@ -149,7 +149,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
 
-            foreach(var group in message.Device.DeviceGroups)
+            foreach (var group in message.Device.DeviceGroups)
             {
                 notification = new Notification()
                 {
@@ -183,7 +183,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var result = await ProcessAsync(message);
                 sw.Stop();
 
-                currentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3);;
+                currentInstruction.ExecutionTimeMS = Math.Round(sw.Elapsed.TotalMilliseconds, 3); ;
                 message.ExecutionTimeMS += currentInstruction.ExecutionTimeMS;
                 currentInstruction.ProcessByHostId = PEMBus.Instance.Id;
 
@@ -192,7 +192,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.ErrorMessages.AddRange(result.ErrorMessages);
                 message.InfoMessages.AddRange(result.InfoMessages);
                 message.WarningMessages.AddRange(result.WarningMessages);
-                
+
                 if (result.Success)
                 {
                     if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Success processing {this.Configuration.Name}");
@@ -210,6 +210,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         await UpdateDevice(message);
                         await PEMBus.PEMStorage.AddMessageAsync(message);
 
+
+                        await PEMBus.Watchdog.DeviceUpdatedAsync(message.Device);
+
+                        //await PEMBus.Watchdog.DeviceUpdatedAsync(message.Device, message.Device.WatchdogSecondsOverride)
                         if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Completed processing {this.Configuration.Name}");
                     }
                     else
@@ -233,7 +237,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         {
                             //Find and set the next instruction.
                             message.CurrentInstruction = message.Instructions[instructionIndex];
-                            
+
                             var nextQueue = PEMBus.Queues.Where(que => que.PipelineModuleId == message.CurrentInstruction.QueueId).FirstOrDefault();
                             if (nextQueue == null) /* We couldn't find the queue for the next step */
                             {
@@ -310,7 +314,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Failed processing {this.Configuration.Name} - Exception {ex.Message}");
 
                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                message.CurrentInstruction = null;                
+                message.CurrentInstruction = null;
 
                 message.ErrorMessages.Add(new Error()
                 {
@@ -330,7 +334,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
             finally
             {
-                Metrics.ProcessingMS += sw.Elapsed.TotalMilliseconds;                
+                Metrics.ProcessingMS += sw.Elapsed.TotalMilliseconds;
 
                 Metrics.MessagesProcessed++;
                 Metrics.ActiveCount--;

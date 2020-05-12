@@ -1,5 +1,7 @@
 ﻿using LagoVista.Core.Interfaces;
+using LagoVista.Core.Models.UIMetaData;
 using LagoVista.IoT.DeviceManagement.Core.Models;
+using LagoVista.IoT.Runtime.Core.Models;
 using LagoVista.IoT.Runtime.Core.Storage;
 using System;
 using System.Collections.Generic;
@@ -41,6 +43,11 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// <param name="device">device that has been updated</param>
         /// <param name="timeout">timeout for the watch dog</param>
         /// <returns></returns>
-        Task DeviceUpdatedAsync(DeviceManagement.Core.Models.Device device, TimeSpan timeout);
+        Task DeviceUpdatedAsync(DeviceManagement.Core.Models.Device device);
+
+
+        Task<ListResponse<DeviceWatchdogTimedout>> GetLastUpdatedDevicesAsync(ListRequest listRequest);
+
+        Task<ListResponse<DeviceWatchdogTimedout>> GetTimedOutDevicesAsync(ListRequest listRequest);
     }
 }

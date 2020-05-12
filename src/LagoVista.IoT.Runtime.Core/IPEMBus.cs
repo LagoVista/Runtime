@@ -9,6 +9,7 @@ using LagoVista.IoT.Runtime.Core.Services;
 using LagoVista.IoT.Runtime.Core.Storage;
 using LagoVista.IoT.Runtime.Core.Users;
 using System.Collections.Generic;
+using IWatchdog = LagoVista.IoT.Runtime.Core.Interfaces.IWatchdog;
 
 namespace LagoVista.IoT.Runtime.Core
 {
@@ -39,9 +40,8 @@ namespace LagoVista.IoT.Runtime.Core
 
         ISecureStorage SecureStorage { get; set; }
 
-        LagoVista.Core.Interfaces.IWatchdog Watchdog { get; set; }
+        IWatchdog Watchdog { get; set; }
 
-       
         INotificationPublisher NotificationPublisher { get; }
 
         IDeviceStorage DeviceStorage { get; set; }

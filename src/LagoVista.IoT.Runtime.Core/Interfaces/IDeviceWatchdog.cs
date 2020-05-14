@@ -1,10 +1,10 @@
 ﻿using LagoVista.Core.Models.UIMetaData;
-using LagoVista.IoT.Runtime.Core.Models;
+using LagoVista.IoT.Deployment.Admin;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
-    public interface IDeviceWatchdog
+    public interface IDeviceWatchdog :  IConnectedDevicesService
     {
         /// <summary>
         /// Initialize the Device Watchdog
@@ -38,11 +38,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// <param name="timeout">timeout for the watch dog</param>
         /// <returns></returns>
         Task DeviceUpdatedAsync(DeviceManagement.Core.Models.Device device);
-
-
-        Task<ListResponse<DeviceWatchdogTimedout>> GetLastUpdatedDevicesAsync(ListRequest listRequest);
-
-        Task<ListResponse<DeviceWatchdogTimedout>> GetTimedOutDevicesAsync(ListRequest listRequest);
 
         Task UpdateAsync();
     }

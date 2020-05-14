@@ -1,5 +1,5 @@
 ﻿using LagoVista.IoT.DeviceManagement.Core.Models;
-using LagoVista.IoT.Runtime.Core.Models;
+using LagoVista.IoT.Deployment.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,9 +12,9 @@ namespace LagoVista.IoT.Runtime.Core.Storage
 
         Task ResetAsync();
 
-        Task<IEnumerable<DeviceWatchdogTimedout>> GetTimedOutDevicesAsync();
+        Task<IEnumerable<WatchdogConnectedDevice>> GetTimedOutDevicesAsync();
 
-        List<DeviceWatchdogTimedout> TrackedDevices { get; }
+        List<WatchdogConnectedDevice> TrackedDevices { get; }
 
         Task MarkAsNotifiedAsync(String id);
     }

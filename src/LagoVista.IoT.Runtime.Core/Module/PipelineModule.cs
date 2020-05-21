@@ -253,7 +253,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             }
                             else
                             {
-                                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Enqueued for next {this.Configuration.Name}");
+                                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Enqueued for next: {message.CurrentInstruction.Name} -  {nextQueue.ForModuleType + " " + nextQueue.Key}");
 
                                 message.CurrentInstruction.Enqueued = DateTime.UtcNow.ToJSONString();
                                 await nextQueue.EnqueueAsync(message);
@@ -475,7 +475,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 return;
             }
 
-            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name}", "statusChange",
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.StateChange, $"StatusChange: {GetType().Name} from {Status} to {newState}.", "statusChange",
                 new KeyValuePair<string, string>("oldState", Status.ToString()),
                 new KeyValuePair<string, string>("newState", newState.ToString()),
                 new KeyValuePair<string, string>("pipelineModuleId", Id));

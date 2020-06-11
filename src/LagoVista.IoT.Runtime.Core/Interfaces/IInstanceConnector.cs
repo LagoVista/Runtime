@@ -3,6 +3,7 @@ using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Deployment.Models.Settings;
+using LagoVista.IoT.DeviceManagement.Models;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
@@ -26,5 +27,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult> UpdateInstanceStatusAsync(DeploymentInstanceStates status, bool isDeployed, string version);
         Task<InvokeResult<ConnectionSettings>> GetUsageStorageSettingsAsync();
         Task<InvokeResult<string>> CreateServiceTicket(string ticketTemplateId, string repoId, string deviceId);
+        Task<InvokeResult> HandleDeviceErrorAsync(DeviceException exception);
     }
 }

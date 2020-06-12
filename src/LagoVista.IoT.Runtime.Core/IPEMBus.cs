@@ -28,8 +28,9 @@ namespace LagoVista.IoT.Runtime.Core
         IApplicationCacheServices CacheServices { get; set; }
         IDeviceArchiveStorage DeviceArchiveStorage { get; set; }
         IDeviceMediaStorage DeviceMediaStorage { get; set; }
-
         IDataStreamServices DataStreamServices { get; set; }
+        IDeviceStatusStorage DeviceStatusStorage { get; set; }
+        IDeviceExceptionStorage DeviceExceptionStorage { get; set; }
 
         ICache SystemCache { get; set; }
         

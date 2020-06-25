@@ -48,6 +48,8 @@ namespace LagoVista.IoT.Runtime.Core
 
         IInstanceConnector InstanceConnector { get; set; }
 
+        IDeviceExceptionHandler DeviceExceptionHandler { get; set; }
+
         void AddError(Error errorCode, params KeyValuePair<string, string>[] extras);
     }
 }

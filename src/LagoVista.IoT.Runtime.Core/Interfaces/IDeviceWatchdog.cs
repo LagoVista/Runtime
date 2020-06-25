@@ -7,12 +7,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
     public interface IDeviceWatchdog :  IConnectedDevicesService
     {
         /// <summary>
-        /// Initialize the Device Watchdog
-        /// </summary>
-        /// <returns></returns>
-        Task InitAsync(IPEMBus pemBus);
-
-        /// <summary>
         /// Reset the watch dog timer
         /// </summary>
         /// <returns></returns>

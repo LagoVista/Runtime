@@ -195,9 +195,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 if (result.Success)
                 {
-                    if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Success processing {this.Configuration.Name}");
-
                     var instructionIndex = message.Instructions.IndexOf(currentInstruction);
+
+                    if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Success processing {instructionIndex} - {currentInstruction.Name} - {this.Configuration.Name}");
+                    
                     instructionIndex++;
 
                     if (instructionIndex == message.Instructions.Count) /* We are done processing the pipe line */
@@ -240,7 +241,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             if (nextQueue == null) /* We couldn't find the queue for the next step */
                             {
                                 var deviceId = message.Device != null ? message.Device.DeviceId : "UNKNOWN";
-                                LogError(Resources.ErrorCodes.PipelineEnqueing.InvalidMessageIndex, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"));
+                                LogError(Resources.ErrorCodes.PipelineEnqueing.MissingPipelineQueue, message.Id.ToKVP("pemId"), deviceId.ToKVP("deviceId"), message.CurrentInstruction.Name.ToKVP("queueName"), instructionIndex.ToString().ToKVP("instructionIndex"));
+
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("ERROR FINDING QUEUE");
+                                Console.WriteLine("\t\t" + instructionIndex.ToString());
+                                Console.WriteLine("\t\t" + message.CurrentInstruction.Name);
+                                Console.WriteLine("\t\t" + message.CurrentInstruction.QueueId);
+                                Console.WriteLine("----------------------");
+                                Console.ResetColor();
+
                                 message.ErrorMessages.Add(Resources.ErrorCodes.PipelineEnqueing.MissingPipelineQueue.ToError());
                                 message.Status = StatusTypes.Failed;
                                 message.ErrorReason = ErrorReason.UnexepctedError;
@@ -249,7 +259,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 Metrics.DeadLetterCount++;
                                 await PEMBus.PEMStorage.AddMessageAsync(message);
 
-                                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Could not find next message {this.Configuration.Name}");
+                                if (message.Device != null && message.Device.DebugMode) SendDeviceNotification(Targets.WebSocket, message.Device.Id, $"Could not find next queue {instructionIndex}. {this.Configuration.Name}");
                             }
                             else
                             {

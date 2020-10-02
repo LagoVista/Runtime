@@ -48,7 +48,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 Metrics.BytesProcessed = message.PayloadLength + (String.IsNullOrEmpty(topic) ? 0 : topic.Length);
 
-                message.Envelope.DeviceId = deviceId;
+                if (!String.IsNullOrEmpty(deviceId))
+                {
+                    message.Envelope.DeviceId = deviceId;
+                }
+
                 message.Envelope.Topic = topic;
 
                 var listenerInstruction = new PipelineExecutionInstruction()

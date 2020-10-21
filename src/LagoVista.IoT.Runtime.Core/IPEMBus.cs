@@ -33,7 +33,7 @@ namespace LagoVista.IoT.Runtime.Core
         IDeviceExceptionStorage DeviceExceptionStorage { get; set; }
 
         ICache SystemCache { get; set; }
-        
+
         IDataMaintenance DataMaintence { get; set; }
 
         ISystemUsers SystemUsers { get; set; }
@@ -45,6 +45,8 @@ namespace LagoVista.IoT.Runtime.Core
         INotificationPublisher NotificationPublisher { get; }
 
         IDeviceStorage DeviceStorage { get; set; }
+
+        IDeviceConnectionEventStorage DeviceConnectionEvent {get; set; }
 
         IInstanceConnector InstanceConnector { get; set; }
 

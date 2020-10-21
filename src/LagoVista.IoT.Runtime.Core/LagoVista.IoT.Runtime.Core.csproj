@@ -8,16 +8,16 @@
     <Compile Remove="Interfaces\IInstanceManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LagoVista.Core" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.Logging" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="2.1.1121-beta0757" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="2.1.1121-beta0757" />
+    <PackageReference Include="LagoVista.Core" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.Logging" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="2.1.1254-beta1851" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="2.1.1254-beta1851" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>

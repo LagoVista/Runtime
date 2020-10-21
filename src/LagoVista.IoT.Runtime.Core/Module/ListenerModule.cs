@@ -2,6 +2,7 @@
 using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
+using LagoVista.IoT.DeviceManagement.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
@@ -325,9 +326,55 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     }
                 }
             }
+            else if (parts[4] == "ioconfig")
+            {
+                var ioConfigSettings = payload.Split(',');
+                if(device.IOConfig == null)
+                {
+                    device.IOConfig = new DeviceManagement.Models.IOConfig();
+                }
+
+                device.IOConfig.LastUpdateFromDevice = DateTime.UtcNow.ToJSONString();
+
+                device.IOConfig.ADC1Config = Convert.ToByte(ioConfigSettings[0]);
+                device.IOConfig.ADC1Scaler = Convert.ToByte(ioConfigSettings[1]);
+                device.IOConfig.ADC2Config = Convert.ToByte(ioConfigSettings[2]);
+                device.IOConfig.ADC2Scaler = Convert.ToByte(ioConfigSettings[3]);
+                device.IOConfig.ADC3Config = Convert.ToByte(ioConfigSettings[4]);
+                device.IOConfig.ADC3Scaler = Convert.ToByte(ioConfigSettings[5]);
+                device.IOConfig.ADC4Config = Convert.ToByte(ioConfigSettings[6]);
+                device.IOConfig.ADC4Scaler = Convert.ToByte(ioConfigSettings[7]);
+                device.IOConfig.ADC5Config = Convert.ToByte(ioConfigSettings[8]);
+                device.IOConfig.ADC5Scaler = Convert.ToByte(ioConfigSettings[9]);
+                device.IOConfig.ADC6Config = Convert.ToByte(ioConfigSettings[10]);
+                device.IOConfig.ADC6Scaler = Convert.ToByte(ioConfigSettings[11]);
+                device.IOConfig.ADC7Config = Convert.ToByte(ioConfigSettings[12]);
+                device.IOConfig.ADC7Scaler = Convert.ToByte(ioConfigSettings[13]);
+                device.IOConfig.ADC8Config = Convert.ToByte(ioConfigSettings[14]);
+                device.IOConfig.ADC8Scaler = Convert.ToByte(ioConfigSettings[15]);
+
+                device.IOConfig.IO1Config = Convert.ToByte(ioConfigSettings[16]);
+                device.IOConfig.IO1Scaler = Convert.ToByte(ioConfigSettings[17]);
+                device.IOConfig.IO2Config = Convert.ToByte(ioConfigSettings[18]);
+                device.IOConfig.IO2Scaler = Convert.ToByte(ioConfigSettings[19]);
+                device.IOConfig.IO3Config = Convert.ToByte(ioConfigSettings[20]);
+                device.IOConfig.IO3Scaler = Convert.ToByte(ioConfigSettings[21]);
+                device.IOConfig.IO4Config = Convert.ToByte(ioConfigSettings[22]);
+                device.IOConfig.IO4Scaler = Convert.ToByte(ioConfigSettings[23]);
+                device.IOConfig.IO5Config = Convert.ToByte(ioConfigSettings[24]);
+                device.IOConfig.IO5Scaler = Convert.ToByte(ioConfigSettings[25]);
+                device.IOConfig.IO6Config = Convert.ToByte(ioConfigSettings[26]);
+                device.IOConfig.IO6Scaler = Convert.ToByte(ioConfigSettings[27]);
+                device.IOConfig.IO7Config = Convert.ToByte(ioConfigSettings[28]);
+                device.IOConfig.IO7Scaler = Convert.ToByte(ioConfigSettings[29]);
+                device.IOConfig.IO8Config = Convert.ToByte(ioConfigSettings[30]);
+                device.IOConfig.IO8Scaler = Convert.ToByte(ioConfigSettings[31]);
+            }
             else if (parts[4] == "online")
             {
                 device.ConnectionTimeStamp = DateTime.UtcNow.ToJSONString();
+                var rssi = -1.0;
+                var reconnect = false;
 
                 var payloadSegements = payload.Split(',');
                 foreach (var segement in payloadSegements)
@@ -366,10 +413,32 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                     device.ActualFirmwareRevision = value;
                                     device.ActualFirmwareDate = DateTime.Now.ToJSONString();
                                 }
+                                if(key == "rssi")
+                                {
+                                    double.TryParse(value, out rssi);
+                                }
+                                if (key == "reconnect")
+                                {
+                                    reconnect = value != "0";
+                                }
                             }
                         }
                     }
                 }
+
+                var connectionEvent = new DeviceConnectionEvent()
+                {
+                    DeviceId = device.DeviceId,
+                    FirmwareRevision = device.ActualFirmwareRevision,
+                    FirmwareSKU = device.ActualFirmware,
+                    TimeStamp = DateTime.UtcNow.ToJSONString(),
+                    RSSI = rssi,
+                    Reconnect = reconnect
+                };
+
+                await PEMBus.DeviceConnectionEvent.AddDeviceEventConnectionEvent(connectionEvent);
+
+
             }
 
             await PEMBus.DeviceStorage.UpdateDeviceAsync(device);

@@ -13,6 +13,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
     {
         Task<InvokeResult<DeviceDataStorageSettings>> GetDeviceDataStorageSettingsAsync();
         Task<InvokeResult<ConnectionSettings>> GetDeviceStorageSettingsAsync();
+        Task<InvokeResult<ConnectionSettings>> GetDeviceConnectionEventStorageSettingsAsync();
         Task<InvokeResult<DeploymentInstance>> GetInstanceAsync();
         Task<InvokeResult<string>> GetKeyFroMSecureIdAsync(string keyId);
         Task<InvokeResult<LoggingSettings>> GetLoggingSettingsAsync();

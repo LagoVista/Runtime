@@ -30,6 +30,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public async Task<InvokeResult> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")
         {
+
+            if (!String.IsNullOrEmpty(topic) && topic.StartsWith("nuviot/srvr/dvcsrvc"))
+            {
+                var strPayload = System.Text.ASCIIEncoding.ASCII.GetString(buffer);
+                return await HandleSystemMessageAsync(topic, strPayload);
+            }
+
             try
             {
                 var message = new PipelineExecutionMessage()
@@ -80,7 +87,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.CurrentInstruction = plannerInstruction;
                 message.Instructions.Add(plannerInstruction);
 
-                
+
                 await plannerQueue.EnqueueAsync(message);
 
                 return InvokeResult.Success;
@@ -170,7 +177,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     double tmpLatitude, tmpLongitude;
 
-                    if(double.TryParse(headers["x-latitude"], out tmpLatitude) &&
+                    if (double.TryParse(headers["x-latitude"], out tmpLatitude) &&
                        double.TryParse(headers["x-longitude"], out tmpLongitude))
                     {
                         lat = tmpLatitude;
@@ -266,7 +273,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 return InvokeResult.FromError(errMsg);
             }
 
-
             device.LastContact = DateTime.UtcNow.ToJSONString();
 
             if (parts[4] == "state")
@@ -276,6 +282,94 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Timestamp = DateTime.UtcNow.ToJSONString(),
                     Details = payload
                 });
+
+                var payloadSegements = payload.Split(',');
+                foreach (var segement in payloadSegements)
+                {
+                    var fieldParts = segement.Split('=');
+                    if (fieldParts.Length == 2)
+                    {
+                        var nameParts = fieldParts[0].Split('-');
+                        if (nameParts.Length == 2)
+                        {
+                            var typeName = nameParts[0];
+                            var key = nameParts[1];
+                            var value = fieldParts[1];
+                            if (typeName != "readonly")
+                            {
+                                var prop = device.Properties.FirstOrDefault(prp => prp.Key == key);
+                                if (prop != null)
+                                {
+                                    if (prop.Value != value)
+                                    {
+                                        prop.Value = value;
+                                        prop.LastUpdated = DateTime.UtcNow.ToJSONString();
+                                        prop.LastUpdatedBy = "Device Twin";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (key == "firmwareSku")
+                                {
+                                    device.ActualFirmware = value;
+                                    device.ActualFirmwareDate = DateTime.Now.ToJSONString();
+                                }
+                                if (key == "firmwareVersion")
+                                {
+                                    device.ActualFirmwareRevision = value;
+                                    device.ActualFirmwareDate = DateTime.Now.ToJSONString();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (parts[4] == "online")
+            {
+                device.ConnectionTimeStamp = DateTime.UtcNow.ToJSONString();
+
+                var payloadSegements = payload.Split(',');
+                foreach (var segement in payloadSegements)
+                {
+                    var fieldParts = segement.Split('=');
+                    if (fieldParts.Length == 2)
+                    {
+                        var nameParts = fieldParts[0].Split('-');
+                        if (nameParts.Length == 2)
+                        {
+                            var typeName = nameParts[0];
+                            var key = nameParts[1];
+                            var value = fieldParts[1];
+                            if (typeName != "readonly")
+                            {
+                                var prop = device.Properties.FirstOrDefault(prp => prp.Key == key);
+                                if (prop != null)
+                                {
+                                    if (prop.Value != value)
+                                    {
+                                        prop.Value = value;
+                                        prop.LastUpdated = DateTime.UtcNow.ToJSONString();
+                                        prop.LastUpdatedBy = "Device Twin";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (key == "firmwareSku")
+                                {
+                                    device.ActualFirmware = value;
+                                    device.ActualFirmwareDate = DateTime.Now.ToJSONString();
+                                }
+                                if (key == "firmwareVersion")
+                                {
+                                    device.ActualFirmwareRevision = value;
+                                    device.ActualFirmwareDate = DateTime.Now.ToJSONString();
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             await PEMBus.DeviceStorage.UpdateDeviceAsync(device);

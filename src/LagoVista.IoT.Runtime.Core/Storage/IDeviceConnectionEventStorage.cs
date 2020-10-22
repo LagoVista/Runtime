@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using LagoVista.IoT.DeviceManagement.Models;
 using LagoVista.IoT.DeviceManagement.Core.Models;
-using LagoVista.IoT.DeviceManagement.Core.Interfaces;
+using LagoVista.IoT.DeviceManagement.Core.Repos;
 
 namespace LagoVista.IoT.Runtime.Core.Storage
 {

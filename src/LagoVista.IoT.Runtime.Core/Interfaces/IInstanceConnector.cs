@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
+
+    public enum NotificationServerType
+    {
+        AzureEventHubs,
+        RabbitMQ
+    }
+
     public interface IInstanceConnector
     {
         Task<InvokeResult<DeviceDataStorageSettings>> GetDeviceDataStorageSettingsAsync();
@@ -17,7 +24,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<DeploymentInstance>> GetInstanceAsync();
         Task<InvokeResult<string>> GetKeyFroMSecureIdAsync(string keyId);
         Task<InvokeResult<LoggingSettings>> GetLoggingSettingsAsync();
-        Task<InvokeResult<ConnectionSettings>> GetNotificationSettingsAsync();
+        Task<InvokeResult<ConnectionSettings>> GetNotificationSettingsAsync(NotificationServerType notificationServerType);
         Task<InvokeResult<ConnectionSettings>> GetPEMStorageSettingsAsync();
         Task<InvokeResult<ConnectionSettings>> GetWatchdogStorageSettingsAsync();
         Task<InvokeResult<ConnectionSettings>> GetEHCheckPointSettingsAsync();

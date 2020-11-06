@@ -329,46 +329,43 @@ namespace LagoVista.IoT.Runtime.Core.Module
             else if (parts[4] == "ioconfig")
             {
                 var ioConfigSettings = payload.Split(',');
-                if(device.IOConfig == null)
-                {
-                    device.IOConfig = new DeviceManagement.Models.IOConfig();
-                }
+                device.Sensors.LastUpdateFromDevice = DateTime.UtcNow.ToJSONString();
+                if (ioConfigSettings.Length != 32)
+                    throw new InvalidDataException($"IO Configuration from device should consist of 32 comma delimitted values, message consists of ${ioConfigSettings.Length} items.");
 
-                device.IOConfig.LastUpdateFromDevice = DateTime.UtcNow.ToJSONString();
+                device.Sensors.AdcConfigs[0].Config = Convert.ToByte(ioConfigSettings[0]);
+                device.Sensors.AdcConfigs[0].DeviceScaler = Convert.ToSingle(ioConfigSettings[1]);
+                device.Sensors.AdcConfigs[1].Config = Convert.ToByte(ioConfigSettings[2]);
+                device.Sensors.AdcConfigs[1].DeviceScaler = Convert.ToSingle(ioConfigSettings[3]);
+                device.Sensors.AdcConfigs[2].Config = Convert.ToByte(ioConfigSettings[4]);
+                device.Sensors.AdcConfigs[2].DeviceScaler = Convert.ToSingle(ioConfigSettings[5]);
+                device.Sensors.AdcConfigs[3].Config = Convert.ToByte(ioConfigSettings[6]);
+                device.Sensors.AdcConfigs[3].DeviceScaler = Convert.ToSingle(ioConfigSettings[7]);
+                device.Sensors.AdcConfigs[4].Config = Convert.ToByte(ioConfigSettings[8]);
+                device.Sensors.AdcConfigs[4].DeviceScaler = Convert.ToSingle(ioConfigSettings[9]);
+                device.Sensors.AdcConfigs[5].Config = Convert.ToByte(ioConfigSettings[10]);
+                device.Sensors.AdcConfigs[5].DeviceScaler = Convert.ToSingle(ioConfigSettings[11]);
+                device.Sensors.AdcConfigs[6].Config = Convert.ToByte(ioConfigSettings[12]);
+                device.Sensors.AdcConfigs[6].DeviceScaler = Convert.ToSingle(ioConfigSettings[13]);
+                device.Sensors.AdcConfigs[7].Config = Convert.ToByte(ioConfigSettings[14]);
+                device.Sensors.AdcConfigs[7].DeviceScaler = Convert.ToSingle(ioConfigSettings[15]);
 
-                device.IOConfig.ADC1Config = Convert.ToByte(ioConfigSettings[0]);
-                device.IOConfig.ADC1Scaler = Convert.ToByte(ioConfigSettings[1]);
-                device.IOConfig.ADC2Config = Convert.ToByte(ioConfigSettings[2]);
-                device.IOConfig.ADC2Scaler = Convert.ToByte(ioConfigSettings[3]);
-                device.IOConfig.ADC3Config = Convert.ToByte(ioConfigSettings[4]);
-                device.IOConfig.ADC3Scaler = Convert.ToByte(ioConfigSettings[5]);
-                device.IOConfig.ADC4Config = Convert.ToByte(ioConfigSettings[6]);
-                device.IOConfig.ADC4Scaler = Convert.ToByte(ioConfigSettings[7]);
-                device.IOConfig.ADC5Config = Convert.ToByte(ioConfigSettings[8]);
-                device.IOConfig.ADC5Scaler = Convert.ToByte(ioConfigSettings[9]);
-                device.IOConfig.ADC6Config = Convert.ToByte(ioConfigSettings[10]);
-                device.IOConfig.ADC6Scaler = Convert.ToByte(ioConfigSettings[11]);
-                device.IOConfig.ADC7Config = Convert.ToByte(ioConfigSettings[12]);
-                device.IOConfig.ADC7Scaler = Convert.ToByte(ioConfigSettings[13]);
-                device.IOConfig.ADC8Config = Convert.ToByte(ioConfigSettings[14]);
-                device.IOConfig.ADC8Scaler = Convert.ToByte(ioConfigSettings[15]);
-
-                device.IOConfig.IO1Config = Convert.ToByte(ioConfigSettings[16]);
-                device.IOConfig.IO1Scaler = Convert.ToByte(ioConfigSettings[17]);
-                device.IOConfig.IO2Config = Convert.ToByte(ioConfigSettings[18]);
-                device.IOConfig.IO2Scaler = Convert.ToByte(ioConfigSettings[19]);
-                device.IOConfig.IO3Config = Convert.ToByte(ioConfigSettings[20]);
-                device.IOConfig.IO3Scaler = Convert.ToByte(ioConfigSettings[21]);
-                device.IOConfig.IO4Config = Convert.ToByte(ioConfigSettings[22]);
-                device.IOConfig.IO4Scaler = Convert.ToByte(ioConfigSettings[23]);
-                device.IOConfig.IO5Config = Convert.ToByte(ioConfigSettings[24]);
-                device.IOConfig.IO5Scaler = Convert.ToByte(ioConfigSettings[25]);
-                device.IOConfig.IO6Config = Convert.ToByte(ioConfigSettings[26]);
-                device.IOConfig.IO6Scaler = Convert.ToByte(ioConfigSettings[27]);
-                device.IOConfig.IO7Config = Convert.ToByte(ioConfigSettings[28]);
-                device.IOConfig.IO7Scaler = Convert.ToByte(ioConfigSettings[29]);
-                device.IOConfig.IO8Config = Convert.ToByte(ioConfigSettings[30]);
-                device.IOConfig.IO8Scaler = Convert.ToByte(ioConfigSettings[31]);
+                device.Sensors.IoConfigs[0].Config = Convert.ToByte(ioConfigSettings[16]);
+                device.Sensors.IoConfigs[0].DeviceScaler= Convert.ToSingle(ioConfigSettings[17]);
+                device.Sensors.IoConfigs[1].Config = Convert.ToByte(ioConfigSettings[18]);
+                device.Sensors.IoConfigs[1].DeviceScaler = Convert.ToSingle(ioConfigSettings[19]);
+                device.Sensors.IoConfigs[2].Config = Convert.ToByte(ioConfigSettings[20]);
+                device.Sensors.IoConfigs[2].DeviceScaler = Convert.ToSingle(ioConfigSettings[21]);
+                device.Sensors.IoConfigs[3].Config = Convert.ToByte(ioConfigSettings[22]);
+                device.Sensors.IoConfigs[3].DeviceScaler = Convert.ToSingle(ioConfigSettings[23]);
+                device.Sensors.IoConfigs[4].Config = Convert.ToByte(ioConfigSettings[24]);
+                device.Sensors.IoConfigs[4].DeviceScaler = Convert.ToSingle(ioConfigSettings[25]);
+                device.Sensors.IoConfigs[5].Config = Convert.ToByte(ioConfigSettings[26]);
+                device.Sensors.IoConfigs[5].DeviceScaler = Convert.ToSingle(ioConfigSettings[27]);
+                device.Sensors.IoConfigs[6].Config = Convert.ToByte(ioConfigSettings[28]);
+                device.Sensors.IoConfigs[6].DeviceScaler = Convert.ToSingle(ioConfigSettings[29]);
+                device.Sensors.IoConfigs[7].Config = Convert.ToByte(ioConfigSettings[30]);
+                device.Sensors.IoConfigs[7].DeviceScaler = Convert.ToSingle(ioConfigSettings[31]);
             }
             else if (parts[4] == "online")
             {
@@ -428,7 +425,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 var connectionEvent = new DeviceConnectionEvent()
                 {
-                    DeviceId = device.DeviceId,
+                    DeviceId = device.Id,
                     FirmwareRevision = device.ActualFirmwareRevision,
                     FirmwareSKU = device.ActualFirmware,
                     TimeStamp = DateTime.UtcNow.ToJSONString(),

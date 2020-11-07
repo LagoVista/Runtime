@@ -2,10 +2,7 @@
 using LagoVista.Core.Models.Geo;
 using LagoVista.IoT.DeviceManagement.Core.Models;
 using LagoVista.IoT.DeviceManagement.Models;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace LagoVista.IoT.Runtime.Core.Models
 {
@@ -29,6 +26,8 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public IEnumerable<DeviceNote> Notes { get; set; }
         public IEnumerable<DeviceTwinDetails> DeviceTwinDetails { get; set; }
 
+        public Sensors Sensors {get; set;}
+
         public static DeviceForNotification FromDevice(LagoVista.IoT.DeviceManagement.Core.Models.Device device)
         {
             return new DeviceForNotification()
@@ -49,7 +48,8 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 Status = device.Status,
                 States = device.States,
                 Notes = device.Notes,
-                LastContact = device.LastContact
+                LastContact = device.LastContact,
+                Sensors = device.Sensors
             };
         }
     }

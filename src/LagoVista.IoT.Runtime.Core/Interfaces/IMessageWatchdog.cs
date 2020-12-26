@@ -7,13 +7,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
     public interface IMessageWatchdog
     {
         /// <summary>
-        /// Initialize the message watch dog with d
-        /// </summary>
-        /// <param name="deviceConfigs"></param>
-        /// <returns></returns>
-        Task InitAsync(IEnumerable<DeviceConfiguration> deviceConfigs);
-
-        /// <summary>
         /// Reset the watch dog timer
         /// </summary>
         /// <returns></returns>

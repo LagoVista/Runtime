@@ -9,7 +9,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
 {
     public interface IMessageWatchdogStorage
     {
-        Task UpdateDeviceAsync(Device device, EntityHeader message, TimeSpan timeout);
+        Task UpdateDeviceAsync(Device device, EntityHeader message, MessageWatchDog messageWatchDog, TimeSpan timeout);
 
         Task ResetAsync();
 

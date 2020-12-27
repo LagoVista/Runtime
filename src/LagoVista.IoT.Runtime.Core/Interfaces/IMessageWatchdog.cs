@@ -1,6 +1,4 @@
-﻿using LagoVista.IoT.Deployment.Admin.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
@@ -33,6 +31,10 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// <returns></returns>
         Task MessageProcessedAsync(DeviceManagement.Core.Models.Device device, string messageId);
 
+        /// <summary>
+        /// Perform a check to see if any of the messages have timed out.
+        /// </summary>
+        /// <returns></returns>
         Task UpdateAsync();
 
     }

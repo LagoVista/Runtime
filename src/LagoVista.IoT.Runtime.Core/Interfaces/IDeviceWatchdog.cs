@@ -33,5 +33,13 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task DeviceUpdatedAsync(DeviceManagement.Core.Models.Device device);
 
         Task UpdateAsync();
+
+        /// <summary>
+        /// Will check the current list of devices to see fi the devices watch dog is
+        /// enabled and that it has not timed out.
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        Task<bool> IsDeviceTimedOutAsync(string deviceId);
     }
 }

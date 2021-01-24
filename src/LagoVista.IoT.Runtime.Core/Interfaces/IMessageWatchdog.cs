@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using LagoVista.IoT.Deployment.Admin;
+using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
-    public interface IMessageWatchdog
+    public interface IMessageWatchdog : IMessageWatchdogService
     {
         /// <summary>
         /// Reset the watch dog timer
@@ -36,6 +37,5 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// </summary>
         /// <returns></returns>
         Task UpdateAsync();
-
     }
 }

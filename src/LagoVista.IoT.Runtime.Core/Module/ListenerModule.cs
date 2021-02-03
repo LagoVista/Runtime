@@ -326,6 +326,30 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     }
                 }
             }
+            else if(parts[4] == "err")
+            {
+                var err = parts[5];
+                var action = parts[6];
+                var exception = new DeviceException()
+                {
+                    ErrorCode = err,
+                    DeviceId = device.DeviceId,
+                    DeviceUniqueId = device.Id,
+                    DeviceRepositoryId = device.DeviceRepository.Id,
+                    Timestamp = DateTime.UtcNow.ToString(),
+                };
+
+                exception.AdditionalDetails.Add(payload);
+
+                if (action == "raise") {
+                 
+                    await PEMBus.InstanceConnector.HandleDeviceExceptionAsync(exception);
+                }
+                else if(action == "clear")
+                {                    
+                    await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(exception);
+                }
+            }
             else if (parts[4] == "ioconfig")
             {
                 var ioConfigSettings = payload.Split(',');
@@ -392,6 +416,21 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 {
                                     if (prop.Value != value)
                                     {
+                                        if(prop.AttributeType.Value == DeviceAdmin.Models.ParameterTypes.TrueFalse)
+                                        {
+                                            if(value == "1")
+                                            {
+                                                value = "true";
+                                            }
+                                            else if(value == "0")
+                                            {
+                                                value = "false";
+                                            }
+                                            else
+                                            {
+                                                value = value.ToLower();
+                                            }
+                                        }
                                         prop.Value = value;
                                         prop.LastUpdated = DateTime.UtcNow.ToJSONString();
                                         prop.LastUpdatedBy = "Device Twin";

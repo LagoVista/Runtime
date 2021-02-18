@@ -1,7 +1,5 @@
 ﻿using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Services
@@ -26,6 +24,9 @@ namespace LagoVista.IoT.Runtime.Core.Services
         Dependency,
 
         Simulator,    
+    
+        Jobs
+
     }
 
     public enum NotificationVerbosity

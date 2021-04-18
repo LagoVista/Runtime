@@ -138,12 +138,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         }
                     }
 
-                    if (headers != null)
+                    foreach (var hdr in headers)
                     {
-                        foreach (var hdr in headers)
-                        {
-                            message.Envelope.Headers.Add(hdr.Key, hdr.Value);
-                        }
+                        message.Envelope.Headers.Add(hdr.Key, hdr.Value);
                     }
                 }
 
@@ -174,7 +171,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 double? lat = null, lon = null;
 
-                if (headers.ContainsKey("x-latitude") && headers.ContainsKey("x-longitude"))
+                if (headers != null 
+                    && headers.ContainsKey("x-latitude") && headers.ContainsKey("x-longitude"))
                 {
                     double tmpLatitude, tmpLongitude;
 
@@ -326,7 +324,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     }
                 }
             }
-            else if(parts[4] == "err")
+            else if (parts[4] == "err")
             {
                 var err = parts[5];
                 var action = parts[6];
@@ -341,12 +339,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 exception.AdditionalDetails.Add(payload);
 
-                if (action == "raise") {
-                 
+                if (action == "raise")
+                {
+
                     await PEMBus.InstanceConnector.HandleDeviceExceptionAsync(exception);
                 }
-                else if(action == "clear")
-                {                    
+                else if (action == "clear")
+                {
                     await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(exception);
                 }
             }
@@ -375,7 +374,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 device.Sensors.AdcConfigs[7].DeviceScaler = Convert.ToSingle(ioConfigSettings[15]);
 
                 device.Sensors.IoConfigs[0].Config = Convert.ToByte(ioConfigSettings[16]);
-                device.Sensors.IoConfigs[0].DeviceScaler= Convert.ToSingle(ioConfigSettings[17]);
+                device.Sensors.IoConfigs[0].DeviceScaler = Convert.ToSingle(ioConfigSettings[17]);
                 device.Sensors.IoConfigs[1].Config = Convert.ToByte(ioConfigSettings[18]);
                 device.Sensors.IoConfigs[1].DeviceScaler = Convert.ToSingle(ioConfigSettings[19]);
                 device.Sensors.IoConfigs[2].Config = Convert.ToByte(ioConfigSettings[20]);
@@ -416,13 +415,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 {
                                     if (prop.Value != value)
                                     {
-                                        if(prop.AttributeType.Value == DeviceAdmin.Models.ParameterTypes.TrueFalse)
+                                        if (prop.AttributeType.Value == DeviceAdmin.Models.ParameterTypes.TrueFalse)
                                         {
-                                            if(value == "1")
+                                            if (value == "1")
                                             {
                                                 value = "true";
                                             }
-                                            else if(value == "0")
+                                            else if (value == "0")
                                             {
                                                 value = "false";
                                             }
@@ -449,7 +448,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                     device.ActualFirmwareRevision = value;
                                     device.ActualFirmwareDate = DateTime.Now.ToJSONString();
                                 }
-                                if(key == "rssi")
+                                if (key == "rssi")
                                 {
                                     double.TryParse(value, out rssi);
                                 }

@@ -6,6 +6,7 @@ using System.Linq;
 using LagoVista.Core;
 using System.Text.RegularExpressions;
 using System;
+using LagoVista.Core.Models.ML;
 
 namespace LagoVista.IoT.Runtime.Core.Models.PEM
 {
@@ -18,6 +19,21 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
     {
         public double latitude { get; set; }
         public double longitude { get; set; }
+    }
+
+    public class SimpleMLResult
+    {
+        public string name { get; set; }
+        public string key { get; set; }
+        public double confidence { get; set; }
+    }
+
+    public class SimpleMLInference
+    {
+        public string modelName { get; set; }
+        public string modelRevision { get; set; }
+        public bool hasResults { get; set; }
+        public SimpleMLResult[] results { get; set; }
     }
 
     public class MessageValue
@@ -124,6 +140,24 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
             }
 
             return null;
+        }
+
+        public SimpleMLInference GetMLInference()
+        {
+            if(String.IsNullOrEmpty(Value))
+            {
+                return null;
+            }
+
+            var inference = JsonConvert.DeserializeObject<MLInference>(Value);
+
+            return new SimpleMLInference()
+            {
+                hasResults = inference.Results != null && inference.Results.Any(),
+                modelName = inference.ModelName,
+                modelRevision = inference.ModelRevision,
+                results = inference.Results.Select(inf=> new SimpleMLResult() {  confidence = inf.Confidence, key = inf.LabelKey, name = inf.LabelName}).ToArray()
+            };
         }
 
         public MessageValue Clone(string key = "", string name = "")

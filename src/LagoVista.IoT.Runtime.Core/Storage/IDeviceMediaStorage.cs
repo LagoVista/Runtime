@@ -23,8 +23,17 @@ namespace LagoVista.IoT.Runtime.Core.Storage
         /// <returns></returns>
         Task<InvokeResult<string>> StoreMediaItemAsync(Stream mediaStream, string pemId, string contentType, long length, double? latitude, double? longitude);
 
-        Task<InvokeResult<Stream>> GetMediaItemAsync(string pemId);
+        Task<InvokeResult<Stream>> GetMediaItemAsync(string uniqueDeviceId, string pemId);
 
-        Task<InvokeResult> AttachToDevice(string pemId, string title, string id, string deviceId);
+        /// <summary>
+        /// First media item id is temporary since we don't know our device id, after we do, then we can assign it 
+        /// after it has been attached we have a new id, this will be returned and assigned to the pem media id item.
+        /// </summary>
+        /// <param name="pemId"></param>
+        /// <param name="title"></param>
+        /// <param name="id"></param>
+        /// <param name="deviceId"></param>
+        /// <returns>Newly assigned media id.</returns>
+        Task<InvokeResult<string>> AttachToDevice(string pemId, string title, string id, string deviceId);
     }
 }

@@ -1,24 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <NetStandardImplicitPackageVersion>2.0.3</NetStandardImplicitPackageVersion>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Interfaces\IInstanceManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LagoVista.Core" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.Logging" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="2.1.1254-beta1851" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="2.1.1254-beta1851" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="LagoVista.Core" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.Logging" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="2.1.1433-beta0800" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="2.1.1433-beta0800" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

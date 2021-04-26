@@ -11,5 +11,6 @@ namespace LagoVista.IoT.Runtime.Core.Users
         EntityHeader HostUser { get; }
         EntityHeader InstanceUser { get; }
         EntityHeader DeviceManagerUser { get; }
+        EntityHeader JobServiceUser { get; }
     }
 }

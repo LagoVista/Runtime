@@ -171,7 +171,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 double? lat = null, lon = null;
 
-                if (headers != null 
+                if (headers != null
                     && headers.ContainsKey("x-latitude") && headers.ContainsKey("x-longitude"))
                 {
                     double tmpLatitude, tmpLongitude;
@@ -354,7 +354,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var ioConfigSettings = payload.Split(',');
                 device.Sensors.LastUpdateFromDevice = DateTime.UtcNow.ToJSONString();
                 if (ioConfigSettings.Length != 32)
-                    throw new InvalidDataException($"IO Configuration from device should consist of 32 comma delimitted values, message consists of ${ioConfigSettings.Length} items.");
+                    throw new InvalidDataException($"IO Configuration from device should consist of 32 comma delimited values, message consists of ${ioConfigSettings.Length} items.");
 
                 device.Sensors.AdcConfigs[0].Config = Convert.ToByte(ioConfigSettings[0]);
                 device.Sensors.AdcConfigs[0].DeviceScaler = Convert.ToSingle(ioConfigSettings[1]);
@@ -389,6 +389,91 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 device.Sensors.IoConfigs[6].DeviceScaler = Convert.ToSingle(ioConfigSettings[29]);
                 device.Sensors.IoConfigs[7].Config = Convert.ToByte(ioConfigSettings[30]);
                 device.Sensors.IoConfigs[7].DeviceScaler = Convert.ToSingle(ioConfigSettings[31]);
+            }
+            else if (parts[4] == "iovalues")
+            {
+                var values = payload.Split(',');
+                device.Sensors.LastUpdateFromDevice = DateTime.UtcNow.ToJSONString();
+                if (values.Length != 16)
+                    throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of ${values.Length} items.");
+
+                for (int idx = 0; idx < 8; ++idx)
+                {
+                    if (!String.IsNullOrEmpty(values[idx]))
+                    {
+                        device.Sensors.AdcValues[idx] = Convert.ToDouble(values[idx]);
+                        if (!String.IsNullOrEmpty(device.Sensors.AdcConfigs[idx].LowValueErrorCode))
+                        {
+                            if (device.Sensors.AdcValues[idx] < device.Sensors.AdcConfigs[idx].LowThreshold)
+                            {
+                                await PEMBus.InstanceConnector.HandleDeviceExceptionAsync(new DeviceException()
+                                {
+                                    ErrorCode = device.Sensors.AdcConfigs[idx].LowValueErrorCode,
+                                    DeviceRepositoryId = device.DeviceRepository.Id,
+                                    DeviceId = device.DeviceId,
+                                    DeviceUniqueId = device.Id,
+                                    Timestamp = DateTime.UtcNow.ToJSONString(),
+                                    Details = $"Value out of tolerance {device.Sensors.AdcValues[idx]}, minimum value {device.Sensors.AdcConfigs[idx].LowThreshold}."
+                                });
+
+                                device.Sensors.AdcConfigs[idx].InTolerance = false;
+                            }
+                            else if (!device.Sensors.AdcConfigs[idx].InTolerance)
+                            {
+                                await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(new DeviceException()
+                                {
+                                    ErrorCode = device.Sensors.AdcConfigs[idx].LowValueErrorCode,
+                                    DeviceRepositoryId = device.DeviceRepository.Id,
+                                    DeviceId = device.DeviceId,
+                                    DeviceUniqueId = device.Id,
+                                    Timestamp = DateTime.UtcNow.ToJSONString(),
+                                    Details = $"Value back in tole  rance {device.Sensors.AdcValues[idx]}, minimum value {device.Sensors.AdcConfigs[idx].LowThreshold}."
+                                });
+                            }
+                        }
+                    }
+                }
+
+                for (int idx = 0; idx < 8; ++idx)
+                {
+                    if (!String.IsNullOrEmpty(values[idx + 8]))
+                        device.Sensors.IoValues[idx] = Convert.ToDouble(values[idx + 8]);
+                }
+            }
+            else if (parts[4] == "geo")
+            {
+                var values = payload.Split(',');
+                if (values.Length < 2)
+                {
+                    throw new InvalidDataException($"Geo Location Data type must contain a minimum of 2 fields for latitude and longitude, message consists of ${values.Length} items.");
+                }
+
+                if (!double.TryParse(values[0], out double lat))
+                {
+                    throw new InvalidDataException($"Invalid Latitude value [{values[0]}].");
+                }
+
+                if (lat > 90 || lat < -90)
+                {
+                    throw new InvalidDataException($"Invalid Latitude value [{values[0]}], must be between -90 and 90.");
+                }
+
+                if (!double.TryParse(values[1], out double lon))
+                {
+                    throw new InvalidDataException($"Invalid Longitude value [{values[1]}].");
+                }
+
+                if (lon > 180 || lon < -180)
+                {
+                    throw new InvalidDataException($"Invalid Latitude value [{values[1]}], must be between -180 and 180.");
+                }
+
+                device.GeoLocation = new LagoVista.Core.Models.Geo.GeoLocation()
+                {
+                    LastUpdated = DateTime.UtcNow.ToJSONString(),
+                    Latitude = lat,
+                    Longitude = lon,
+                };
             }
             else if (parts[4] == "online")
             {

@@ -31,7 +31,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public async Task<InvokeResult> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")
         {
-
             if (!String.IsNullOrEmpty(topic) && topic.StartsWith("nuviot/srvr/dvcsrvc"))
             {
                 var strPayload = System.Text.ASCIIEncoding.ASCII.GetString(buffer);
@@ -252,6 +251,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         private async Task<InvokeResult> HandleSystemMessageAsync(string path, string payload)
         {
+            Metrics.MessagesProcessed++;
+
             PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, "ListenerMOdule_HandleSystemMessageAsync", "Received System Message", path.ToKVP("topic"), payload.ToKVP("body"));
 
             var parts = path.Split('/');
@@ -615,6 +616,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null)
         {
+
             try
             {
                 if (!String.IsNullOrEmpty(topic))
@@ -725,6 +727,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
             catch (Exception ex)
             {
+                Metrics.DeadLetterCount++;
                 PEMBus.InstanceLogger.AddException("ListenerModule_AddStringMessageAsync", ex);
                 return InvokeResult.FromException("ListenerModule_AddStringMessageAsync", ex);
             }

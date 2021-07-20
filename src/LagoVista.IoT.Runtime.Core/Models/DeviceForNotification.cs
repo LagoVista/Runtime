@@ -11,7 +11,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public string DeviceId { get; set; }
         public string Name { get; set; }
         public string Id { get; set; }
-        public GeoLocation GoeLocation { get; set; }
+        public GeoLocation GeoLocation { get; set; }
         public double Heading { get; set; }
         public string SerialNumber { get; set; }
         public string LastContact { get; set; }
@@ -35,7 +35,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 DeviceId = device.DeviceId,
                 Name = device.Name,
                 Id = device.Id,
-                GoeLocation = device.GeoLocation,
+                GeoLocation = device.GeoLocation,
                 Heading = device.Heading,
                 Attributes = device.Attributes,
                 Properties = device.Properties,

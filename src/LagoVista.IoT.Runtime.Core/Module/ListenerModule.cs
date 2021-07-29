@@ -400,45 +400,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 for (int idx = 0; idx < 8; ++idx)
                 {
-                    if (!String.IsNullOrEmpty(values[idx]))
-                    {
-                        device.Sensors.AdcValues[idx] = Convert.ToDouble(values[idx]);
-                        if (!String.IsNullOrEmpty(device.Sensors.AdcConfigs[idx].LowValueErrorCode))
-                        {
-                            if (device.Sensors.AdcValues[idx] < device.Sensors.AdcConfigs[idx].LowThreshold)
-                            {
-                                await PEMBus.InstanceConnector.HandleDeviceExceptionAsync(new DeviceException()
-                                {
-                                    ErrorCode = device.Sensors.AdcConfigs[idx].LowValueErrorCode,
-                                    DeviceRepositoryId = device.DeviceRepository.Id,
-                                    DeviceId = device.DeviceId,
-                                    DeviceUniqueId = device.Id,
-                                    Timestamp = DateTime.UtcNow.ToJSONString(),
-                                    Details = $"Value out of tolerance {device.Sensors.AdcValues[idx]}, minimum value {device.Sensors.AdcConfigs[idx].LowThreshold}."
-                                });
-
-                                device.Sensors.AdcConfigs[idx].InTolerance = false;
-                            }
-                            else if (!device.Sensors.AdcConfigs[idx].InTolerance)
-                            {
-                                await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(new DeviceException()
-                                {
-                                    ErrorCode = device.Sensors.AdcConfigs[idx].LowValueErrorCode,
-                                    DeviceRepositoryId = device.DeviceRepository.Id,
-                                    DeviceId = device.DeviceId,
-                                    DeviceUniqueId = device.Id,
-                                    Timestamp = DateTime.UtcNow.ToJSONString(),
-                                    Details = $"Value back in tole  rance {device.Sensors.AdcValues[idx]}, minimum value {device.Sensors.AdcConfigs[idx].LowThreshold}."
-                                });
-                            }
-                        }
-                    }
+                    if (!String.IsNullOrEmpty(values[idx + 8]))
+                        device.Sensors.IoValues[idx] = Convert.ToDouble(values[idx + 8]);
                 }
 
                 for (int idx = 0; idx < 8; ++idx)
                 {
-                    if (!String.IsNullOrEmpty(values[idx + 8]))
-                        device.Sensors.IoValues[idx] = Convert.ToDouble(values[idx + 8]);
+                    if (!String.IsNullOrEmpty(values[idx]))
+                    {
+                        device.Sensors.AdcValues[idx] = Convert.ToDouble(values[idx]);
+                    }
                 }
             }
             else if (parts[4] == "geo")

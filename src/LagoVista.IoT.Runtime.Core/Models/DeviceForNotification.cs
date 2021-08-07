@@ -26,7 +26,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public IEnumerable<DeviceNote> Notes { get; set; }
         public IEnumerable<DeviceTwinDetails> DeviceTwinDetails { get; set; }
 
-        public Sensors Sensors {get; set;}
+        public IEnumerable<Sensor> Sensors {get; set;}
 
         public static DeviceForNotification FromDevice(LagoVista.IoT.DeviceManagement.Core.Models.Device device)
         {

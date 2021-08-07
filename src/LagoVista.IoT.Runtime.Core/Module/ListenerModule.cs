@@ -18,8 +18,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 {
     public abstract class ListenerModule : PipelineModule
     {
-        ListenerConfiguration _listenerConfiguration;
-        IPEMQueue _outgoingMessageQueue;
+        private readonly ListenerConfiguration _listenerConfiguration;
+        private readonly IPEMQueue _outgoingMessageQueue;
 
         public ListenerModule(ListenerConfiguration listenerConfiguration, IPEMBus pemBus) : base(listenerConfiguration, pemBus)
         {
@@ -173,10 +173,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (headers != null
                     && headers.ContainsKey("x-latitude") && headers.ContainsKey("x-longitude"))
                 {
-                    double tmpLatitude, tmpLongitude;
-
-                    if (double.TryParse(headers["x-latitude"], out tmpLatitude) &&
-                       double.TryParse(headers["x-longitude"], out tmpLongitude))
+                    if (double.TryParse(headers["x-latitude"], out double tmpLatitude) &&
+                       double.TryParse(headers["x-longitude"], out double tmpLongitude))
                     {
                         lat = tmpLatitude;
                         lon = tmpLongitude;
@@ -350,65 +348,55 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(exception);
                 }
             }
-            else if (parts[4] == "ioconfig")
-            {
-                var ioConfigSettings = payload.Split(',');
-                device.Sensors.LastUpdateFromDevice = DateTime.UtcNow.ToJSONString();
-                if (ioConfigSettings.Length != 32)
-                    throw new InvalidDataException($"IO Configuration from device should consist of 32 comma delimited values, message consists of ${ioConfigSettings.Length} items.");
-
-                device.Sensors.AdcConfigs[0].Config = Convert.ToByte(ioConfigSettings[0]);
-                device.Sensors.AdcConfigs[0].DeviceScaler = Convert.ToSingle(ioConfigSettings[1]);
-                device.Sensors.AdcConfigs[1].Config = Convert.ToByte(ioConfigSettings[2]);
-                device.Sensors.AdcConfigs[1].DeviceScaler = Convert.ToSingle(ioConfigSettings[3]);
-                device.Sensors.AdcConfigs[2].Config = Convert.ToByte(ioConfigSettings[4]);
-                device.Sensors.AdcConfigs[2].DeviceScaler = Convert.ToSingle(ioConfigSettings[5]);
-                device.Sensors.AdcConfigs[3].Config = Convert.ToByte(ioConfigSettings[6]);
-                device.Sensors.AdcConfigs[3].DeviceScaler = Convert.ToSingle(ioConfigSettings[7]);
-                device.Sensors.AdcConfigs[4].Config = Convert.ToByte(ioConfigSettings[8]);
-                device.Sensors.AdcConfigs[4].DeviceScaler = Convert.ToSingle(ioConfigSettings[9]);
-                device.Sensors.AdcConfigs[5].Config = Convert.ToByte(ioConfigSettings[10]);
-                device.Sensors.AdcConfigs[5].DeviceScaler = Convert.ToSingle(ioConfigSettings[11]);
-                device.Sensors.AdcConfigs[6].Config = Convert.ToByte(ioConfigSettings[12]);
-                device.Sensors.AdcConfigs[6].DeviceScaler = Convert.ToSingle(ioConfigSettings[13]);
-                device.Sensors.AdcConfigs[7].Config = Convert.ToByte(ioConfigSettings[14]);
-                device.Sensors.AdcConfigs[7].DeviceScaler = Convert.ToSingle(ioConfigSettings[15]);
-
-                device.Sensors.IoConfigs[0].Config = Convert.ToByte(ioConfigSettings[16]);
-                device.Sensors.IoConfigs[0].DeviceScaler = Convert.ToSingle(ioConfigSettings[17]);
-                device.Sensors.IoConfigs[1].Config = Convert.ToByte(ioConfigSettings[18]);
-                device.Sensors.IoConfigs[1].DeviceScaler = Convert.ToSingle(ioConfigSettings[19]);
-                device.Sensors.IoConfigs[2].Config = Convert.ToByte(ioConfigSettings[20]);
-                device.Sensors.IoConfigs[2].DeviceScaler = Convert.ToSingle(ioConfigSettings[21]);
-                device.Sensors.IoConfigs[3].Config = Convert.ToByte(ioConfigSettings[22]);
-                device.Sensors.IoConfigs[3].DeviceScaler = Convert.ToSingle(ioConfigSettings[23]);
-                device.Sensors.IoConfigs[4].Config = Convert.ToByte(ioConfigSettings[24]);
-                device.Sensors.IoConfigs[4].DeviceScaler = Convert.ToSingle(ioConfigSettings[25]);
-                device.Sensors.IoConfigs[5].Config = Convert.ToByte(ioConfigSettings[26]);
-                device.Sensors.IoConfigs[5].DeviceScaler = Convert.ToSingle(ioConfigSettings[27]);
-                device.Sensors.IoConfigs[6].Config = Convert.ToByte(ioConfigSettings[28]);
-                device.Sensors.IoConfigs[6].DeviceScaler = Convert.ToSingle(ioConfigSettings[29]);
-                device.Sensors.IoConfigs[7].Config = Convert.ToByte(ioConfigSettings[30]);
-                device.Sensors.IoConfigs[7].DeviceScaler = Convert.ToSingle(ioConfigSettings[31]);
-            }
             else if (parts[4] == "iovalues")
             {
                 var values = payload.Split(',');
-                device.Sensors.LastUpdateFromDevice = DateTime.UtcNow.ToJSONString();
                 if (values.Length != 16)
                     throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of ${values.Length} items.");
 
                 for (int idx = 0; idx < 8; ++idx)
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
-                        device.Sensors.IoValues[idx] = Convert.ToDouble(values[idx + 8]);
+                    {
+                        var sensor = device.Sensors.Where(sns => sns.Technology == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx + 8).FirstOrDefault();
+                        if (sensor == null)
+                        {
+                            device.Sensors.Add(new Sensor()
+                            {
+                                PortIndex = idx,
+                                Technology = DeviceManagement.Models.SensorTechnology.IO,
+                                Value = values[idx + 8],
+                                LastUpdated = DateTime.UtcNow.ToJSONString()
+                            });
+                        }
+                        else
+                        {
+                            sensor.Value = values[idx + 8];
+                            sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
+                        }
+                    }
                 }
 
                 for (int idx = 0; idx < 8; ++idx)
                 {
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
-                        device.Sensors.AdcValues[idx] = Convert.ToDouble(values[idx]);
+                        var sensor = device.Sensors.Where(sns => sns.Technology == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx).FirstOrDefault();
+                        if (sensor == null)
+                        {
+                            device.Sensors.Add(new Sensor()
+                            {
+                                PortIndex = idx,
+                                Technology = DeviceManagement.Models.SensorTechnology.ADC,
+                                Value = values[idx + 8],
+                                LastUpdated = DateTime.UtcNow.ToJSONString()
+                            });
+                        }
+                        else
+                        {
+                            sensor.Value = values[idx + 8];
+                            sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
+                        }
                     }
                 }
             }

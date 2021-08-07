@@ -358,13 +358,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
-                        var sensor = device.Sensors.Where(sns => sns.Technology == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx + 8).FirstOrDefault();
+                        var sensor = device.Sensors.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx + 8).FirstOrDefault();
                         if (sensor == null)
                         {
                             device.Sensors.Add(new Sensor()
                             {
                                 PortIndex = idx,
-                                Technology = DeviceManagement.Models.SensorTechnology.IO,
+                                Technology =  EntityHeader<SensorTechnology>.Create(SensorTechnology.IO),
                                 Value = values[idx + 8],
                                 LastUpdated = DateTime.UtcNow.ToJSONString()
                             });
@@ -381,20 +381,20 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
-                        var sensor = device.Sensors.Where(sns => sns.Technology == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx).FirstOrDefault();
+                        var sensor = device.Sensors.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx).FirstOrDefault();
                         if (sensor == null)
                         {
                             device.Sensors.Add(new Sensor()
                             {
                                 PortIndex = idx,
-                                Technology = DeviceManagement.Models.SensorTechnology.ADC,
-                                Value = values[idx + 8],
+                                Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),
+                                Value = values[idx],
                                 LastUpdated = DateTime.UtcNow.ToJSONString()
                             });
                         }
                         else
                         {
-                            sensor.Value = values[idx + 8];
+                            sensor.Value = values[idx];
                             sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
                         }
                     }

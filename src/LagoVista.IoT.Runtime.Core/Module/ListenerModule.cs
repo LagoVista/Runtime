@@ -358,10 +358,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
-                        var sensor = device.Sensors.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx + 8).FirstOrDefault();
+                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx + 8).FirstOrDefault();
                         if (sensor == null)
                         {
-                            device.Sensors.Add(new Sensor()
+                            device.SensorCollection.Add(new Sensor()
                             {
                                 PortIndex = idx,
                                 Technology =  EntityHeader<SensorTechnology>.Create(SensorTechnology.IO),
@@ -381,10 +381,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
-                        var sensor = device.Sensors.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx).FirstOrDefault();
+                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx).FirstOrDefault();
                         if (sensor == null)
                         {
-                            device.Sensors.Add(new Sensor()
+                            device.SensorCollection.Add(new Sensor()
                             {
                                 PortIndex = idx,
                                 Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),

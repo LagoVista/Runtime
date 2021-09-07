@@ -399,6 +399,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         }
                     }
                 }
+
+                await PEMBus.SensorEvaluator.EvaluateAsync(device);
             }
             else if (parts[4] == "geo")
             {

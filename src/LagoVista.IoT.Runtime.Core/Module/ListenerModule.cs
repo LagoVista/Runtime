@@ -263,7 +263,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             var deviceId = parts[3];
 
-            var device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
+            var device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId); 
             if (device == null)
             {
                 var errMsg = $"Could not find device with device id {deviceId}.";
@@ -359,17 +359,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
                         var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx + 8).FirstOrDefault();
-                        if (sensor == null)
-                        {
-                            device.SensorCollection.Add(new Sensor()
-                            {
-                                PortIndex = idx,
-                                Technology =  EntityHeader<SensorTechnology>.Create(SensorTechnology.IO),
-                                Value = values[idx + 8],
-                                LastUpdated = DateTime.UtcNow.ToJSONString()
-                            });
-                        }
-                        else
+                        if (sensor != null)
                         {
                             sensor.Value = values[idx + 8];
                             sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
@@ -382,17 +372,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
                         var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx).FirstOrDefault();
-                        if (sensor == null)
-                        {
-                            device.SensorCollection.Add(new Sensor()
-                            {
-                                PortIndex = idx,
-                                Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),
-                                Value = values[idx],
-                                LastUpdated = DateTime.UtcNow.ToJSONString()
-                            });
-                        }
-                        else
+                        if (sensor != null)
                         {
                             sensor.Value = values[idx];
                             sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
@@ -663,7 +643,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 message.Instructions.Add(listenerInstruction);
 
                 var plannerQueue = PEMBus.Queues.Where(queue => queue.ForModuleType == PipelineModuleType.Planner).FirstOrDefault();
-
                 if (plannerQueue == null)
                 {
                     PEMBus.InstanceLogger.AddError("ListenerModule_AddStringMessageAsync", "Could not find planner queue.");
@@ -689,7 +668,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
             catch (Exception ex)
             {
                 Metrics.DeadLetterCount++;
+                Metrics.ErrorCount++;
                 PEMBus.InstanceLogger.AddException("ListenerModule_AddStringMessageAsync", ex);
+                Console.WriteLine(ex.StackTrace);
                 return InvokeResult.FromException("ListenerModule_AddStringMessageAsync", ex);
             }
         }

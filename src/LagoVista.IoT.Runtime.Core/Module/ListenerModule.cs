@@ -358,7 +358,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
-                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx + 8).FirstOrDefault();
+                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC && sns.PortIndex == idx).FirstOrDefault();
                         if (sensor != null)
                         {
                             sensor.Value = values[idx + 8];

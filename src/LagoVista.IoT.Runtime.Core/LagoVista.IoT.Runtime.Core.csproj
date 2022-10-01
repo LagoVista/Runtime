@@ -6,18 +6,13 @@
     <Compile Remove="Interfaces\IInstanceManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LagoVista.Core" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Models" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.Logging" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="3.0.1959.1339" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Models" Version="3.0.1959.1339" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
+    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="3.0.1963.1115" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="3.0.1963.1115" />
+    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="3.0.1963.1115" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="3.0.1963.1115" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="3.0.1963.1115" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="3.0.1963.1115" />
+    </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>

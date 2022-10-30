@@ -348,21 +348,71 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(exception);
                 }
             }
+            else if (parts[4] == "relays")
+            {
+                var values = payload.Split(',');
+
+                if (values.Length != 8)
+                    throw new InvalidDataException($"Relay values from device should consist of 8 comma delimited values, message consists of [{values.Length}] items data: [{payload}].");
+
+                if (device.Relays.Count == 0)
+                {
+                    for(var idx = 0; idx < 8; idx++)
+                    {
+                        device.Relays.Add(new Relay()
+                        {
+                            Index = idx,
+                            CurrentState = EntityHeader<RelayStates>.Create(RelayStates.Unknown),
+                            LastUpdated = DateTime.UtcNow.ToJSONString(),
+                            Name = $"Relay {idx + 1}"
+                        });
+                    }
+
+                    for(var idx = 0; idx < 8; ++idx)
+                    {
+                        var state = RelayStates.Unknown;
+                        if (values[idx] == "1")
+                            state = RelayStates.On;
+                        else if(values[idx] == "0")
+                            state = RelayStates.Off;
+                    
+                    
+                        if(device.Relays[idx].CurrentState.Value != state)
+                        {
+                            device.Relays[idx].CurrentState = EntityHeader<RelayStates>.Create(state);
+                            device.Relays[idx].LastUpdated = DateTime.UtcNow.ToJSONString();
+                        }
+                    }
+                }
+            }
             else if (parts[4] == "iovalues")
             {
                 var values = payload.Split(',');
                 if (values.Length != 16)
-                    throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of ${values.Length} items.");
+                    throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of {values.Length} items.");
 
                 for (int idx = 0; idx < 8; ++idx)
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
-                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC && sns.PortIndex == idx).FirstOrDefault();
+                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && 
+                                                                   sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC && 
+                                                                   sns.PortIndex == idx).FirstOrDefault();
                         if (sensor != null)
                         {
                             sensor.Value = values[idx + 8];
                             sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
+                        }
+                        else
+                        {
+                            sensor = new Sensor()
+                            {
+                                 PortIndex = idx,
+                                 Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),
+                                 Value = values[idx + 8],
+                                 LastUpdated = DateTime.UtcNow.ToJSONString()
+                            };
+                            device.SensorCollection.Add(sensor);
                         }
                     }
                 }
@@ -371,11 +421,24 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
-                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && sns.PortIndex == idx).FirstOrDefault();
+                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && 
+                                                                    sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && 
+                                                                    sns.PortIndex == idx).FirstOrDefault();
                         if (sensor != null)
                         {
                             sensor.Value = values[idx];
                             sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
+                        }
+                        else
+                        {
+                            sensor = new Sensor()
+                            {
+                                PortIndex = idx,
+                                Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.IO),
+                                Value = values[idx],
+                                LastUpdated = DateTime.UtcNow.ToJSONString()
+                            };
+                            device.SensorCollection.Add(sensor);
                         }
                     }
                 }
@@ -465,23 +528,29 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             }
                             else
                             {
+
                                 if (key == "firmwareSku")
                                 {
                                     device.ActualFirmware = value;
                                     device.ActualFirmwareDate = DateTime.Now.ToJSONString();
                                 }
-                                if (key == "firmwareVersion")
+                                else if (key == "firmwareVersion")
                                 {
                                     device.ActualFirmwareRevision = value;
                                     device.ActualFirmwareDate = DateTime.Now.ToJSONString();
                                 }
-                                if (key == "rssi")
+                                else if (key == "rssi")
                                 {
                                     double.TryParse(value, out rssi);
                                 }
-                                if (key == "reconnect")
+                                else if (key == "reconnect")
                                 {
                                     reconnect = value != "0";
+                                }
+                                else if(key == "ipAddress")
+                                {
+                                    device.IPAddress = value;
+                               
                                 }
                             }
                         }

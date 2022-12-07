@@ -1,9 +1,6 @@
 ﻿using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
-using LagoVista.IoT.Runtime.Core.Module;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core
@@ -12,7 +9,7 @@ namespace LagoVista.IoT.Runtime.Core
     {
 
         event EventHandler<DeploymentInstanceStates> StateChanged;
-        String Id { get; }
+        string Id { get; }
         
         Task<InvokeResult> InitAsync(DeploymentInstance instance);
 
@@ -22,7 +19,9 @@ namespace LagoVista.IoT.Runtime.Core
 
         InstanceRuntimeSummary CreateSummary();
 
-        Task<InvokeResult> PauseAsync();
+        void PopulateInstanceDetails(InstanceRuntimeDetails instanceDetails);
+
+		Task<InvokeResult> PauseAsync();
         Task<InvokeResult> StartListeningAsync();
         Task<InvokeResult> StopListeningAsync();
         Task<bool> CheckAllQueuesEmpty();

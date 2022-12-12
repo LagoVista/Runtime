@@ -6,12 +6,12 @@
     <Compile Remove="Interfaces\IInstanceManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="3.0.1963.1115" />
-    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="3.0.1963.1115" />
-    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="3.0.1963.1115" />
-    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="3.0.1963.1115" />
-    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="3.0.1963.1115" />
-    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="3.0.1963.1115" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Models" Version="3.0.2029.1547" />
+    <PackageReference Include="LagoVista.IoT.DeviceAdmin.Models" Version="3.0.2029.1547" />
+    <PackageReference Include="LagoVista.IoT.DeviceMessaging.Models" Version="3.0.2029.1547" />
+    <PackageReference Include="LagoVista.IoT.DeviceManagement.Core" Version="3.0.2029.1547" />
+    <PackageReference Include="LagoVista.IoT.Deployment.Admin" Version="3.0.2029.1547" />
+    <PackageReference Include="LagoVista.IoT.Pipeline.Admin" Version="3.0.2029.1547" />
     </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

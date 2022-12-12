@@ -10,18 +10,18 @@ namespace LagoVista.IoT.Runtime.Core
 
         event EventHandler<DeploymentInstanceStates> StateChanged;
         string Id { get; }
-        
+
         Task<InvokeResult> InitAsync(DeploymentInstance instance);
 
         Task<InvokeResult> CleanupAsync();
 
-        DeploymentInstance Instance { get;  }
+        DeploymentInstance Instance { get; }
 
         InstanceRuntimeSummary CreateSummary();
 
         void PopulateInstanceDetails(InstanceRuntimeDetails instanceDetails);
 
-		Task<InvokeResult> PauseAsync();
+        Task<InvokeResult> PauseAsync();
         Task<InvokeResult> StartListeningAsync();
         Task<InvokeResult> StopListeningAsync();
         Task<bool> CheckAllQueuesEmpty();

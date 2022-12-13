@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
-	public interface ISharedInstanceConnector
+	public interface ISharedHostConnector
 	{
-		Task<InvokeResult<DeploymentInstance>> GetInstanceAsync();
+		Task<InvokeResult<DeploymentHost>> GetHostAsync();
 		Task<InvokeResult<string>> GetKeyFroMSecureIdAsync(string keyId);
 		Task<InvokeResult<LoggingSettings>> GetLoggingSettingsAsync();
 		Task<InvokeResult<ConnectionSettings>> GetNotificationSettingsAsync(NotificationServerType notificationServerType);

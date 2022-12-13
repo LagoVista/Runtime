@@ -9,8 +9,8 @@
   <ItemGroup>
     
     <PackageReference Include="Moq" Version="4.18.2" />
-    <PackageReference Include="LagoVista.MediaServices.Models" Version="3.0.2029.1547" />
-    <PackageReference Include="LagoVista.Core.Networking" Version="3.0.2029.1547" />
+    <PackageReference Include="LagoVista.MediaServices.Models" Version="3.0.2036.1142" />
+    <PackageReference Include="LagoVista.Core.Networking" Version="3.0.2036.1142" />
 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />

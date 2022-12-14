@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>LagoVista.IoT.Runtime.Core</id>
-    <version>3.0.2037.1041</version>
+    <version>3.0.2037.1551</version>
     <authors>Software Logistics, LLC</authors>
     <owners>Software Logistics, LLC</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -12,7 +12,7 @@
     <copyright>Copyright Software Logistics - 2022</copyright>
     <tags>HomeAutomation IoT Cloud</tags>
     <icon>LagoVistaIcon.png</icon>
-    <releaseNotes>Build Date: 12/14/2022 3:41:37 PM UTC</releaseNotes>
+    <releaseNotes>Build Date: 12/14/2022 8:51:35 PM UTC</releaseNotes>
     <repository url="https://www.github.com/lagovista" type="git" branch="master"></repository>
     <dependencies>
       <group targetFramework="netstandard2.1">

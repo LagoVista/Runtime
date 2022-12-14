@@ -32,7 +32,7 @@ namespace LagoVista.IoT.Runtime.Core
         Task<UsageMetrics> GetAndResetMetricsAsync(DateTime dateStamp, string hostVersion);
         InstanceRuntimeDetails GetInstanceDetails();
 
-        Task<InvokeResult> AddMediaMessageAsync(string hostName, Stream stream, string contentType, long contentLength, DateTime startTimeStamp, string path, String deviceId = "", String topic = "", Dictionary<string, string> headers = null);
-        Task<InvokeResult> AddStringMessageAsync(string hostName, string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null);
+        Task<InvokeResult> AddMediaMessageAsync(Stream stream, string contentType, long contentLength, DateTime startTimeStamp, string path, String deviceId = "", String topic = "", Dictionary<string, string> headers = null);
+        Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null);
 	}
 }

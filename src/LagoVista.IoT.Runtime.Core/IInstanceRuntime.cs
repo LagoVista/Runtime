@@ -1,6 +1,8 @@
 ﻿using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core
@@ -29,5 +31,8 @@ namespace LagoVista.IoT.Runtime.Core
         Task<InvokeResult> StartAsync();
         Task<UsageMetrics> GetAndResetMetricsAsync(DateTime dateStamp, string hostVersion);
         InstanceRuntimeDetails GetInstanceDetails();
-    }
+
+        Task<InvokeResult> AddMediaMessageAsync(string hostName, Stream stream, string contentType, long contentLength, DateTime startTimeStamp, string path, String deviceId = "", String topic = "", Dictionary<string, string> headers = null);
+        Task<InvokeResult> AddStringMessageAsync(string hostName, string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null);
+	}
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using LagoVista.Core.Interfaces;
+using Newtonsoft.Json;
 
 namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
 {
@@ -18,6 +19,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
             ErrorMessages = new List<string>();
         }
 
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         public string DateStamp { get; set; }

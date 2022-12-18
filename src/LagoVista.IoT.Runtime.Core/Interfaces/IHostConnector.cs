@@ -8,14 +8,10 @@ using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
-	public interface IHostConnector
+	public interface IHostConnector : IUsageMetricsSettingsProvider, ILogWriterSettingsProvider, INotificationConnectionProvider, IRPCSettingsProvider, IEHCheckPointSettingsProvider
 	{
 		Task<InvokeResult<DeploymentHost>> GetHostAsync();
 		Task<InvokeResult<List<SharedInstanceSummary>>> GetInstanceAsync();
-		Task<InvokeResult<ConnectionSettings>> GetEHCheckPointSettingsAsync();
-		Task<InvokeResult<RPCSettings>> GetRPCConnectionAsync();
-		Task<InvokeResult<ConnectionSettings>> GetNotificationSettingsAsync(NotificationServerType notificationServerType);
-		Task<InvokeResult<LoggingSettings>> GetLoggingSettingsAsync();
-		Task<InvokeResult<ConnectionSettings>> GetUsageStorageSettingsAsync();
+		Task<InvokeResult> UpdateHostStatusAsync(string hostId, HostStatus status, string version);
 	}
 }

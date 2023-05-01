@@ -1,5 +1,6 @@
 ﻿using LagoVista.Core.Interfaces;
 using LagoVista.Core.Models;
+using LagoVista.Core.Models.UIMetaData;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Deployment.Models;
@@ -60,5 +61,10 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<string>> CreateServiceTicketAsync(CreateServiceTicketRequest ticketRequest);
         Task<InvokeResult> HandleDeviceExceptionAsync(DeviceException exception);
         Task<InvokeResult> ClearDeviceExceptionAsync(DeviceException exception);
+
+        Task<InvokeResult<InstanceService>> AllocatedServiceHostAsync(HostTypes hostType);
+        Task<InvokeResult> RemoveServiceHostAsync(string id);
+        Task<ListResponse<InstanceAccount>> GetInstanceAccounts();
+
     }
 }

@@ -64,7 +64,5 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
 
         Task<InvokeResult<InstanceService>> AllocatedServiceHostAsync(HostTypes hostType);
         Task<InvokeResult> RemoveServiceHostAsync(string id);
-        Task<ListResponse<InstanceAccount>> GetInstanceAccounts();
-
     }
 }

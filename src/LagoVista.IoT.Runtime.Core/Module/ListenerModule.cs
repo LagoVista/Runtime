@@ -251,7 +251,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             Metrics.MessagesProcessed++;
 
-            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, "ListenerMOdule_HandleSystemMessageAsync", "Received System Message", path.ToKVP("topic"), payload.ToKVP("body"));
+            PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, "ListenerModule_HandleSystemMessageAsync", "Received System Message", path.ToKVP("topic"), payload.ToKVP("body"));
 
             var parts = path.Split('/');
             if (parts.Length < 5)

@@ -273,7 +273,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             device.LastContact = DateTime.UtcNow.ToJSONString();
 
-            if (parts[4] == "state")
+            var sysMessageType = parts[4];
+            var details = $"payload: {payload} - ";
+
+            if (sysMessageType == "state")
             {
                 device.DeviceTwinDetails.Insert(0, new DeviceManagement.Models.DeviceTwinDetails()
                 {
@@ -323,7 +326,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     }
                 }
             }
-            else if (parts[4] == "err")
+            else if (sysMessageType == "err")
             {
                 var err = parts[5];
                 var action = parts[6];
@@ -348,7 +351,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(exception);
                 }
             }
-            else if (parts[4] == "relays")
+            else if (sysMessageType == "relays")
             {
                 var values = payload.Split(',');
 
@@ -385,16 +388,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     }
                 }
             }
-            else if (parts[4] == "iovalues")
+            else if (sysMessageType == "iovalues")
             {
                 var values = payload.Split(',');
                 if (values.Length != 16)
-                    throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of {values.Length} items.");
+                    throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of {values.Length} items.");                
 
                 for (int idx = 0; idx < 8; ++idx)
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
+                        details += $" ADC {idx} has value {values[idx + 8]}";
                         var sensor = device.SensorCollection.Where(sns => sns.Technology != null && 
                                                                    sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC && 
                                                                    sns.PortIndex == idx).FirstOrDefault();
@@ -421,6 +425,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
+                        details += $" IO {idx} has value {values[idx + 8]}";
                         var sensor = device.SensorCollection.Where(sns => sns.Technology != null && 
                                                                     sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && 
                                                                     sns.PortIndex == idx).FirstOrDefault();
@@ -445,7 +450,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 await PEMBus.SensorEvaluator.EvaluateAsync(device);
             }
-            else if (parts[4] == "geo")
+            else if (sysMessageType == "geo")
             {
                 var values = payload.Split(',');
                 if (values.Length < 2)
@@ -480,7 +485,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Longitude = lon,
                 };
             }
-            else if (parts[4] == "online")
+            else if (sysMessageType == "online")
             {
                 device.ConnectionTimeStamp = DateTime.UtcNow.ToJSONString();
                 var rssi = -1.0;
@@ -526,34 +531,37 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                     }
                                 }
                             }
-                            else
-                            {
+                        }
+                        else
+                        {
+                            var key = fieldParts[0];
+                            var value = fieldParts[1];
 
-                                if (key == "firmwareSku")
-                                {
-                                    device.ActualFirmware = value;
-                                    device.ActualFirmwareDate = DateTime.Now.ToJSONString();
-                                }
-                                else if (key == "firmwareVersion")
-                                {
-                                    device.ActualFirmwareRevision = value;
-                                    device.ActualFirmwareDate = DateTime.Now.ToJSONString();
-                                }
-                                else if (key == "rssi")
-                                {
-                                    double.TryParse(value, out rssi);
-                                }
-                                else if (key == "reconnect")
-                                {
-                                    reconnect = value != "0";
-                                }
-                                else if(key == "ipAddress")
-                                {
-                                    device.IPAddress = value;
-                               
-                                }
+                            if (key == "firmwareSku")
+                            {
+                                device.ActualFirmware = value;
+                                device.ActualFirmwareDate = DateTime.Now.ToJSONString();
+                            }
+                            else if (key == "firmwareVersion")
+                            {
+                                device.ActualFirmwareRevision = value;
+                                device.ActualFirmwareDate = DateTime.Now.ToJSONString();
+                            }
+                            else if (key == "rssi")
+                            {
+                                double.TryParse(value, out rssi);
+                            }
+                            else if (key == "reconnect")
+                            {
+                                reconnect = value != "0";
+                            }
+                            else if (key == "ipAddress")
+                            {
+                                device.IPAddress = value;
+
                             }
                         }
+                        
                     }
                 }
 
@@ -583,7 +591,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 PayloadType = "Device",
                 DateStamp = DateTime.UtcNow.ToJSONString(),
                 MessageId = Guid.NewGuid().ToId(),
-                Text = "Device Updated",
+                Text = $"Device Updated - Sys Message {sysMessageType} - {details}",
                 Title = "Device Updated"
             };
 
@@ -597,7 +605,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 PayloadType = "Device",
                 DateStamp = DateTime.UtcNow.ToJSONString(),
                 MessageId = Guid.NewGuid().ToId(),
-                Text = "Device Updated",
+                Text = $"Device Updated - Sys Message {sysMessageType} - {details}",
                 Title = "Device Updated"
             };
 
@@ -613,7 +621,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     PayloadType = "Device",
                     DateStamp = DateTime.UtcNow.ToJSONString(),
                     MessageId = Guid.NewGuid().ToId(),
-                    Text = "Device Updated",
+                    Text = $"Device Updated - Sys Message {sysMessageType} - {details}",
                     Title = "Device Updated"
                 };
 

@@ -35,6 +35,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.Utils
         public string Key { get; private set; }
 
         public PipelineModuleType ForModuleType { get; set; }
+        public string ForModuleTypeSubKey { get; set; }
 
         public PEMQueueTypes QueueType { get; set; }
 

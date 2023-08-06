@@ -12,8 +12,8 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
     public interface IFallbackMessageHandler : IPipelineModule
     {
-        Task<InvokeResult> AddMediaMessageAsync(Stream stream, string contentType, long contentLength, DateTime startTimeStamp, string path, String deviceId = "", String topic = "", Dictionary<string, string> headers = null);
-        Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null);
+        Task<InvokeResult<PipelineExecutionMessage>> AddMediaMessageAsync(Stream stream, string contentType, long contentLength, DateTime startTimeStamp, string path, String deviceId = "", String topic = "", Dictionary<string, string> headers = null);
+        Task<InvokeResult<PipelineExecutionMessage>> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null);
 
         void LogVerboseMessage(string tag, string message, params KeyValuePair<string, string>[] args);
 

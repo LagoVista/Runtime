@@ -24,6 +24,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         String Key { get; }
 
+
         PEMQueueTypes QueueType { get; }
 
         Task<InvokeResult> StartListeningAsync();
@@ -35,6 +36,11 @@ namespace LagoVista.IoT.Runtime.Core
         /// The type of pipeline module this queue supports.
         /// </summary>
         PipelineModuleType ForModuleType { get; }
+
+        /// <summary>
+        /// The key associated with the type of module
+        /// </summary>
+        String ForModuleTypeSubKey { get; }
 
         /// <summary>
         /// Take the message and enqueue it based on the instruction sets queue uri.

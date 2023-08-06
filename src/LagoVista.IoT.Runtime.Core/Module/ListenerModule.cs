@@ -29,7 +29,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             if (_outgoingMessageQueue == null) throw new Exception($"Incoming queue for listener module {_listenerConfiguration.Id} - {_listenerConfiguration.Name} could not be found.");
         }
 
-        public async Task<InvokeResult> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")
+        public async Task<InvokeResult<PipelineExecutionMessage>> AddBinaryMessageAsync(byte[] buffer, DateTime startTimeStamp, String deviceId = "", String topic = "")
         {
             if (!String.IsNullOrEmpty(topic) && topic.StartsWith("nuviot/srvr/dvcsrvc"))
             {
@@ -90,16 +90,16 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 await plannerQueue.EnqueueAsync(message);
 
-                return InvokeResult.Success;
+                return InvokeResult<PipelineExecutionMessage>.Create(message);
             }
             catch (Exception ex)
             {
                 PEMBus.InstanceLogger.AddException("ListenerModule_AddBinaryMessageAsync", ex);
-                return InvokeResult.FromException("ListenerModule_AddBinaryMessageAsync", ex);
+                return InvokeResult<PipelineExecutionMessage>.FromException("ListenerModule_AddBinaryMessageAsync", ex);
             }
         }
 
-        public async Task<InvokeResult> AddMediaMessageAsync(Stream stream, string contentType, long contentLength, DateTime startTimeStamp, string path, String deviceId = "", String topic = "", Dictionary<string, string> headers = null)
+        public async Task<InvokeResult<PipelineExecutionMessage>> AddMediaMessageAsync(Stream stream, string contentType, long contentLength, DateTime startTimeStamp, string path, String deviceId = "", String topic = "", Dictionary<string, string> headers = null)
         {
             try
             {
@@ -184,20 +184,20 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var insertResult = await PEMBus.DeviceMediaStorage.StoreMediaItemAsync(stream, message.Id, contentType, contentLength, lat, lon);
                 if (!insertResult.Successful)
                 {
-                    return insertResult.ToInvokeResult();
+                    return InvokeResult<PipelineExecutionMessage>.FromInvokeResult(insertResult.ToInvokeResult());
                 }
 
                 message.MediaItemId = insertResult.Result;
 
                 await plannerQueue.EnqueueAsync(message);
 
-                return InvokeResult.Success;
+                return InvokeResult<PipelineExecutionMessage>.Create(message);
 
             }
             catch (Exception ex)
             {
                 PEMBus.InstanceLogger.AddException("ListenerModule_AddBinaryMessageAsync", ex);
-                return InvokeResult.FromException("ListenerModule_AddBinaryMessageAsync", ex);
+                return InvokeResult<PipelineExecutionMessage>.FromException("ListenerModule_AddBinaryMessageAsync", ex);
             }
         }
 
@@ -247,7 +247,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         public abstract Task<InvokeResult> SendResponseAsync(PipelineExecutionMessage message, OutgoingMessage msg);
 
-        private async Task<InvokeResult> HandleSystemMessageAsync(string path, string payload)
+        private async Task<InvokeResult<PipelineExecutionMessage>> HandleSystemMessageAsync(string path, string payload)
         {
             Metrics.MessagesProcessed++;
 
@@ -258,7 +258,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 var errMsg = $"NuvIoT service messages must be at least 5 segments {path} is {parts.Length} segments";
                 PEMBus.InstanceLogger.AddError("ListenerModule__HandleSystemMessage", errMsg);
-                return InvokeResult.FromError(errMsg);
+                return InvokeResult<PipelineExecutionMessage>.FromError(errMsg);
             }
 
             var deviceId = parts[3];
@@ -268,7 +268,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 var errMsg = $"Could not find device with device id {deviceId}.";
                 PEMBus.InstanceLogger.AddError("ListenerModule__HandleSystemMessage", errMsg);
-                return InvokeResult.FromError(errMsg);
+                return InvokeResult<PipelineExecutionMessage>.FromError(errMsg);
             }
 
             device.LastContact = DateTime.UtcNow.ToJSONString();
@@ -628,11 +628,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
             }
 
-            return InvokeResult.Success;
+            return InvokeResult<PipelineExecutionMessage>.Create(null);
 
         }
 
-        public async Task<InvokeResult> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null)
+        public async Task<InvokeResult<PipelineExecutionMessage>> AddStringMessageAsync(string buffer, DateTime startTimeStamp, string path = "", string deviceId = "", string topic = "", Dictionary<string, string> headers = null)
         {
 
             try
@@ -723,7 +723,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (plannerQueue == null)
                 {
                     PEMBus.InstanceLogger.AddError("ListenerModule_AddStringMessageAsync", "Could not find planner queue.");
-                    return InvokeResult.FromError("Could not find planner queue.");
+                    return InvokeResult<PipelineExecutionMessage>.FromError("Could not find planner queue.");
                 }
 
                 var planner = PEMBus.Instance.Solution.Value.Planner.Value;
@@ -740,7 +740,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 await plannerQueue.EnqueueAsync(message);
 
-                return InvokeResult.Success;
+                return InvokeResult<PipelineExecutionMessage>.Create(message);
             }
             catch (Exception ex)
             {
@@ -748,7 +748,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 Metrics.ErrorCount++;
                 PEMBus.InstanceLogger.AddException("ListenerModule_AddStringMessageAsync", ex);
                 Console.WriteLine(ex.StackTrace);
-                return InvokeResult.FromException("ListenerModule_AddStringMessageAsync", ex);
+                return InvokeResult<PipelineExecutionMessage>.FromException("ListenerModule_AddStringMessageAsync", ex);
             }
         }
     }

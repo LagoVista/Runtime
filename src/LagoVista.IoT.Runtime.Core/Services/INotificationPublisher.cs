@@ -25,7 +25,9 @@ namespace LagoVista.IoT.Runtime.Core.Services
 
         Simulator,    
     
-        Jobs
+        Jobs,
+        
+        DFU
 
     }
 

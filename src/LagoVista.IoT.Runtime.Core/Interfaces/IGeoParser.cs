@@ -10,6 +10,6 @@ namespace LagoVista.IoT.Runtime.Core
     /// </summary>
     public interface IGeoParser
     {
-        InvokeResult<String> Parse(object lat, object lon); 
+        InvokeResult<String> Parse(object lat, object lon, object altitude); 
     }
 }

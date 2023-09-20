@@ -1,4 +1,5 @@
 ﻿using LagoVista.Core.Attributes;
+using LagoVista.Core.Interfaces;
 using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.DeviceAdmin.Models;
@@ -33,7 +34,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
     }
 
     [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifier_Title, RuntimeCoreResources.Names.Verifier_Help, RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.SimpleModel, typeof(RuntimeCoreResources))]
-    public class Verifier : IoTModelBase, IVerifier
+    public class Verifier : IoTModelBase, IVerifier, IFormDescriptor
     {
         public const string InputType_Binary = "binary";
         public const string InputType_Text = "text";
@@ -65,7 +66,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ShouldSucceed, HelpResource: RuntimeCoreResources.Names.Verifier_ShouldSucceed_Help, ResourceType: typeof(RuntimeCoreResources), FieldType: FieldTypes.CheckBox)]
         public bool ShouldSucceed { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Header, HelpResource: RuntimeCoreResources.Names.Verifier_Header_Help, ResourceType: typeof(RuntimeCoreResources), FieldType: FieldTypes.ChildList)]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Header, HelpResource: RuntimeCoreResources.Names.Verifier_Header_Help, ResourceType: typeof(RuntimeCoreResources), FieldType: FieldTypes.ChildListInline)]
         public ObservableCollection<Header> Headers { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString, FieldType: FieldTypes.Text, HelpResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString_Help, ResourceType: typeof(RuntimeCoreResources))]
@@ -83,7 +84,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.Text, ResourceType: typeof(RuntimeCoreResources))]
         public string ExpectedOutput { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.ChildListInline, ResourceType: typeof(RuntimeCoreResources))]
         public ObservableCollection<ExpectedValue> ExpectedOutputs { get; set; }
 
         [CustomValidator]
@@ -241,6 +242,21 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
                 IsPublic = IsPublic,
                 Description = Description,
                 Key = Key
+            };
+        }
+
+        public List<string> GetFormFields()
+        {
+            return new List<string>()
+            {
+                nameof(Name),
+                nameof(Key),
+                nameof(InputType),
+                nameof(PathAndQueryString),
+                nameof(Topic),
+                nameof(Input),
+                nameof(Headers),
+                nameof(ExpectedOutputs)
             };
         }
     }

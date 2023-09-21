@@ -161,7 +161,7 @@
     <value>Expected:</value>
   </data>
   <data name="Verifier_ExpectedOutput" xml:space="preserve">
-    <value>Expected Output</value>
+    <value>Expected Outputs</value>
   </data>
   <data name="Verifier_Expected_NotMatch_Actual" xml:space="preserve">
     <value>Expected Value does not match Actual Value</value>

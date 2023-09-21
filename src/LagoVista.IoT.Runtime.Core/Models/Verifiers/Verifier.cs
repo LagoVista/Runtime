@@ -84,7 +84,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.Text, ResourceType: typeof(RuntimeCoreResources))]
         public string ExpectedOutput { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.ChildListInline, ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.ChildList, ResourceType: typeof(RuntimeCoreResources))]
         public ObservableCollection<ExpectedValue> ExpectedOutputs { get; set; }
 
         [CustomValidator]

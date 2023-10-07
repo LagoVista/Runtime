@@ -14,6 +14,7 @@ namespace LagoVista.IoT.Runtime.Core
 {
     public interface IPEMBus
     {
+        string RuntimeVersion { get;  }
         DeploymentInstance Instance { get; set; }
 
         List<IPEMQueue> Queues { get; }

@@ -105,6 +105,12 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         [JsonProperty("instructions")]
         public List<PipelineExecutionInstruction> Instructions { get; set; }
 
+        [JsonProperty("runtimeVersion")]
+        public string RuntimeVersion { get; set; }
+
+        [JsonProperty("solutionVersion")]
+        public string SolutionVersion { get; set; }
+
         [JsonProperty("creationTimeStamp")]
         public string CreationTimeStamp { get; set; }
 
@@ -233,6 +239,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
                 Status = Status,
                 TextPayload = TextPayload,
                 WarningMessages = WarningMessages,
+                RuntimeVersion = RuntimeVersion,
+                SolutionVersion = SolutionVersion
             };
             
             foreach(var instruction in Instructions)

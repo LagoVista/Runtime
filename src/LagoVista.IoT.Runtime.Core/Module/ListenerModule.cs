@@ -41,8 +41,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 var message = new PipelineExecutionMessage()
                 {
+                    SolutionVersion = PEMBus.Instance.Solution.Value.Version,
+                    RuntimeVersion = PEMBus.RuntimeVersion,
                     PayloadType = MessagePayloadTypes.Binary,
-                    BinaryPayload = buffer,
+                    BinaryPayload = buffer,                    
                     CreationTimeStamp = startTimeStamp.ToJSONString()
                 };
 
@@ -106,7 +108,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 var message = new PipelineExecutionMessage()
                 {
                     PayloadType = MessagePayloadTypes.Media,
-                    CreationTimeStamp = startTimeStamp.ToJSONString()
+                    CreationTimeStamp = startTimeStamp.ToJSONString(),
+                    SolutionVersion = PEMBus.Instance.Solution.Value.Version,
+                    RuntimeVersion = PEMBus.RuntimeVersion,
                 };
 
                 Metrics.MessagesProcessed++;
@@ -656,6 +660,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     PayloadType = MessagePayloadTypes.Text,
                     TextPayload = buffer,
+                    SolutionVersion = PEMBus.Instance.Solution.Value.Version,
+                    RuntimeVersion = PEMBus.RuntimeVersion,
                     CreationTimeStamp = startTimeStamp.ToJSONString()
                 };
 

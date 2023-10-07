@@ -67,7 +67,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
                 QueueUri = QueueUri,
                 Type = Type,
                 TimeInQueueMS = TimeInQueueMS,
-                StartDateStamp = StartDateStamp
+                StartDateStamp = StartDateStamp,
             };
         }
     }

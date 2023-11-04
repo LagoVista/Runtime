@@ -153,6 +153,9 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 //Resources:RuntimeCoreResources:Verifier_Payload
 
 		public static string Verifier_Payload { get { return GetResourceString("Verifier_Payload"); } }
+//Resources:RuntimeCoreResources:Verifier_PopulateFromSampleMessage
+
+		public static string Verifier_PopulateFromSampleMessage { get { return GetResourceString("Verifier_PopulateFromSampleMessage"); } }
 //Resources:RuntimeCoreResources:Verifier_ResultDoesNotContainKey
 
 
@@ -222,6 +225,7 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 			public const string Verifier_PathAndQueryString = "Verifier_PathAndQueryString";
 			public const string Verifier_PathAndQueryString_Help = "Verifier_PathAndQueryString_Help";
 			public const string Verifier_Payload = "Verifier_Payload";
+			public const string Verifier_PopulateFromSampleMessage = "Verifier_PopulateFromSampleMessage";
 			public const string Verifier_ResultDoesNotContainKey = "Verifier_ResultDoesNotContainKey";
 			public const string Verifier_ShouldSucceed = "Verifier_ShouldSucceed";
 			public const string Verifier_ShouldSucceed_Help = "Verifier_ShouldSucceed_Help";

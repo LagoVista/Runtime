@@ -217,6 +217,9 @@
   <data name="Verifier_Payload" xml:space="preserve">
     <value>Payload</value>
   </data>
+  <data name="Verifier_PopulateFromSampleMessage" xml:space="preserve">
+    <value>Populate from Sample Message</value>
+  </data>
   <data name="Verifier_ResultDoesNotContainKey" xml:space="preserve">
     <value>Result set does not contain key:</value>
     <comment>Will append some additional text to message</comment>

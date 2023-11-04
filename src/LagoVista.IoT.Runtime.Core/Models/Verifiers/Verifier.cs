@@ -33,7 +33,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         Text
     }
 
-    [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifier_Title, RuntimeCoreResources.Names.Verifier_Help, RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.SimpleModel, typeof(RuntimeCoreResources))]
+    [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifier_Title, RuntimeCoreResources.Names.Verifier_Help, 
+        RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.SimpleModel, typeof(RuntimeCoreResources),
+        GetUrl: "/api/verifier/{id}", SaveUrl: "/api/verifier", FactoryUrl: "/api/verifier/factory/{type}")]
     public class Verifier : IoTModelBase, IVerifier, IFormDescriptor
     {
         public const string InputType_Binary = "binary";
@@ -77,6 +79,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Component, FieldType: FieldTypes.EntityHeaderPicker, IsRequired: true, ResourceType: typeof(RuntimeCoreResources))]
         public EntityHeader Component { get; set; }
+
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_PopulateFromSampleMessage, FieldType: FieldTypes.Action, ResourceType: typeof(RuntimeCoreResources))]
+        public bool PopulateFromSampleMessageAction { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Payload, FieldType: FieldTypes.MultiLineText, ResourceType: typeof(RuntimeCoreResources))]
         public string Input { get; set; }
@@ -251,6 +256,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
             {
                 nameof(Name),
                 nameof(Key),
+                nameof(PopulateFromSampleMessageAction),
                 nameof(InputType),
                 nameof(PathAndQueryString),
                 nameof(Topic),

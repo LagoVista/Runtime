@@ -429,7 +429,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
-                        details += $" IO {idx} has value {values[idx + 8]}";
+                        details += $" IO {idx} has value {values[idx]}";
                         var sensor = device.SensorCollection.Where(sns => sns.Technology != null && 
                                                                     sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && 
                                                                     sns.PortIndex == idx).FirstOrDefault();
@@ -456,38 +456,60 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
             else if (sysMessageType == "geo")
             {
-                var values = payload.Split(',');
-                if (values.Length < 2)
+                if (payload == "nofix")
                 {
-                    throw new InvalidDataException($"Geo Location Data type must contain a minimum of 2 fields for latitude and longitude, message consists of ${values.Length} items.");
+                    device.HasGeoFix = false;
                 }
-
-                if (!double.TryParse(values[0], out double lat))
+                else
                 {
-                    throw new InvalidDataException($"Invalid Latitude value [{values[0]}].");
+                    device.HasGeoFix = true;
+                    var values = payload.Split(',');
+                    if (values.Length < 2)
+                    {
+                        throw new InvalidDataException($"Geo Location Data type must contain a minimum of 2 fields for latitude and longitude, message consists of ${values.Length} items.");
+                    }
+
+                    if (!double.TryParse(values[0], out double lat))
+                    {
+                        throw new InvalidDataException($"Invalid Latitude value [{values[0]}].");
+                    }
+
+                    if (lat > 90 || lat < -90)
+                    {
+                        throw new InvalidDataException($"Invalid Latitude value [{values[0]}], must be between -90 and 90.");
+                    }
+
+                    if (!double.TryParse(values[1], out double lon))
+                    {
+                        throw new InvalidDataException($"Invalid Longitude value [{values[1]}].");
+                    }
+
+                    if (lon > 180 || lon < -180)
+                    {
+                        throw new InvalidDataException($"Invalid Latitude value [{values[1]}], must be between -180 and 180.");
+                    }
+
+                    double? alt = null;
+                    if (values.Length > 2)
+                    {
+                        if (!double.TryParse(values[1], out double altValue))
+                        {
+                            throw new InvalidDataException($"Invalid Longitude value [{values[2]}].");
+                        }
+                        else
+                        {
+                            alt = altValue;
+                        }
+                    }
+
+                    device.GeoLocation = new LagoVista.Core.Models.Geo.GeoLocation()
+                    {
+                        LastUpdated = DateTime.UtcNow.ToJSONString(),
+                        Latitude = lat,
+                        Longitude = lon,
+                        Altitude = alt
+                    };
                 }
-
-                if (lat > 90 || lat < -90)
-                {
-                    throw new InvalidDataException($"Invalid Latitude value [{values[0]}], must be between -90 and 90.");
-                }
-
-                if (!double.TryParse(values[1], out double lon))
-                {
-                    throw new InvalidDataException($"Invalid Longitude value [{values[1]}].");
-                }
-
-                if (lon > 180 || lon < -180)
-                {
-                    throw new InvalidDataException($"Invalid Latitude value [{values[1]}], must be between -180 and 180.");
-                }
-
-                device.GeoLocation = new LagoVista.Core.Models.Geo.GeoLocation()
-                {
-                    LastUpdated = DateTime.UtcNow.ToJSONString(),
-                    Latitude = lat,
-                    Longitude = lon,
-                };
             }
             else if (sysMessageType == "online")
             {
@@ -562,10 +584,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             else if (key == "ipAddress")
                             {
                                 device.IPAddress = value;
-
                             }
-                        }
-                        
+                        }                        
                     }
                 }
 

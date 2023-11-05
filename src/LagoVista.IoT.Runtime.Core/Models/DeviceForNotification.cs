@@ -11,6 +11,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public string DeviceId { get; set; }
         public string Name { get; set; }
         public string Id { get; set; }
+        public bool HasGeoFix {get; set;}
         public GeoLocation GeoLocation { get; set; }
         public double Heading { get; set; }
         public string SerialNumber { get; set; }
@@ -49,6 +50,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 States = device.States,
                 Notes = device.Notes,
                 LastContact = device.LastContact,
+                HasGeoFix = device.HasGeoFix,
                 SensorCollection = device.SensorCollection
             };
         }

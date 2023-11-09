@@ -16,7 +16,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
     public interface IParserManager
     {
-        IMessageFieldParser GetFieldMessageParser(DeviceMessageDefinitionField parserConfig, IInstanceLogger logger);
+        IMessageFieldParser GetFieldMessageParser(DeviceField parserConfig, IInstanceLogger logger);
 
         IMessageParser GetMessageParser(DeviceMessageDefinition parserConfig, IInstanceLogger logger);
     }

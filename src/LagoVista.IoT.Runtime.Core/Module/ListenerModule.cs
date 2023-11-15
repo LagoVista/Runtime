@@ -492,7 +492,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     double? alt = null;
                     if (values.Length > 2)
                     {
-                        if (!double.TryParse(values[1], out double altValue))
+                        if (!double.TryParse(values[2], out double altValue))
                         {
                             throw new InvalidDataException($"Invalid Longitude value [{values[2]}].");
                         }

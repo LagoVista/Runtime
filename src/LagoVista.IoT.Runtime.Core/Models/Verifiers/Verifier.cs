@@ -46,18 +46,12 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public const string VerifierType_MessageParser = "message";
         public const string VerifierType_Planner = "planner";
 
-        public string DatabaseName { get; set; }
-        public string EntityType { get; set; }
-
         public Verifier()
         {
             Headers = new ObservableCollection<Header>();
             ExpectedOutputs = new ObservableCollection<ExpectedValue>();
             VerifierType = EntityHeader<VerifierTypes>.Create(VerifierTypes.NotSpecified);
         }
-
-        [FormField(LabelResource: RuntimeCoreResources.Names.Common_Key, HelpResource: RuntimeCoreResources.Names.Common_Key_Help, FieldType: FieldTypes.Key, RegExValidationMessageResource: RuntimeCoreResources.Names.Common_Key_Validation, ResourceType: typeof(RuntimeCoreResources), IsRequired: true)]
-        public String Key { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_InputType, EnumType: (typeof(InputTypes)), FieldType: FieldTypes.Picker, ResourceType: typeof(RuntimeCoreResources), WaterMark: RuntimeCoreResources.Names.Verifier_InputType_Select, HelpResource: RuntimeCoreResources.Names.Verifier_InputType_Help, IsRequired: true, IsUserEditable: true)]
         public EntityHeader<InputTypes> InputType { get; set; }
@@ -231,12 +225,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
                 throw InvalidConfigurationException.FromErrorCode(ErrorCodes.Verifiers.CouldNotConvertInputToBytes, ex.Message);
             }
         }
-
-
-        [FormField(LabelResource: RuntimeCoreResources.Names.Common_IsPublic, FieldType: FieldTypes.Bool, ResourceType: typeof(RuntimeCoreResources))]
-        public bool IsPublic { get; set; }
-        public EntityHeader OwnerOrganization { get; set; }
-        public EntityHeader OwnerUser { get; set; }
 
         public VerifierSummary CreateSummary()
         {

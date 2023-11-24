@@ -98,7 +98,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             _pemBus.Setup(pmb => pmb.Instance).Returns(new Deployment.Admin.Models.DeploymentInstance()
             {
                 Id = "231228217F754DEFAA2F3F364E101D26",
-                Host = new LagoVista.Core.Models.EntityHeader<Deployment.Admin.Models.DeploymentHost>()
+                PrimaryHost = new LagoVista.Core.Models.EntityHeader<Deployment.Admin.Models.DeploymentHost>()
                 {
                     Id = "0952B411513346EDBF553EA8150C87C2"
                 }

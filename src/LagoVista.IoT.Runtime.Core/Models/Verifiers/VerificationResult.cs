@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
 {
-    public class VerificationResults : INoSQLEntity, IIDEntity, INamedEntity
+    public class VerificationResults : EntityBase
     {
         public VerificationResults(EntityHeader component, VerifierTypes type)
         {
@@ -20,9 +20,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
             Name = $"Verifier Result: {DateTime.UtcNow.ToJSONString()}";
         }
 
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
+   
         public string DateStamp { get; set; }
         public EntityHeader RequestedBy { get; set; }
 
@@ -33,11 +31,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public double ExecutionTimeMS { get; set; }
         public bool Success { get; set; }
         public List<string> ErrorMessages { get; set; }
-        public ObservableCollection<VerificationResult> Results {get; set;}
-        public string DatabaseName { get; set; }
-        public string EntityType { get; set; }
-        public string Name { get; set; }
-    }
+        public ObservableCollection<VerificationResult> Results { get; set; }
+     }
 
     public class VerificationResult
     {

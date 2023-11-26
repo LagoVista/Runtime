@@ -44,7 +44,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     SolutionVersion = PEMBus.Instance.Solution.Value.Version,
                     RuntimeVersion = PEMBus.RuntimeVersion,
                     PayloadType = MessagePayloadTypes.Binary,
-                    BinaryPayload = buffer,                    
+                    BinaryPayload = buffer,
                     CreationTimeStamp = startTimeStamp.ToJSONString()
                 };
 
@@ -267,7 +267,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             var deviceId = parts[3];
 
-            var device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId); 
+            var device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
             if (device == null)
             {
                 var errMsg = $"Could not find device with device id {deviceId}.";
@@ -364,47 +364,52 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 if (device.Relays.Count == 0)
                 {
-                    for(var idx = 0; idx < 8; idx++)
+                    for (var idx = 0; idx < 8; idx++)
                     {
                         device.Relays.Add(new Relay()
                         {
                             Index = idx,
                             CurrentState = EntityHeader<RelayStates>.Create(RelayStates.Unknown),
+                            DesiredState = EntityHeader<RelayStates>.Create(RelayStates.Unknown),
                             LastUpdated = DateTime.UtcNow.ToJSONString(),
                             Name = $"Relay {idx + 1}"
                         });
                     }
+                }
 
-                    for(var idx = 0; idx < 8; ++idx)
+                for (var idx = 0; idx < 8; ++idx)
+                {
+                    if (device.Relays[idx].DesiredState == null)
+                        device.Relays[idx].DesiredState = EntityHeader<RelayStates>.Create(RelayStates.Unknown);
+
+                    var state = RelayStates.Unknown;
+                    if (values[idx] == "1")
+                        state = RelayStates.On;
+                    else if (values[idx] == "0")
+                        state = RelayStates.Off;
+
+
+                    if (device.Relays[idx].CurrentState.Value != state)
                     {
-                        var state = RelayStates.Unknown;
-                        if (values[idx] == "1")
-                            state = RelayStates.On;
-                        else if(values[idx] == "0")
-                            state = RelayStates.Off;
-                    
-                    
-                        if(device.Relays[idx].CurrentState.Value != state)
-                        {
-                            device.Relays[idx].CurrentState = EntityHeader<RelayStates>.Create(state);
-                            device.Relays[idx].LastUpdated = DateTime.UtcNow.ToJSONString();
-                        }
+                        device.Relays[idx].CurrentState = EntityHeader<RelayStates>.Create(state);
+                        device.Relays[idx].LastUpdated = DateTime.UtcNow.ToJSONString();
                     }
                 }
+
             }
             else if (sysMessageType == "iovalues")
             {
                 var values = payload.Split(',');
                 if (values.Length != 16)
-                    throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of {values.Length} items.");                
+                    throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of {values.Length} items.");
 
                 for (int idx = 0; idx < 8; ++idx)
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
                         details += $" ADC {idx} has value {values[idx + 8]}";
-                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && 
-                                                                   sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC && 
+                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null &&
+                                                                   sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC &&
                                                                    sns.PortIndex == idx).FirstOrDefault();
                         if (sensor != null)
                         {
@@ -415,11 +420,15 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         {
                             sensor = new Sensor()
                             {
-                                 PortIndex = idx,
-                                 Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),
-                                 Value = values[idx + 8],
-                                 LastUpdated = DateTime.UtcNow.ToJSONString()
+                                PortIndex = idx,
+                                Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),
+                                Value = values[idx + 8],
+                                LastUpdated = DateTime.UtcNow.ToJSONString()
                             };
+
+                            sensor.Name = $"{sensor.Technology.Text} - {sensor.PortIndexSelection.Text}";
+                            sensor.Key = sensor.Name.Replace(" ", "").Replace("-", "").Replace("/", "").ToLower();
+
                             device.SensorCollection.Add(sensor);
                         }
                     }
@@ -430,8 +439,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
                         details += $" IO {idx} has value {values[idx]}";
-                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null && 
-                                                                    sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO && 
+                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null &&
+                                                                    sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO &&
                                                                     sns.PortIndex == idx).FirstOrDefault();
                         if (sensor != null)
                         {
@@ -447,6 +456,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 Value = values[idx],
                                 LastUpdated = DateTime.UtcNow.ToJSONString()
                             };
+
+                            sensor.Name = $"{sensor.Technology.Text} - {sensor.PortIndexSelection.Text}";
+                            sensor.Key = sensor.Name.Replace(" ", "").Replace("-", "").Replace("/", "").ToLower();
+
                             device.SensorCollection.Add(sensor);
                         }
                     }
@@ -585,7 +598,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             {
                                 device.IPAddress = value;
                             }
-                        }                        
+                        }
                     }
                 }
 

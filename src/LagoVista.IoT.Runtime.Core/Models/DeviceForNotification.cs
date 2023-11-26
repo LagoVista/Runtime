@@ -28,6 +28,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public IEnumerable<DeviceTwinDetails> DeviceTwinDetails { get; set; }
 
         public IEnumerable<Sensor> SensorCollection {get; set;}
+        public IEnumerable<Relay> Relays { get; set; }
 
         public static DeviceForNotification FromDevice(LagoVista.IoT.DeviceManagement.Core.Models.Device device)
         {
@@ -51,6 +52,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 Notes = device.Notes,
                 LastContact = device.LastContact,
                 HasGeoFix = device.HasGeoFix,
+                Relays = device.Relays,
                 SensorCollection = device.SensorCollection
             };
         }

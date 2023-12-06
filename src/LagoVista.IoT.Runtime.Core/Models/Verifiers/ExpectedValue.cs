@@ -6,6 +6,7 @@ using System.Text;
 
 namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
 {
+    
     public class ExpectedValue 
     {
         public string Key { get; set; }

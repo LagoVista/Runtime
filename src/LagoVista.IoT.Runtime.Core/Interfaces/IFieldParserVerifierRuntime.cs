@@ -7,6 +7,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
 {
     public interface IFieldParserVerifierRuntime
     {
-        Task<VerificationResults> VerifyAsync(VerificationRequest<DeviceMessageDefinitionField> request, EntityHeader org, EntityHeader user);
+        Task<VerificationResults> VerifyAsync(VerificationRequest<DeviceField> request, EntityHeader org, EntityHeader user);
     }
 }

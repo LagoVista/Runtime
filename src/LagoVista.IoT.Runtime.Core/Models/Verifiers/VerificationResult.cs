@@ -36,6 +36,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
 
     public class VerificationResult
     {
+        public string Field { get; set; }
         public string Key { get; set; }
         public string Expected { get; set; }
         public string Actual { get; set; }

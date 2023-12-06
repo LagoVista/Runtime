@@ -135,8 +135,29 @@
   <data name="Common_Name" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="ExpectedValue_Field" xml:space="preserve">
+    <value>Field</value>
+  </data>
+  <data name="ExpectedValue_Field_Select" xml:space="preserve">
+    <value>-select field-</value>
+  </data>
+  <data name="ExpectedValue_Help" xml:space="preserve">
+    <value>Expected Value are what the parser should fine when it extracts the values out of the message.</value>
+  </data>
+  <data name="ExpectedValue_Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="ExpectedValue_Title" xml:space="preserve">
+    <value>Expected Value</value>
+  </data>
+  <data name="ExpectedValue_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="Verifiers_Title" xml:space="preserve">
+    <value>Verifiers</value>
   </data>
   <data name="VerifierType_NotSpecified" xml:space="preserve">
     <value>Not Specified</value>

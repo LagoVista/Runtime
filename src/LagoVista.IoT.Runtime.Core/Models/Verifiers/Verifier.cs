@@ -34,10 +34,10 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         Text
     }
 
-    [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifier_Title, RuntimeCoreResources.Names.Verifier_Help, 
+    [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifier_Title, RuntimeCoreResources.Names.Verifier_Help,
         RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.SimpleModel, typeof(RuntimeCoreResources),
         GetUrl: "/api/verifier/{id}", SaveUrl: "/api/verifier", DeleteUrl: "/api/verifier/{id}", FactoryUrl: "/api/verifier/factory/{type}")]
-    public class Verifier : IoTModelBase, IVerifier, IFormDescriptor, IFormConditionalFields
+    public class Verifier : IoTModelBase, IVerifier, IFormDescriptor, IFormConditionalFields, IFormAdditionalActions
     {
         public const string InputType_Binary = "binary";
         public const string InputType_Text = "text";
@@ -46,7 +46,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public const string VerifierType_MessageFieldParser = "messagefieldparser";
         public const string VerifierType_MessageParser = "message";
         public const string VerifierType_Planner = "planner";
-
         public Verifier()
         {
             Headers = new ObservableCollection<Header>();
@@ -69,7 +68,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString, FieldType: FieldTypes.Text, HelpResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString_Help, ResourceType: typeof(RuntimeCoreResources))]
         public String PathAndQueryString { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Topic, FieldType: FieldTypes.Text,  ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Topic, FieldType: FieldTypes.Text, ResourceType: typeof(RuntimeCoreResources))]
         public String Topic { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Component, FieldType: FieldTypes.EntityHeaderPicker, IsRequired: true, ResourceType: typeof(RuntimeCoreResources))]
@@ -84,35 +83,35 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.Text, ResourceType: typeof(RuntimeCoreResources))]
         public string ExpectedOutput { get; set; }
 
-        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.ChildListInline, FactoryUrl: "/api/verifier/expectedoutput/factory", ResourceType: typeof(RuntimeCoreResources))]
+        [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_ExpectedOutput, FieldType: FieldTypes.ChildList, ChildListDisplayMember: nameof(ExpectedValue.Key), FactoryUrl: "/api/verifier/expectedoutput/factory", ResourceType: typeof(RuntimeCoreResources))]
         public ObservableCollection<ExpectedValue> ExpectedOutputs { get; set; }
 
         [CustomValidator]
         public void Validate(ValidationResult result, Actions action)
         {
-            switch(VerifierType.Value)
+            switch (VerifierType.Value)
             {
                 case VerifierTypes.Planner:
-                    
+
                     break;
                 case VerifierTypes.NotSpecified:
                     result.Errors.Add(new ErrorMessage() { Message = "Verifier Type Not Specified." });
                     break;
                 case VerifierTypes.MessageParser:
-                    if(String.IsNullOrEmpty(Input) && String.IsNullOrEmpty(PathAndQueryString) && String.IsNullOrEmpty(Topic) && Headers.Count == 0)
+                    if (String.IsNullOrEmpty(Input) && String.IsNullOrEmpty(PathAndQueryString) && String.IsNullOrEmpty(Topic) && Headers.Count == 0)
                     {
                         result.Errors.Add(new ErrorMessage() { Message = "Must Supply at a minimum an Input, Path/Query String, Topic or Header." });
                     }
 
-                    if(ExpectedOutputs.Count == 0)
+                    if (ExpectedOutputs.Count == 0)
                     {
                         //TODO: Add translation and error code
                         result.Errors.Add(new ErrorMessage() { Message = "Must Supply at least one Expected Output." });
                     }
 
-                    foreach(var expectedOutput in ExpectedOutputs)
+                    foreach (var expectedOutput in ExpectedOutputs)
                     {
-                        if(String.IsNullOrEmpty(expectedOutput.Key))
+                        if (String.IsNullOrEmpty(expectedOutput.Key))
                         {
                             result.Errors.Add(new ErrorMessage() { Message = "Key is Required for All Specified Expected Outputs, please fix or remove any incomplete expected values." });
                         }
@@ -149,9 +148,9 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
                         result.Errors.Add(new ErrorMessage() { Message = "Expected Output is a Required Field." });
                     }
                     break;
-            }            
+            }
         }
-       
+
 
         public byte[] GetBinaryPayload()
         {
@@ -245,6 +244,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
             {
                 nameof(Name),
                 nameof(Key),
+                nameof(VerifierType),
                 nameof(PopulateFromSampleMessageAction),
                 nameof(InputType),
                 nameof(PathAndQueryString),
@@ -252,7 +252,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
                 nameof(Input),
                 nameof(Headers),
                 nameof(ExpectedOutput),
-                nameof(ExpectedOutputs)
             };
         }
 
@@ -260,27 +259,46 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         {
             return new FormConditionals()
             {
-                ConditionalFields = new List<string>() { nameof(ExpectedOutput), nameof(ExpectedOutputs) },
+                ConditionalFields = new List<string>() { nameof(ExpectedOutput), nameof(ExpectedOutputs), nameof(VerifierType), nameof(PopulateFromSampleMessageAction) },
                 Conditionals = new List<FormConditional>()
                  {
                      new FormConditional()
                      {
                          Field = nameof(VerifierType),
                          Value = Verifier.VerifierType_MessageFieldParser,
-                         VisibleFields = new List<string>() {nameof(ExpectedOutput)}
-                            
+                         VisibleFields = new List<string>() {nameof(ExpectedOutput)},
+                         RequiredFields = new List<string>() {nameof(ExpectedOutput)}
+
                      },
                      new FormConditional()
                      {
                          Field = nameof(VerifierType),
                          Value = Verifier.VerifierType_MessageParser,
-                         VisibleFields = new List<string>() {nameof(ExpectedOutputs)}
+                         VisibleFields = new List<string>() {nameof(ExpectedOutputs), nameof(PopulateFromSampleMessageAction)},
+                         RequiredFields = new List<string>() {nameof(ExpectedOutputs)}
                      },
                  }
             };
         }
+
+        public List<FormAdditionalAction> GetAdditionalActions()
+        {
+            return new List<FormAdditionalAction>()
+            {
+                new FormAdditionalAction()
+                {
+                     ForCreate = false,
+                     Key = "run",
+                     Title = "Run",
+                     Icon = "fa fa-play"
+                }
+            };
+        }
     }
 
+    [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifiers_Title, RuntimeCoreResources.Names.Verifier_Help,
+        RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.Summary, typeof(RuntimeCoreResources),
+        GetUrl: "/api/verifier/{id}", SaveUrl: "/api/verifier", DeleteUrl: "/api/verifier/{id}", FactoryUrl: "/api/verifier/factory/{type}")]
     public class VerifierSummary : LagoVista.Core.Models.SummaryData
     {
 

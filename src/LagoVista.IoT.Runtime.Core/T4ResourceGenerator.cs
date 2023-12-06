@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿/*12/6/2023 5:03:41 PM*/
+using System.Globalization;
 using System.Reflection;
 
 //Resources:RuntimeCoreResources:Common_Description
@@ -71,6 +72,24 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 //Resources:RuntimeCoreResources:Common_Name
 
 		public static string Common_Name { get { return GetResourceString("Common_Name"); } }
+//Resources:RuntimeCoreResources:ExpectedValue_Field
+
+		public static string ExpectedValue_Field { get { return GetResourceString("ExpectedValue_Field"); } }
+//Resources:RuntimeCoreResources:ExpectedValue_Field_Select
+
+		public static string ExpectedValue_Field_Select { get { return GetResourceString("ExpectedValue_Field_Select"); } }
+//Resources:RuntimeCoreResources:ExpectedValue_Help
+
+		public static string ExpectedValue_Help { get { return GetResourceString("ExpectedValue_Help"); } }
+//Resources:RuntimeCoreResources:ExpectedValue_Key
+
+		public static string ExpectedValue_Key { get { return GetResourceString("ExpectedValue_Key"); } }
+//Resources:RuntimeCoreResources:ExpectedValue_Title
+
+		public static string ExpectedValue_Title { get { return GetResourceString("ExpectedValue_Title"); } }
+//Resources:RuntimeCoreResources:ExpectedValue_Value
+
+		public static string ExpectedValue_Value { get { return GetResourceString("ExpectedValue_Value"); } }
 //Resources:RuntimeCoreResources:Status
 
 		public static string Status { get { return GetResourceString("Status"); } }
@@ -187,6 +206,9 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 //Resources:RuntimeCoreResources:Verifier_VerifierType_Planner
 
 		public static string Verifier_VerifierType_Planner { get { return GetResourceString("Verifier_VerifierType_Planner"); } }
+//Resources:RuntimeCoreResources:Verifiers_Title
+
+		public static string Verifiers_Title { get { return GetResourceString("Verifiers_Title"); } }
 //Resources:RuntimeCoreResources:VerifierType_NotSpecified
 
 		public static string VerifierType_NotSpecified { get { return GetResourceString("VerifierType_NotSpecified"); } }
@@ -199,6 +221,12 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 			public const string Common_Key_Help = "Common_Key_Help";
 			public const string Common_Key_Validation = "Common_Key_Validation";
 			public const string Common_Name = "Common_Name";
+			public const string ExpectedValue_Field = "ExpectedValue_Field";
+			public const string ExpectedValue_Field_Select = "ExpectedValue_Field_Select";
+			public const string ExpectedValue_Help = "ExpectedValue_Help";
+			public const string ExpectedValue_Key = "ExpectedValue_Key";
+			public const string ExpectedValue_Title = "ExpectedValue_Title";
+			public const string ExpectedValue_Value = "ExpectedValue_Value";
 			public const string Status = "Status";
 			public const string Verifier_Aborted = "Verifier_Aborted";
 			public const string Verifier_Actual = "Verifier_Actual";
@@ -235,7 +263,9 @@ namespace LagoVista.IoT.Runtime.Core.Resources
 			public const string Verifier_VerifierType_MessageFieldParser = "Verifier_VerifierType_MessageFieldParser";
 			public const string Verifier_VerifierType_MessageParser = "Verifier_VerifierType_MessageParser";
 			public const string Verifier_VerifierType_Planner = "Verifier_VerifierType_Planner";
+			public const string Verifiers_Title = "Verifiers_Title";
 			public const string VerifierType_NotSpecified = "VerifierType_NotSpecified";
 		}
 	}
 }
+

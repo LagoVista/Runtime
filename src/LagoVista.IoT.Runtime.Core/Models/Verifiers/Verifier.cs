@@ -35,7 +35,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
     }
 
     [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifier_Title, RuntimeCoreResources.Names.Verifier_Help,
-        RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.SimpleModel, typeof(RuntimeCoreResources),
+        RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.SimpleModel, typeof(RuntimeCoreResources), Icon: "icon-ae-coding-proaction",
         GetUrl: "/api/verifier/{id}", SaveUrl: "/api/verifier", DeleteUrl: "/api/verifier/{id}", FactoryUrl: "/api/verifier/factory/{type}")]
     public class Verifier : IoTModelBase, IVerifier, IFormDescriptor, IFormConditionalFields, IFormAdditionalActions
     {
@@ -46,6 +46,8 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public const string VerifierType_MessageFieldParser = "messagefieldparser";
         public const string VerifierType_MessageParser = "message";
         public const string VerifierType_Planner = "planner";
+
+
         public Verifier()
         {
             Headers = new ObservableCollection<Header>();
@@ -234,6 +236,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
                 Name = Name,
                 IsPublic = IsPublic,
                 Description = Description,
+                Icon = "icon-ae-coding-proaction",
                 Key = Key
             };
         }
@@ -297,7 +300,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
     }
 
     [EntityDescription(VerifierDomain.Verifiers, RuntimeCoreResources.Names.Verifiers_Title, RuntimeCoreResources.Names.Verifier_Help,
-        RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.Summary, typeof(RuntimeCoreResources),
+        RuntimeCoreResources.Names.Verifier_Description, EntityDescriptionAttribute.EntityTypes.Summary, typeof(RuntimeCoreResources), Icon: "icon-ae-coding-proaction",
         GetUrl: "/api/verifier/{id}", SaveUrl: "/api/verifier", DeleteUrl: "/api/verifier/{id}", FactoryUrl: "/api/verifier/factory/{type}")]
     public class VerifierSummary : LagoVista.Core.Models.SummaryData
     {

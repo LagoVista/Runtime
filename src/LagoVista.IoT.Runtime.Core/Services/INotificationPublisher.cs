@@ -31,7 +31,8 @@ namespace LagoVista.IoT.Runtime.Core.Services
 
         Customer,
         ToDo,
-        WorkTask
+        WorkTask,
+        Inbox
     }
 
     public enum NotificationVerbosity

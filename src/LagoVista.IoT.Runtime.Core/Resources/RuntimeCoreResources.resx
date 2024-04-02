@@ -182,6 +182,9 @@
     <value>Expected:</value>
   </data>
   <data name="Verifier_ExpectedOutput" xml:space="preserve">
+    <value>Expected Output</value>
+  </data>
+  <data name="Verifier_ExpectedOutputs" xml:space="preserve">
     <value>Expected Outputs</value>
   </data>
   <data name="Verifier_Expected_NotMatch_Actual" xml:space="preserve">

@@ -47,7 +47,6 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public const string VerifierType_MessageParser = "message";
         public const string VerifierType_Planner = "planner";
 
-
         public Verifier()
         {
             Headers = new ObservableCollection<Header>();

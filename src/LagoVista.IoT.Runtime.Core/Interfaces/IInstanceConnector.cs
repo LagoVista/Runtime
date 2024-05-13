@@ -60,6 +60,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<string>> CreateServiceTicketAsync(string ticketTemplateId, string repoId, string deviceId);
         Task<InvokeResult<string>> CreateServiceTicketAsync(CreateServiceTicketRequest ticketRequest);
         Task<InvokeResult> HandleDeviceExceptionAsync(DeviceException exception);
+        Task<InvokeResult> SendDeviceNotification(RaisedDeviceNotification notification);
         Task<InvokeResult> ClearDeviceExceptionAsync(DeviceException exception);
 
         Task<InvokeResult<InstanceService>> AllocatedServiceHostAsync(HostTypes hostType);

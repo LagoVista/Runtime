@@ -2,6 +2,7 @@
 using LagoVista.Core.Models;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
+using LagoVista.IoT.Deployment.Models;
 using LagoVista.IoT.DeviceManagement.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
@@ -354,6 +355,19 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(exception);
                 }
+            }
+            else if(sysMessageType == "notification")
+            {
+                var deviceNotification = new RaisedDeviceNotification()
+                {
+                    DeviceId = device.DeviceId,
+                    DeviceRepositoryId = device.DeviceRepository.Id,
+                    Id = Guid.NewGuid().ToId(),
+                    NotificationKey = parts[5],
+                    TestMode = false                                          
+                };
+
+                await PEMBus.InstanceConnector.SendDeviceNotification(deviceNotification);
             }
             else if (sysMessageType == "relays")
             {

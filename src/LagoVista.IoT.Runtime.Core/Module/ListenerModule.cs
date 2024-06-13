@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Module
@@ -275,8 +276,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 PEMBus.InstanceLogger.AddError("ListenerModule__HandleSystemMessage", errMsg);
                 return InvokeResult<PipelineExecutionMessage>.FromError(errMsg);
             }
-
-            device.LastContact = DateTime.UtcNow.ToJSONString();
+            
 
             var sysMessageType = parts[4];
             var details = $"payload: {payload} - ";
@@ -348,13 +348,15 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 if (action == "raise")
                 {
-
                     await PEMBus.InstanceConnector.HandleDeviceExceptionAsync(exception);
                 }
                 else if (action == "clear")
                 {
                     await PEMBus.InstanceConnector.ClearDeviceExceptionAsync(exception);
                 }
+
+                // reload since the server will have updated the device.
+                device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
             }
             else if(sysMessageType == "notification")
             {
@@ -368,6 +370,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 };
 
                 await PEMBus.InstanceConnector.SendDeviceNotification(deviceNotification);
+                // reload since the server will have updated the device.
+                device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
             }
             else if (sysMessageType == "relays")
             {
@@ -409,7 +413,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         device.Relays[idx].LastUpdated = DateTime.UtcNow.ToJSONString();
                     }
                 }
-
             }
             else if (sysMessageType == "iovalues")
             {
@@ -442,6 +445,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                             sensor.Name = $"{sensor.Technology.Text} - {sensor.PortIndexSelection.Text}";
                             sensor.Key = sensor.Name.Replace(" ", "").Replace("-", "").Replace("/", "").ToLower();
+
+                            if (double.TryParse(sensor.Value, out double dbl))
+                                sensor.ValueType = EntityHeader<SensorValueType>.Create(SensorValueType.Number);
+                            
 
                             device.SensorCollection.Add(sensor);
                         }
@@ -480,6 +487,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
 
                 await PEMBus.SensorEvaluator.EvaluateAsync(device);
+                // It's possible that device was updated on the server, if so, we want to reload it.
+                var sensorCollection = device.SensorCollection;
+                device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
+                device.SensorCollection = sensorCollection;
+
             }
             else if (sysMessageType == "geo")
             {
@@ -631,6 +643,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             }
 
+            device.LastContact = DateTime.UtcNow.ToJSONString();
             await PEMBus.DeviceStorage.UpdateDeviceAsync(device);
 
             var json = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(device), _camelCaseSettings);

@@ -30,6 +30,8 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public IEnumerable<Sensor> SensorCollection {get; set;}
         public IEnumerable<Relay> Relays { get; set; }
 
+        public IEnumerable<DeviceError> Errors { get; set; }
+
         public static DeviceForNotification FromDevice(LagoVista.IoT.DeviceManagement.Core.Models.Device device)
         {
             return new DeviceForNotification()
@@ -50,6 +52,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 Status = device.Status,
                 States = device.States,
                 Notes = device.Notes,
+                Errors = device.Errors,
                 LastContact = device.LastContact,
                 HasGeoFix = device.HasGeoFix,
                 Relays = device.Relays,

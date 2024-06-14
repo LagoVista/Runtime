@@ -277,7 +277,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 return InvokeResult<PipelineExecutionMessage>.FromError(errMsg);
             }
             
-
             var sysMessageType = parts[4];
             var details = $"payload: {payload} - ";
 
@@ -639,8 +638,6 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 };
 
                 await PEMBus.DeviceConnectionEvent.AddDeviceEventConnectionEvent(connectionEvent);
-
-
             }
 
             device.LastContact = DateTime.UtcNow.ToJSONString();

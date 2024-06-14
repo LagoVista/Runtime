@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
-    public interface IDeviceWatchdog :  IConnectedDevicesService
+    public interface IDeviceWatchdog
     {
         /// <summary>
         /// Reset the watch dog timer
@@ -40,6 +40,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// </summary>
         /// <param name="deviceId"></param>
         /// <returns></returns>
-        Task<bool> IsDeviceTimedOutAsync(string deviceId);
+        Task<bool> IsDeviceTimedOutAsync(string uniqueDeviceId);
     }
 }

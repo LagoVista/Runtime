@@ -1,5 +1,6 @@
 ﻿using LagoVista.Core;
 using LagoVista.Core.Models;
+using LagoVista.Core.Rpc.Messages;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Deployment.Models;
@@ -640,6 +641,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 await PEMBus.DeviceConnectionEvent.AddDeviceEventConnectionEvent(connectionEvent);
             }
 
+            await PEMBus.DeviceWatchdog.DeviceUpdatedAsync(device);
             device.LastContact = DateTime.UtcNow.ToJSONString();
             await PEMBus.DeviceStorage.UpdateDeviceAsync(device);
 
@@ -688,6 +690,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
             }
+
+            
 
             return InvokeResult<PipelineExecutionMessage>.Create(null);
 

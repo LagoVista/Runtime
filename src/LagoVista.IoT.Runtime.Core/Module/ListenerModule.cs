@@ -369,7 +369,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     TestMode = false                                          
                 };
 
-                await PEMBus.InstanceConnector.SendDeviceNotification(deviceNotification);
+                await PEMBus.InstanceConnector.SendDeviceNotificationAsync(deviceNotification);
                 // reload since the server will have updated the device.
                 device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
             }
@@ -641,7 +641,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 await PEMBus.DeviceConnectionEvent.AddDeviceEventConnectionEvent(connectionEvent);
             }
 
-            await PEMBus.DeviceWatchdog.DeviceUpdatedAsync(device);
+            device = await PEMBus.DeviceWatchdog.DeviceUpdatedAsync(device);
             device.LastContact = DateTime.UtcNow.ToJSONString();
             await PEMBus.DeviceStorage.UpdateDeviceAsync(device);
 

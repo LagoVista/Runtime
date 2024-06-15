@@ -5,6 +5,7 @@ using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Deployment.Models;
 using LagoVista.IoT.Deployment.Models.Settings;
+using LagoVista.IoT.DeviceManagement.Core.Models;
 using LagoVista.IoT.DeviceManagement.Models;
 using System.Threading.Tasks;
 
@@ -60,8 +61,11 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<string>> CreateServiceTicketAsync(string ticketTemplateId, string repoId, string deviceId);
         Task<InvokeResult<string>> CreateServiceTicketAsync(CreateServiceTicketRequest ticketRequest);
         Task<InvokeResult> HandleDeviceExceptionAsync(DeviceException exception);
-        Task<InvokeResult> SendDeviceNotification(RaisedDeviceNotification notification);
+        Task<InvokeResult> SendDeviceNotificationAsync(RaisedDeviceNotification notification);
         Task<InvokeResult> ClearDeviceExceptionAsync(DeviceException exception);
+
+        Task<InvokeResult<Device>> DeviceOnlineAsync(Device device);
+        Task<InvokeResult<Device>> DeviceOfflineAsync(Device device);
 
         Task<InvokeResult<InstanceService>> AllocatedServiceHostAsync(HostTypes hostType);
         Task<InvokeResult> RemoveServiceHostAsync(string id);

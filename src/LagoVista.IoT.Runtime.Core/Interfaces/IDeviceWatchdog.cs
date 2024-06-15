@@ -1,5 +1,6 @@
 ﻿using LagoVista.Core.Models.UIMetaData;
 using LagoVista.IoT.Deployment.Admin;
+using LagoVista.IoT.DeviceManagement.Core.Models;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
@@ -30,7 +31,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         /// </summary>
         /// <param name="device">device that has been updated</param>
         /// <returns></returns>
-        Task DeviceUpdatedAsync(DeviceManagement.Core.Models.Device device);
+        Task<Device> DeviceUpdatedAsync(Device device);
 
         Task UpdateAsync();
 

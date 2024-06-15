@@ -210,7 +210,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                         await UpdateDevice(message);
                         await PEMBus.PEMStorage.AddMessageAsync(message);
-                        await PEMBus.DeviceWatchdog.DeviceUpdatedAsync(message.Device);
+                        message.Device = await PEMBus.DeviceWatchdog.DeviceUpdatedAsync(message.Device);
                         await PEMBus.MessageWatchdog.MessageProcessedAsync(message.Device, message.MessageId);
 
                         //await PEMBus.Watchdog.DeviceUpdatedAsync(message.Device, message.Device.WatchdogSecondsOverride)

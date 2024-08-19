@@ -45,6 +45,7 @@ namespace LagoVista.IoT.Runtime.Core
         IMessageWatchdog MessageWatchdog { get; set; }
 
         ISensorEvaluator SensorEvaluator { get; }
+        ITransactionStorage TransactionStorage { get; set; }
 
         INotificationPublisher NotificationPublisher { get; }
 

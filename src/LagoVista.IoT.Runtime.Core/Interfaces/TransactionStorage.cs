@@ -10,6 +10,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
     public interface ITransactionStorage
     {
         void AddSetting(ConnectionSettings settings);
-        Task AddTransactionAsync(DeviceTransaction transaction);
+        Task<double> AddTransactionAsync(DeviceTransaction transaction);
     }
 }

@@ -26,6 +26,7 @@ namespace LagoVista.IoT.Runtime.Core.Models
         public IEnumerable<AttributeValue> Properties { get; set; }
         public IEnumerable<DeviceNote> Notes { get; set; }
         public IEnumerable<DeviceTwinDetails> DeviceTwinDetails { get; set; }
+        public Dictionary<string, decimal> Balances { get; set; } = new Dictionary<string, decimal>();
 
         public IEnumerable<Sensor> SensorCollection {get; set;}
         public IEnumerable<Relay> Relays { get; set; }
@@ -56,7 +57,8 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 LastContact = device.LastContact,
                 HasGeoFix = device.HasGeoFix,
                 Relays = device.Relays,
-                SensorCollection = device.SensorCollection
+                SensorCollection = device.SensorCollection,
+                Balances = device.Balances
             };
         }
     }

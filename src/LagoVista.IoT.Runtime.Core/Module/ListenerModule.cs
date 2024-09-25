@@ -624,6 +624,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             {
                                 device.IPAddress = value;
                             }
+                            else if (key == "sim")
+                                device.SIM = value;
                         }
                     }
                 }

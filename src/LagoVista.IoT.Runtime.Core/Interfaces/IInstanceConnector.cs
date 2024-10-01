@@ -64,7 +64,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult> SendDeviceNotificationAsync(RaisedDeviceNotification notification);
         Task<InvokeResult> ClearDeviceExceptionAsync(DeviceException exception);
 
-        Task<InvokeResult<Device>> DeviceOnlineAsync(Device device, long secondsOffline);
+        Task<InvokeResult<Device>> DeviceOnlineAsync(Device device, string lastContact);
         Task<InvokeResult<Device>> DeviceOfflineAsync(Device device, string lastContact);
 
         Task<InvokeResult<ConnectionSettings>> GetDeviceAccountTransactionSettings();

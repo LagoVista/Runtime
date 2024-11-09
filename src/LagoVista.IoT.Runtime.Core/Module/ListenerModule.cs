@@ -372,6 +372,54 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 await PEMBus.InstanceConnector.SendDeviceNotificationAsync(deviceNotification);
                 // reload since the server will have updated the device.
                 device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
+
+
+                var deviceJSON = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(device), _camelCaseSettings);
+                var notificationNotification = new Notification()
+                {
+                    Payload = deviceJSON,
+                    Channel = EntityHeader<Channels>.Create(Channels.Device),
+                    ChannelId = device.Id,
+                    PayloadType = "Device",
+                    DateStamp = DateTime.UtcNow.ToJSONString(),
+                    MessageId = Guid.NewGuid().ToId(),
+                    Text = $"Notification:{parts[5]}",
+                    Title = "Raised Notification"
+                };
+
+                await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notificationNotification);
+
+                notificationNotification = new Notification()
+                {
+                    Payload = deviceJSON,
+                    Channel = EntityHeader<Channels>.Create(Channels.DeviceRepository),
+                    ChannelId = device.DeviceRepository.Id,
+                    PayloadType = "Device",
+                    DateStamp = DateTime.UtcNow.ToJSONString(),
+                    MessageId = Guid.NewGuid().ToId(),
+                    Text = $"Notification:{parts[5]}",
+                    Title = "Raised Notification"
+                };
+
+                await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notificationNotification);
+
+                foreach (var group in device.DeviceGroups)
+                {
+                    notificationNotification = new Notification()
+                    {
+                        Payload = deviceJSON,
+                        Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup),
+                        ChannelId = group.Id,
+                        PayloadType = "Device",
+                        DateStamp = DateTime.UtcNow.ToJSONString(),
+                        MessageId = Guid.NewGuid().ToId(),
+                        Text = $"Notification:{parts[5]}",
+                        Title = "Raised Notification"
+                    };
+
+                    await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notificationNotification);
+                }
+
             }
             else if (sysMessageType == "relays")
             {

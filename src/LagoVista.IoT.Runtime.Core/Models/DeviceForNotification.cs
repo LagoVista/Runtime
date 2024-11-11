@@ -2,6 +2,7 @@
 using LagoVista.Core.Models.Geo;
 using LagoVista.IoT.DeviceManagement.Core.Models;
 using LagoVista.IoT.DeviceManagement.Models;
+using LagoVista.UserAdmin.Models.Orgs;
 using System.Collections.Generic;
 
 namespace LagoVista.IoT.Runtime.Core.Models
@@ -33,6 +34,8 @@ namespace LagoVista.IoT.Runtime.Core.Models
 
         public IEnumerable<DeviceError> Errors { get; set; }
 
+        public OrgLocationDiagramReference DiagramReference { get; set; }
+
         public static DeviceForNotification FromDevice(LagoVista.IoT.DeviceManagement.Core.Models.Device device)
         {
             return new DeviceForNotification()
@@ -58,7 +61,8 @@ namespace LagoVista.IoT.Runtime.Core.Models
                 HasGeoFix = device.HasGeoFix,
                 Relays = device.Relays,
                 SensorCollection = device.SensorCollection,
-                Balances = device.Balances
+                Balances = device.Balances,
+                DiagramReference = device.DiagramReference,
             };
         }
     }

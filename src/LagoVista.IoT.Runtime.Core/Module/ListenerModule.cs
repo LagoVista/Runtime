@@ -5,6 +5,7 @@ using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Deployment.Models;
 using LagoVista.IoT.DeviceManagement.Models;
+using LagoVista.IoT.DeviceMessaging.Models.Cot;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
@@ -373,6 +374,13 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 // reload since the server will have updated the device.
                 device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
 
+                var deviceConfig = PEMBus.Instance.Solution.Value.DeviceConfigurations.Where(dcf => dcf.Value.Id == device.DeviceConfiguration.Id).FirstOrDefault();
+                if (deviceConfig.Value.CustomStatusType.HasValue)
+                {
+                    var stateSet = deviceConfig.Value.CustomStatusType.Value.States.FirstOrDefault(st => st.Key == parts[5]);
+                    if (stateSet != null)
+                        device.CustomStatus = EntityHeader.Create(stateSet.Key, stateSet.Key, stateSet.Name);
+                }
 
                 var deviceJSON = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(device), _camelCaseSettings);
                 var notificationNotification = new Notification()

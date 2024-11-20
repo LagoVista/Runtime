@@ -11,6 +11,7 @@ using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Services;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp.Memory;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -257,6 +258,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
         private async Task<InvokeResult<PipelineExecutionMessage>> HandleSystemMessageAsync(string path, string payload)
         {
+            var startTimeStamp = DateTime.UtcNow;
+
+            var message = new PipelineExecutionMessage()
+            {
+                SolutionVersion = PEMBus.Instance.Solution.Value.Version,
+                RuntimeVersion = PEMBus.RuntimeVersion,
+                PayloadType = MessagePayloadTypes.Binary,
+                TextPayload = payload,
+                CreationTimeStamp = startTimeStamp.ToJSONString()
+            };
+
             Metrics.MessagesProcessed++;
 
             //PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, "ListenerModule_HandleSystemMessageAsync", "Received System Message", path.ToKVP("topic"), payload.ToKVP("body"));
@@ -278,6 +290,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 PEMBus.InstanceLogger.AddError("ListenerModule__HandleSystemMessage", errMsg);
                 return InvokeResult<PipelineExecutionMessage>.FromError(errMsg);
             }
+
+            message.Device = device;
             
             var sysMessageType = parts[4];
             var details = $"payload: {payload} - ";
@@ -361,6 +375,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
             else if(sysMessageType == "notification")
             {
+                var replyTopic = $"nuviot/srvr/dvcsrvc/{device.DeviceId}/notification/{parts[5]}/ack";
+                await SendResponseAsync(message, new OutgoingMessage() { Topic = replyTopic });
+
                 var deviceNotification = new RaisedDeviceNotification()
                 {
                     DeviceId = device.DeviceId,
@@ -370,9 +387,11 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     TestMode = false                                          
                 };
 
-                await PEMBus.InstanceConnector.SendDeviceNotificationAsync(deviceNotification);
-                // reload since the server will have updated the device.
-                device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
+                var stepTimeStamp = DateTime.UtcNow;
+                
+                stepTimeStamp = DateTime.UtcNow;
+             
+                message.Instructions.Add(new PipelineExecutionInstruction(){ Name = "GetDeviceByDeviceIdAsync", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(),ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
 
                 var deviceConfig = PEMBus.Instance.Solution.Value.DeviceConfigurations.Where(dcf => dcf.Value.Id == device.DeviceConfiguration.Id).FirstOrDefault();
                 if (deviceConfig.Value.CustomStatusType.HasValue)
@@ -382,6 +401,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                         device.CustomStatus = EntityHeader.Create(stateSet.Key, stateSet.Key, stateSet.Name);
                 }
 
+                stepTimeStamp = DateTime.UtcNow;
                 var deviceJSON = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(device), _camelCaseSettings);
                 var notificationNotification = new Notification()
                 {
@@ -395,7 +415,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Title = "Raised Notification"
                 };
 
+                stepTimeStamp = DateTime.UtcNow;
                 await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notificationNotification);
+                message.Instructions.Add(new PipelineExecutionInstruction() { Name = "PublishAsync-Device", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(), ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
 
                 notificationNotification = new Notification()
                 {
@@ -409,24 +431,28 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     Title = "Raised Notification"
                 };
 
+                stepTimeStamp = DateTime.UtcNow;
                 await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notificationNotification);
+                message.Instructions.Add(new PipelineExecutionInstruction() { Name = "PublishAsync-DeviceRepo", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(), ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
 
                 foreach (var group in device.DeviceGroups)
                 {
-                    notificationNotification = new Notification()
-                    {
-                        Payload = deviceJSON,
-                        Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup),
-                        ChannelId = group.Id,
-                        PayloadType = "Device",
-                        DateStamp = DateTime.UtcNow.ToJSONString(),
-                        MessageId = Guid.NewGuid().ToId(),
-                        Text = $"Notification:{parts[5]}",
-                        Title = "Raised Notification"
-                    };
-
+                    notificationNotification = new Notification(){Payload = deviceJSON, Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup), ChannelId = group.Id, PayloadType = "Device", DateStamp = DateTime.UtcNow.ToJSONString(), MessageId = Guid.NewGuid().ToId(),Text = $"Notification:{parts[5]}",Title = "Raised Notification"};
+                    stepTimeStamp = DateTime.UtcNow;
                     await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notificationNotification);
+                    message.Instructions.Add(new PipelineExecutionInstruction() { Name = $"PublishAsync-DeviceGroup-{group.Text}", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(), ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
                 }
+
+                await PEMBus.InstanceConnector.SendDeviceNotificationAsync(deviceNotification);
+                message.Instructions.Add(new PipelineExecutionInstruction() { Name = "SendDeviceNotificationAsync", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(), ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
+
+                // reload since the server will have updated the device.
+                device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
+
+                message.MessageId = $"notification-{parts[5]}";
+                message.Status = StatusTypes.Completed;
+                message.ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds;
+                await PEMBus.PEMStorage.AddMessageAsync(message);
 
             }
             else if (sysMessageType == "relays")
@@ -748,6 +774,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notification);
             }
+
 
             
 

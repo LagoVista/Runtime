@@ -375,8 +375,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
             }
             else if(sysMessageType == "notification")
             {
-                var replyTopic = $"nuviot/srvr/dvcsrvc/{device.DeviceId}/notification/{parts[5]}/ack";
-                await SendResponseAsync(message, new OutgoingMessage() { Topic = replyTopic });
+                var replyTopic = $"nuviot/dvcsrvc/{device.DeviceId}/notification/{parts[5]}/ack";
+              
 
                 var deviceNotification = new RaisedDeviceNotification()
                 {
@@ -445,6 +445,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 await PEMBus.InstanceConnector.SendDeviceNotificationAsync(deviceNotification);
                 message.Instructions.Add(new PipelineExecutionInstruction() { Name = "SendDeviceNotificationAsync", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(), ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
+
+                await SendResponseAsync(message, new OutgoingMessage() { Topic = replyTopic, PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text), TextPayload = String.Empty });
 
                 // reload since the server will have updated the device.
                 device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);

@@ -10,7 +10,9 @@ using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.IoT.Runtime.Core.Models.Messaging;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Services;
+using LagoVista.UserAdmin.Models.Calendar;
 using Newtonsoft.Json;
+using RingCentral;
 using SixLabors.ImageSharp.Memory;
 using System;
 using System.Collections.Generic;
@@ -373,10 +375,10 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 // reload since the server will have updated the device.
                 device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
             }
-            else if(sysMessageType == "notification")
+            else if (sysMessageType == "notification")
             {
                 var replyTopic = $"nuviot/dvcsrvc/{device.DeviceId}/notification/{parts[5]}/ack";
-              
+
 
                 var deviceNotification = new RaisedDeviceNotification()
                 {
@@ -384,14 +386,14 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     DeviceRepositoryId = device.DeviceRepository.Id,
                     Id = Guid.NewGuid().ToId(),
                     NotificationKey = parts[5],
-                    TestMode = false                                          
+                    TestMode = false
                 };
 
                 var stepTimeStamp = DateTime.UtcNow;
-                
+
                 stepTimeStamp = DateTime.UtcNow;
-             
-                message.Instructions.Add(new PipelineExecutionInstruction(){ Name = "GetDeviceByDeviceIdAsync", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(),ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
+
+                message.Instructions.Add(new PipelineExecutionInstruction() { Name = "GetDeviceByDeviceIdAsync", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(), ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
 
                 var deviceConfig = PEMBus.Instance.Solution.Value.DeviceConfigurations.Where(dcf => dcf.Value.Id == device.DeviceConfiguration.Id).FirstOrDefault();
                 if (deviceConfig.Value.CustomStatusType.HasValue)
@@ -437,7 +439,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                 foreach (var group in device.DeviceGroups)
                 {
-                    notificationNotification = new Notification(){Payload = deviceJSON, Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup), ChannelId = group.Id, PayloadType = "Device", DateStamp = DateTime.UtcNow.ToJSONString(), MessageId = Guid.NewGuid().ToId(),Text = $"Notification:{parts[5]}",Title = "Raised Notification"};
+                    notificationNotification = new Notification() { Payload = deviceJSON, Channel = EntityHeader<Channels>.Create(Channels.DeviceGroup), ChannelId = group.Id, PayloadType = "Device", DateStamp = DateTime.UtcNow.ToJSONString(), MessageId = Guid.NewGuid().ToId(), Text = $"Notification:{parts[5]}", Title = "Raised Notification" };
                     stepTimeStamp = DateTime.UtcNow;
                     await PEMBus.NotificationPublisher.PublishAsync(Targets.WebSocket, notificationNotification);
                     message.Instructions.Add(new PipelineExecutionInstruction() { Name = $"PublishAsync-DeviceGroup-{group.Text}", Type = "Notification", StartDateStamp = stepTimeStamp.ToJSONString(), ExecutionTimeMS = (DateTime.UtcNow - stepTimeStamp).TotalMilliseconds });
@@ -532,7 +534,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
                             if (double.TryParse(sensor.Value, out double dbl))
                                 sensor.ValueType = EntityHeader<SensorValueType>.Create(SensorValueType.Number);
-                            
+
 
                             device.SensorCollection.Add(sensor);
                         }
@@ -634,6 +636,43 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     };
                 }
             }
+            else if (sysMessageType == "heartbeat")
+            {
+                var payloadSegements = payload.Split(',');
+                foreach (var segement in payloadSegements)
+                {
+                    var fieldParts = segement.Split('=');
+                    if (fieldParts.Length == 2)
+                    {
+                        var key = fieldParts[0];
+                        var value = fieldParts[1];
+
+                        switch(key)
+                        {
+                            case "lat":
+                                if (device.GeoLocation == null)
+                                    device.GeoLocation = new LagoVista.Core.Models.Geo.GeoLocation();
+
+                                device.GeoLocation.Latitude = Convert.ToDouble(value);
+                                device.GeoLocation.LastUpdated = DateTime.UtcNow.ToJSONString();
+                                break;
+                            case "lon":
+                                if (device.GeoLocation == null)
+                                    device.GeoLocation = new LagoVista.Core.Models.Geo.GeoLocation();
+
+                                device.GeoLocation.Longitude = Convert.ToDouble(value);
+                                device.GeoLocation.LastUpdated = DateTime.UtcNow.ToJSONString();
+                                break;
+                            default:
+                                if (device.PropertyBag.ContainsKey(key))
+                                    device.PropertyBag[key] = value;
+                                else
+                                    device.PropertyBag.Add(key, value);
+                                break;
+                        }
+                    }
+                }
+            }
             else if (sysMessageType == "online")
             {
                 device.ConnectionTimeStamp = DateTime.UtcNow.ToJSONString();
@@ -686,6 +725,8 @@ namespace LagoVista.IoT.Runtime.Core.Module
                             var key = fieldParts[0];
                             var value = fieldParts[1];
 
+
+
                             if (key == "firmwareSku")
                             {
                                 device.ActualFirmware = value;
@@ -709,7 +750,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 device.IPAddress = value;
                             }
                             else if (key == "sim")
+                            {
                                 device.SIM = value;
+                            }
                         }
                     }
                 }

@@ -18,6 +18,7 @@ using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Pipeline.Admin.Models;
 using LagoVista.Core.Exceptions;
 using Newtonsoft.Json.Serialization;
+using LagoVista.Core.Interfaces;
 
 namespace LagoVista.IoT.Runtime.Core.Module
 {
@@ -120,7 +121,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             message.Device.Status = EntityHeader<DeviceStates>.Create(DeviceStates.Ready);
             await PEMBus.DeviceStorage.UpdateDeviceAsync(message.Device);
 
-            var json = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(message.Device), _camelCaseSettings);
+            var json = JsonConvert.SerializeObject(DeviceForNotification.FromDevice(message.Device), _camelCaseSettings);
             var notification = new Notification()
             {
                 Payload = json,
@@ -501,7 +502,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 Payload = JsonConvert.SerializeObject(stateChangeNotification),
                 PayloadType = typeof(StateChangeNotification).Name,
-                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule),
+                Channel = EntityHeader<Channels>.Create(Channels.PipelineModule),
                 ChannelId = Id,
                 Text = $"Status Change from {stateChangeNotification.OldState.Text} to {stateChangeNotification.NewState.Text}"
             };
@@ -516,7 +517,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             try
             {
-                SendNotification(Runtime.Core.Services.Targets.WebSocket, msg);
+                SendNotification(Targets.WebSocket, msg);
                 LogMessage(this.GetType().Name, msg);
                 await StateChanged(newState);
             }
@@ -538,7 +539,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 Payload = JsonConvert.SerializeObject(payload),
                 PayloadType = typeof(TPayload).Name,
-                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule),
+                Channel = EntityHeader<Channels>.Create(Channels.PipelineModule),
                 ChannelId = Id,
                 Text = text
             };
@@ -548,7 +549,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             {
                 Payload = JsonConvert.SerializeObject(payload),
                 PayloadType = typeof(TPayload).Name,
-                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance),
+                Channel = EntityHeader<Channels>.Create(Channels.Instance),
                 ChannelId = PEMBus.Instance.Id,
                 Text = text
             };
@@ -559,7 +560,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             var msg = new Notification()
             {
-                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.PipelineModule),
+                Channel = EntityHeader<Channels>.Create(Channels.PipelineModule),
                 ChannelId = Id,
                 Text = text
             };
@@ -567,7 +568,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             msg = new Notification()
             {
-                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Instance),
+                Channel = EntityHeader<Channels>.Create(Channels.Instance),
                 ChannelId = PEMBus.Instance.Id,
                 Text = text
             };
@@ -578,7 +579,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
         {
             var msg = new Notification()
             {
-                Channel = EntityHeader<Services.Channels>.Create(Services.Channels.Device),
+                Channel = EntityHeader<Channels>.Create(Channels.Device),
                 ChannelId = deviceId,
                 Text = text
             };

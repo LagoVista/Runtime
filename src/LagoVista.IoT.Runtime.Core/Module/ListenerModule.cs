@@ -1,9 +1,11 @@
 ﻿using LagoVista.Core;
+using LagoVista.Core.Interfaces;
 using LagoVista.Core.Models;
 using LagoVista.Core.Rpc.Messages;
 using LagoVista.Core.Validation;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.Deployment.Models;
+using LagoVista.IoT.DeviceManagement.Core.Models;
 using LagoVista.IoT.DeviceManagement.Models;
 using LagoVista.IoT.DeviceMessaging.Models.Cot;
 using LagoVista.IoT.Pipeline.Admin.Models;
@@ -404,7 +406,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 }
 
                 stepTimeStamp = DateTime.UtcNow;
-                var deviceJSON = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(device), _camelCaseSettings);
+                var deviceJSON = JsonConvert.SerializeObject(DeviceForNotification.FromDevice(device), _camelCaseSettings);
                 var notificationNotification = new Notification()
                 {
                     Payload = deviceJSON,
@@ -774,7 +776,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
             device.LastContact = DateTime.UtcNow.ToJSONString();
             await PEMBus.DeviceStorage.UpdateDeviceAsync(device);
 
-            var json = JsonConvert.SerializeObject(Models.DeviceForNotification.FromDevice(device), _camelCaseSettings);
+            var json = JsonConvert.SerializeObject(DeviceForNotification.FromDevice(device), _camelCaseSettings);
             var notification = new Notification()
             {
                 Payload = json,

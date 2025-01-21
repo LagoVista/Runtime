@@ -1,4 +1,5 @@
-﻿using LagoVista.Core.Validation;
+﻿using LagoVista.Core.Interfaces;
+using LagoVista.Core.Validation;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
 using LagoVista.IoT.Runtime.Core.Module;
 using LagoVista.IoT.Runtime.Core.Services;

@@ -1,4 +1,5 @@
-﻿using LagoVista.Core.Models;
+﻿using LagoVista.Core.Interfaces;
+using LagoVista.Core.Models;
 using LagoVista.IoT.Core.Runtime.Tests.Utils;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceAdmin.Interfaces;

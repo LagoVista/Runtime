@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Module
@@ -275,7 +276,7 @@ namespace LagoVista.IoT.Runtime.Core.Module
 
             Metrics.MessagesProcessed++;
 
-            //PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, "ListenerModule_HandleSystemMessageAsync", "Received System Message", path.ToKVP("topic"), payload.ToKVP("body"));
+            //PEMBus.InstanceLogger.AddCustomEvent(LagoVista.Core.PlatformSupport.LogLevel.Message, "ListenerModule_HandleSystemMessageAsync", "Received System Message", path.ToKVP("topic"), outgoingPayload.ToKVP("body"));
 
             var parts = path.Split('/');
             if (parts.Length < 5)
@@ -675,6 +676,44 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     }
                 }
             }
+            else if (sysMessageType == "desiredconfig")
+            {
+                if(parts.Length >= 6)
+                {
+                    var action = parts[5];
+                    if(action == "send")
+                    {
+                        var cmdTopic = $"nuviot/dvcsrvc/{device.DeviceId}/desiredconfig";
+
+                        Console.WriteLine($"[RemotePropertyManager__SetDesiredConfigurationRevisionAsync] - {cmdTopic}");
+
+                        var revisionLevel = device.DesiredConfigurationRevisionLevel;
+
+                        await SendResponseAsync(message, new OutgoingMessage() { Topic = $"{cmdTopic}/lvl/{revisionLevel}", PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text), TextPayload = String.Empty });
+
+                        foreach (var prp in device.Properties)
+                        {
+                            await SendResponseAsync(message, new OutgoingMessage() { Topic = $"{cmdTopic}/prop/{prp.Key}", PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text), TextPayload = prp.Value });
+                        }
+
+                        foreach (var key in device.PropertyBag.Keys)
+                        {
+                            var value = device.PropertyBag[key];
+
+                            if (value != null)
+                            {
+                                await SendResponseAsync(message, new OutgoingMessage() { Topic = $"{cmdTopic}/prop/{key}", PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text), TextPayload = value.ToString() });
+                            }
+                        }
+                    }
+                    else if(action == "lvl" && parts.Length == 7)
+                    {
+                        device.ActualConfigurationRevisionLevel = Convert.ToInt32(parts[6]);
+                        device.ActualConfigurationTimeStamp = DateTime.UtcNow.ToJSONString();
+                    }
+                }
+                
+            }
             else if (sysMessageType == "online")
             {
                 device.ConnectionTimeStamp = DateTime.UtcNow.ToJSONString();
@@ -768,6 +807,9 @@ namespace LagoVista.IoT.Runtime.Core.Module
                     RSSI = rssi,
                     Reconnect = reconnect
                 };
+
+                var topic = $"nuviot/dvcsrvc/{device.DeviceId}/desiredconfig/srvrlvl/{device.DesiredConfigurationRevisionLevel}";
+                await SendResponseAsync(message, new OutgoingMessage() { Topic = topic, PayloadType = EntityHeader<MessagePayloadTypes>.Create(MessagePayloadTypes.Text), TextPayload = String.Empty });
 
                 await PEMBus.DeviceConnectionEvent.AddDeviceEventConnectionEvent(connectionEvent);
             }

@@ -4,6 +4,7 @@ using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceManagement.Core;
 using LagoVista.IoT.Logging;
 using LagoVista.IoT.Logging.Loggers;
+using LagoVista.IoT.Pipeline.Admin.Interfaces;
 using LagoVista.IoT.Runtime.Core.Interfaces;
 using LagoVista.IoT.Runtime.Core.Services;
 using LagoVista.IoT.Runtime.Core.Storage;

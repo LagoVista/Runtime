@@ -1,4 +1,8 @@
-﻿using System;
+// --- BEGIN CODE INDEX META (do not edit) ---
+// ContentHash: bde3aa7f7bca032df524732462b92964a0a27273f05a77d14655b46a5aa4f51a
+// IndexVersion: 2
+// --- END CODE INDEX META ---
+using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LagoVista.IoT.Runtime.Core.Models.PEM;

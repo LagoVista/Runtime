@@ -1,4 +1,8 @@
-﻿using LagoVista.IoT.Runtime.Core.Models.PEM;
+// --- BEGIN CODE INDEX META (do not edit) ---
+// ContentHash: d961c3d852c1847c2c96ce9db86b3efa4355f1e84a108d132b869543703b8d39
+// IndexVersion: 2
+// --- END CODE INDEX META ---
+using LagoVista.IoT.Runtime.Core.Models.PEM;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;

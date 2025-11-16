@@ -1,4 +1,8 @@
-﻿using LagoVista.IoT.Deployment.Admin;
+// --- BEGIN CODE INDEX META (do not edit) ---
+// ContentHash: 56e5128766e09334069224f2376aea4ef2931d71c368d53d2c9b828bbc3e6e34
+// IndexVersion: 2
+// --- END CODE INDEX META ---
+using LagoVista.IoT.Deployment.Admin;
 using System.Threading.Tasks;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces

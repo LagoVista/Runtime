@@ -5,7 +5,6 @@
 using LagoVista.Core.Interfaces;
 using LagoVista.Core.PlatformSupport;
 using LagoVista.IoT.Deployment.Admin.Models;
-using LagoVista.IoT.DeviceManagement.Core;
 using LagoVista.IoT.Logging;
 using LagoVista.IoT.Logging.Loggers;
 using LagoVista.IoT.Pipeline.Admin.Interfaces;
@@ -30,7 +29,7 @@ namespace LagoVista.IoT.Runtime.Core
 
         IPEMStorage PEMStorage { get; set; }
 
-
+        ISensorDataArchiveStorage SensorDataArchiveRepo { get; set; }
         IApplicationCacheServices CacheServices { get; set; }
         IDeviceArchiveStorage DeviceArchiveStorage { get; set; }
         IDeviceMediaStorage DeviceMediaStorage { get; set; }

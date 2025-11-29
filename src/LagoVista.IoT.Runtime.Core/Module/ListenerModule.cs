@@ -513,37 +513,65 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 if (values.Length != 16)
                     throw new InvalidDataException($"IO Configuration from device should consist of 16 comma delimited values, message consists of {values.Length} items.");
 
+                var sensorData = new SensorDataArchive();
+                sensorData.Timestamp = DateTime.UtcNow.ToJSONString();
+                sensorData.DeviceId = device.DeviceId;
+
+                Console.WriteLine(payload);
+
                 for (int idx = 0; idx < 8; ++idx)
                 {
                     if (!String.IsNullOrEmpty(values[idx + 8]))
                     {
-                        details += $" ADC {idx} has value {values[idx + 8]}";
-                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null &&
-                                                                   sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC &&
-                                                                   sns.PortIndex == idx).FirstOrDefault();
-                        if (sensor != null)
+                        var value = values[idx + 8];
+                        value = value.Replace("\"", String.Empty);
+                        if (!String.IsNullOrEmpty(value))
                         {
-                            sensor.Value = values[idx + 8];
-                            sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
-                        }
-                        else
-                        {
-                            sensor = new Sensor()
+
+                            details += $" ADC {idx} has value {value}";
+                            var sensor = device.SensorCollection.Where(sns => sns.Technology != null &&
+                                                                       sns.Technology.Value == DeviceManagement.Models.SensorTechnology.ADC &&
+                                                                       sns.PortIndex == idx).FirstOrDefault();
+                            if (sensor != null)
                             {
-                                PortIndex = idx,
-                                Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),
-                                Value = values[idx + 8],
-                                LastUpdated = DateTime.UtcNow.ToJSONString()
-                            };
+                                sensor.Value = value;
+                                sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
+                            }
+                            else
+                            {
+                                sensor = new Sensor()
+                                {
+                                    PortIndex = idx,
+                                    Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.ADC),
+                                    Value = value,
+                                    LastUpdated = DateTime.UtcNow.ToJSONString()
+                                };
+                                sensor.Value = value;
+                                sensor.Name = $"{sensor.Technology.Text} - {sensor.PortIndexSelection.Text}";
+                                sensor.Key = sensor.Name.Replace(" ", "").Replace("-", "").Replace("/", "").ToLower();
 
-                            sensor.Name = $"{sensor.Technology.Text} - {sensor.PortIndexSelection.Text}";
-                            sensor.Key = sensor.Name.Replace(" ", "").Replace("-", "").Replace("/", "").ToLower();
-
-                            if (double.TryParse(sensor.Value, out double dbl))
-                                sensor.ValueType = EntityHeader<SensorValueType>.Create(SensorValueType.Number);
+                                if (double.TryParse(sensor.Value, out double dbl))
+                                    sensor.ValueType = EntityHeader<SensorValueType>.Create(SensorValueType.Number);
 
 
-                            device.SensorCollection.Add(sensor);
+                                device.SensorCollection.Add(sensor);
+                            }
+
+                            Console.WriteLine($"[ListenerModule_HandleSystemMessageAsync] - ADC Sensor {idx} Value: {value}");
+                            if (double.TryParse(value, out double parsed))
+                            {
+                                switch (idx)
+                                {
+                                    case 0: sensorData.ADCSensor1 = parsed; break;
+                                    case 1: sensorData.ADCSensor2 = parsed; break;
+                                    case 2: sensorData.ADCSensor3 = parsed; break;
+                                    case 3: sensorData.ADCSensor4 = parsed; break;
+                                    case 4: sensorData.ADCSensor5 = parsed; break;
+                                    case 5: sensorData.ADCSensor6 = parsed; break;
+                                    case 6: sensorData.ADCSensor7 = parsed; break;
+                                    case 7: sensorData.ADCSensor8 = parsed; break;
+                                }
+                            }
                         }
                     }
                 }
@@ -552,33 +580,55 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 {
                     if (!String.IsNullOrEmpty(values[idx]))
                     {
-                        details += $" IO {idx} has value {values[idx]}";
-                        var sensor = device.SensorCollection.Where(sns => sns.Technology != null &&
-                                                                    sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO &&
-                                                                    sns.PortIndex == idx).FirstOrDefault();
-                        if (sensor != null)
+                        var value = values[idx];
+                        value = value.Replace("\"", String.Empty);
+                        if (!String.IsNullOrEmpty(value))
                         {
-                            sensor.Value = values[idx];
-                            sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
-                        }
-                        else
-                        {
-                            sensor = new Sensor()
+                            details += $" IO {idx} has value {value}";
+                            var sensor = device.SensorCollection.Where(sns => sns.Technology != null &&
+                                                                        sns.Technology.Value == DeviceManagement.Models.SensorTechnology.IO &&
+                                                                        sns.PortIndex == idx).FirstOrDefault();
+                            if (sensor != null)
                             {
-                                PortIndex = idx,
-                                Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.IO),
-                                Value = values[idx],
-                                LastUpdated = DateTime.UtcNow.ToJSONString()
-                            };
+                                sensor.Value = value;
+                                sensor.LastUpdated = DateTime.UtcNow.ToJSONString();
+                            }
+                            else
+                            {
+                                sensor = new Sensor()
+                                {
+                                    PortIndex = idx,
+                                    Technology = EntityHeader<SensorTechnology>.Create(SensorTechnology.IO),
+                                    Value = value,
+                                    LastUpdated = DateTime.UtcNow.ToJSONString()
+                                };
+                                sensor.Value = value;
+                                sensor.Name = $"{sensor.Technology.Text} - {sensor.PortIndexSelection.Text}";
+                                sensor.Key = sensor.Name.Replace(" ", "").Replace("-", "").Replace("/", "").ToLower();
 
-                            sensor.Name = $"{sensor.Technology.Text} - {sensor.PortIndexSelection.Text}";
-                            sensor.Key = sensor.Name.Replace(" ", "").Replace("-", "").Replace("/", "").ToLower();
+                                device.SensorCollection.Add(sensor);
+                            }
 
-                            device.SensorCollection.Add(sensor);
+                            Console.WriteLine($"[ListenerModule_HandleSystemMessageAsync] - IO Sensor {idx} Value: {sensor.Value}");
+                            if (double.TryParse(value, out double parsed))
+                            {
+                                switch (idx)
+                                {
+                                    case 0: sensorData.IoSensor1 = parsed; break;
+                                    case 1: sensorData.IoSensor2 = parsed; break;
+                                    case 2: sensorData.IoSensor3 = parsed; break;
+                                    case 3: sensorData.IoSensor4 = parsed; break;
+                                    case 4: sensorData.IoSensor5 = parsed; break;
+                                    case 5: sensorData.IoSensor6 = parsed; break;
+                                    case 6: sensorData.IoSensor7 = parsed; break;
+                                    case 7: sensorData.IoSensor8 = parsed; break;
+                                }
+                            }
                         }
                     }
                 }
 
+                await PEMBus.SensorDataArchiveRepo.AddArchiveAsync(sensorData);
                 await PEMBus.SensorEvaluator.EvaluateAsync(device);
                 // It's possible that device was updated on the server, if so, we want to reload it.
                 var sensorCollection = device.SensorCollection;

@@ -15,12 +15,12 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
 
         public OutgoingMessage()
         {
-            Headers = new ObservableCollection<Header>();
+            Headers = new ObservableCollection<SampleMessageHeader>();
         }
 
         public EntityHeader<MessagePayloadTypes> PayloadType { get; set; }
 
-        public ObservableCollection<Header> Headers { get; private set; }
+        public ObservableCollection<SampleMessageHeader> Headers { get; private set; }
 
         public string ContentType { get; set; }
         public string Topic { get; set; }

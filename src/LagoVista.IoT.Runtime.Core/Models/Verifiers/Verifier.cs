@@ -53,7 +53,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
 
         public Verifier()
         {
-            Headers = new ObservableCollection<Header>();
+            Headers = new ObservableCollection<SampleMessageHeader>();
             ExpectedOutputs = new ObservableCollection<ExpectedValue>();
             VerifierType = EntityHeader<VerifierTypes>.Create(VerifierTypes.NotSpecified);
         }
@@ -68,7 +68,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.Verifiers
         public bool ShouldSucceed { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_Header, HelpResource: RuntimeCoreResources.Names.Verifier_Header_Help, FactoryUrl: "/api/devicemessagetype/header/factory", ResourceType: typeof(RuntimeCoreResources), FieldType: FieldTypes.ChildListInline)]
-        public ObservableCollection<Header> Headers { get; set; }
+        public ObservableCollection<SampleMessageHeader> Headers { get; set; }
 
         [FormField(LabelResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString, FieldType: FieldTypes.Text, HelpResource: RuntimeCoreResources.Names.Verifier_PathAndQueryString_Help, ResourceType: typeof(RuntimeCoreResources))]
         public String PathAndQueryString { get; set; }

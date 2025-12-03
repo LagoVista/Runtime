@@ -14,7 +14,6 @@ namespace LagoVista.IoT.Runtime.Core
     public class MetricsDomain
     {
         public const string Metrics = "Metrics";
-
         [DomainDescription(Metrics)]
         public static DomainDescription MetricsDomainDescription
         {
@@ -22,7 +21,7 @@ namespace LagoVista.IoT.Runtime.Core
             {
                 return new DomainDescription()
                 {
-                    Description = "Meterics are used for monitoring usage and performance of the system.",
+                    Description = "Metrics are used to monitor system usage and performance.",
                     DomainType = DomainDescription.DomainTypes.Dto,
                     Name = "Metrics",
                     CurrentVersion = new LagoVista.Core.Models.VersionInfo()

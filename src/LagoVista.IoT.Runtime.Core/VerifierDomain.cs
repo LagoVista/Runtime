@@ -14,7 +14,6 @@ namespace LagoVista.IoT.Runtime.Core
     public class VerifierDomain
     {
         public const string Verifiers = "Verifiers";
-
         [DomainDescription(Verifiers)]
         public static DomainDescription VerifierDomainDescription
         {
@@ -22,7 +21,7 @@ namespace LagoVista.IoT.Runtime.Core
             {
                 return new DomainDescription()
                 {
-                    Description = "Verifiers are used to Verify Configured Components work as Expected.",
+                    Description = "Use verifiers to confirm that configured components work as expected.",
                     DomainType = DomainDescription.DomainTypes.BusinessObject,
                     Name = "Verifiers",
                     CurrentVersion = new LagoVista.Core.Models.VersionInfo()

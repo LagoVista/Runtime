@@ -142,7 +142,7 @@
     <value>-select field-</value>
   </data>
   <data name="ExpectedValue_Help" xml:space="preserve">
-    <value>Expected Value are what the parser should fine when it extracts the values out of the message.</value>
+    <value>Specify the values the parser should detect when extracting data from the message.</value>
   </data>
   <data name="ExpectedValue_Key" xml:space="preserve">
     <value>Key</value>
@@ -173,7 +173,7 @@
     <value>Component</value>
   </data>
   <data name="Verifier_Description" xml:space="preserve">
-    <value>You can add Verifiers to certain components of your deployment.  A verifier can be thought of as a test that can be ran against certain components to verifiy they behave the way you expect.</value>
+    <value>Add verifiers to selected components in your deployment. Each verifier is a test that confirms the component behaves as expected.</value>
   </data>
   <data name="Verifier_Empty" xml:space="preserve">
     <value>-empty-</value>
@@ -197,7 +197,7 @@
     <value>You can enter Key Value Pairs that represent the contents of the heades of your messages to be evaluated by the Verifier</value>
   </data>
   <data name="Verifier_Help" xml:space="preserve">
-    <value>You can add Verifiers to certain components of your deployment.  A verifier can be thought of as a test that can be ran against certain components to verifiy they behave the way you expect.</value>
+    <value>Add verifiers to components in your deployment. A verifier is a test that confirms a component behaves as expected.</value>
   </data>
   <data name="Verifier_InputType" xml:space="preserve">
     <value>Payload Type</value>

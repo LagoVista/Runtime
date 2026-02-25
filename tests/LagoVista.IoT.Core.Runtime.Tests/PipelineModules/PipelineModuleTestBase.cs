@@ -7,16 +7,12 @@ using LagoVista.Core.Models;
 using LagoVista.IoT.Core.Runtime.Tests.Utils;
 using LagoVista.IoT.Deployment.Admin.Models;
 using LagoVista.IoT.DeviceAdmin.Interfaces;
-using LagoVista.IoT.DeviceManagement.Core;
 using LagoVista.IoT.Logging.Loggers;
 using LagoVista.IoT.Runtime.Core;
 using LagoVista.IoT.Runtime.Core.Models.PEM;
-using LagoVista.IoT.Runtime.Core.Services;
 using LagoVista.IoT.Runtime.Core.Storage;
-using LagoVista.IoT.Runtime.Core.Users;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

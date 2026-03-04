@@ -83,7 +83,7 @@ namespace LagoVista.IoT.Runtime.Core.Models.PEM
         /// Unique ID assigned to the Message ID
         /// </summary>
         [JsonProperty("pemId")]
-        public string Id { get; set; }
+        public NormalizedId32 Id { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("messageType")]

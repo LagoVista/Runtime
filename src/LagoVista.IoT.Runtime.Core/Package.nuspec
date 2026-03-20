@@ -2,26 +2,26 @@
 <package>
   <metadata>
     <id>LagoVista.IoT.Runtime.Core</id>
-    <version>3.0.3099.1426</version>
+    <version>3.0.3228.2100</version>
     <authors>Software Logistics, LLC</authors>
     <owners>Software Logistics, LLC</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://www.nuviot.com</projectUrl>
     <iconUrl>http://bytemaster.blob.core.windows.net/icons/LagoVistaIcon.png</iconUrl>
     <description>Provides Core Functionality and Specifications in the form of Interfaces for Pipeline Modules of the Execution Engine in the LagoVista Devices, IoT and Home Automation Framework</description>
-    <copyright>Copyright Software Logistics - 2025</copyright>
+    <copyright>Copyright Software Logistics - 2026</copyright>
     <tags>HomeAutomation IoT Cloud</tags>
     <icon>LagoVistaIcon.png</icon>
-    <releaseNotes>Build Date: 11/10/2025 7:26:04 PM UTC</releaseNotes>
+    <releaseNotes>Build Date: 3/20/2026 1:00:12 AM UTC</releaseNotes>
     <repository url="https://www.github.com/lagovista" type="git" branch="master"></repository>
     <dependencies>
       <group targetFramework="netstandard2.1">
-        <dependency id="LagoVista.IoT.Deployment.Models" version="3.0.3099.1426" />
-        <dependency id="LagoVista.IoT.DeviceAdmin.Models" version="3.0.3099.1426" />
-        <dependency id="LagoVista.IoT.DeviceMessaging.Models" version="3.0.3099.1426" />
-        <dependency id="LagoVista.IoT.DeviceManagement.Core" version="3.0.3099.1426" />
-        <dependency id="LagoVista.IoT.Deployment.Admin" version="3.0.3099.1426" />
-        <dependency id="LagoVista.IoT.Pipeline.Admin" version="3.0.3099.1426" />
+        <dependency id="LagoVista.IoT.Deployment.Models" version="3.0.3228.2100" />
+        <dependency id="LagoVista.IoT.DeviceAdmin.Models" version="3.0.3228.2054" />
+        <dependency id="LagoVista.IoT.DeviceMessaging.Models" version="3.0.3228.2054" />
+        <dependency id="LagoVista.IoT.DeviceManagement.Core" version="3.0.3228.2054" />
+        <dependency id="LagoVista.IoT.Deployment.Admin" version="3.0.3228.2100" />
+        <dependency id="LagoVista.IoT.Pipeline.Admin" version="3.0.3228.2054" />
       </group>
     </dependencies>
   </metadata>

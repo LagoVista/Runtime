@@ -3,7 +3,11 @@
 // IndexVersion: 2
 // --- END CODE INDEX META ---
 using LagoVista.Core.Interfaces;
+using LagoVista.IoT.DeviceMessaging.Admin.Models;
 using LagoVista.IoT.Logging;
+using LagoVista.IoT.Logging.Loggers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LagoVista.IoT.Runtime.Core
 {
@@ -15,6 +19,17 @@ namespace LagoVista.IoT.Runtime.Core
             ErrorCodes.Register(typeof(Resources.ErrorCodes.PipelineEnqueing));
             ErrorCodes.Register(typeof(Resources.ErrorCodes.Verifiers));
             ErrorCodes.Register(typeof(Resources.ErrorCodes.Messaging));
+        }
+    }
+}
+
+namespace LagoVista.DependencyInjection
+{
+    public static class RuntimeModule
+    {
+        public static void AddRuntimeCoreModule(this IServiceCollection services, IConfigurationRoot configRoot, IAdminLogger logger)
+        {
+            LagoVista.IoT.Runtime.Core.StartUp.ConfigureServices(services);
         }
     }
 }

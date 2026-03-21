@@ -68,7 +68,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             var msg = new PipelineExecutionMessage()
             {
                 Id = "messageid",
-                ErrorMessages = new List<Logging.Error>(),
+                ErrorMessages = new List<Error>(),
                 CurrentInstruction = new PipelineExecutionInstruction()
                 {
                     Name = "First Step",

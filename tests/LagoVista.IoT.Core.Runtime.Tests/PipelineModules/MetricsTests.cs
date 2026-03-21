@@ -175,7 +175,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             Assert.AreEqual(0, PipelineModule.Metrics.ErrorCount);
 
             PipelineModule.ResultToReturn = new IoT.Runtime.Core.Processor.ProcessResult();
-            var failedError = new Logging.Error() { Message = "IT FAILED!", ErrorCode = "ERR001" };
+            var failedError = new Error() { Message = "IT FAILED!", ErrorCode = "ERR001" };
             PipelineModule.ResultToReturn.ErrorMessages.Add(failedError);
 
             await ProcessMessageAsync(pem);
@@ -191,7 +191,7 @@ namespace LagoVista.IoT.Core.Runtime.Tests.PipelineModules
             PipelineModule.Metrics.DeadLetterCount = 15;
 
             PipelineModule.ResultToReturn = new IoT.Runtime.Core.Processor.ProcessResult();
-            var failedError = new Logging.Error() { Message = "IT FAILED!", ErrorCode = "ERR001" };
+            var failedError = new Error() { Message = "IT FAILED!", ErrorCode = "ERR001" };
             PipelineModule.ResultToReturn.ErrorMessages.Add(failedError);
 
             await ProcessMessageAsync(pem);

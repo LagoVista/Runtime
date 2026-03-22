@@ -7,9 +7,9 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
    </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LagoVista.Core.TestBase" Version="3.0.3228.2054" />
-    <PackageReference Include="LagoVista.MediaServices.Models" Version="3.0.3228.2054" />
-    <PackageReference Include="LagoVista.Core.Networking" Version="3.0.3228.2054" />
+    <PackageReference Include="LagoVista.Core.TestBase" Version="3.0.3231.0414" />
+    <PackageReference Include="LagoVista.MediaServices.Models" Version="3.0.3231.0414" />
+    <PackageReference Include="LagoVista.Core.Networking" Version="3.0.3231.0414" />
      </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\LagoVista.IoT.Runtime.Core\LagoVista.IoT.Runtime.Core.csproj" />

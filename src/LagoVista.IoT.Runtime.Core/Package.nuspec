@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>LagoVista.IoT.Runtime.Core</id>
-    <version>3.0.3228.2100</version>
+    <version>3.0.3231.0421</version>
     <authors>Software Logistics, LLC</authors>
     <owners>Software Logistics, LLC</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -12,22 +12,22 @@
     <copyright>Copyright Software Logistics - 2026</copyright>
     <tags>HomeAutomation IoT Cloud</tags>
     <icon>LagoVistaIcon.png</icon>
-    <releaseNotes>Build Date: 3/20/2026 1:00:12 AM UTC</releaseNotes>
+    <releaseNotes>Build Date: 3/22/2026 8:21:02 AM UTC</releaseNotes>
     <repository url="https://www.github.com/lagovista" type="git" branch="master"></repository>
     <dependencies>
-      <group targetFramework="netstandard2.1">
-        <dependency id="LagoVista.IoT.Deployment.Models" version="3.0.3228.2100" />
-        <dependency id="LagoVista.IoT.DeviceAdmin.Models" version="3.0.3228.2054" />
-        <dependency id="LagoVista.IoT.DeviceMessaging.Models" version="3.0.3228.2054" />
-        <dependency id="LagoVista.IoT.DeviceManagement.Core" version="3.0.3228.2054" />
-        <dependency id="LagoVista.IoT.Deployment.Admin" version="3.0.3228.2100" />
-        <dependency id="LagoVista.IoT.Pipeline.Admin" version="3.0.3228.2054" />
+      <group targetFramework="net9.0">
+        <dependency id="LagoVista.IoT.Deployment.Models" version="3.0.3231.0421" />
+        <dependency id="LagoVista.IoT.DeviceAdmin.Models" version="3.0.3231.0414" />
+        <dependency id="LagoVista.IoT.DeviceMessaging.Models" version="3.0.3231.0414" />
+        <dependency id="LagoVista.IoT.DeviceManagement.Core" version="3.0.3231.0414" />
+        <dependency id="LagoVista.IoT.Deployment.Admin" version="3.0.3231.0421" />
+        <dependency id="LagoVista.IoT.Pipeline.Admin" version="3.0.3231.0414" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="LagoVistaIcon.png" target="LagoVistaIcon.png" />
-    <file src="bin\release\netstandard2.1\LagoVista.IoT.Runtime.Core.dll" target="lib\netstandard2.1\LagoVista.IoT.Runtime.Core.dll" />
-    <file src="bin\release\netstandard2.1\LagoVista.IoT.Runtime.Core.pdb" target="lib\netstandard2.1\LagoVista.IoT.Runtime.Core.pdb" />
+    <file src="bin\release\net9.0\LagoVista.IoT.Runtime.Core.dll" target="lib\net9.0\LagoVista.IoT.Runtime.Core.dll" />
+    <file src="bin\release\net9.0\LagoVista.IoT.Runtime.Core.pdb" target="lib\net9.0\LagoVista.IoT.Runtime.Core.pdb" />
   </files>
 </package>

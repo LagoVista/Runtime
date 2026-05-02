@@ -720,6 +720,17 @@ namespace LagoVista.IoT.Runtime.Core.Module
                                 device.GeoLocation.Longitude = Convert.ToDouble(value);
                                 device.GeoLocation.LastUpdated = DateTime.UtcNow.ToJSONString();
                                 break;
+                            case "batlvl":
+                                if(decimal.TryParse(value, out decimal batlvl))
+                                     device.BatteryLevel = batlvl;
+                                break;
+                            case "batvlt":
+                                if (decimal.TryParse(value, out decimal batvlt))
+                                    device.BatteryVoltage = batvlt;
+                                break;
+                            case "onbat":
+                                device.RunningOnBattery = value == "true";
+                                break;
                             default:
                                 if (device.PropertyBag.ContainsKey(key))
                                     device.PropertyBag[key] = value;

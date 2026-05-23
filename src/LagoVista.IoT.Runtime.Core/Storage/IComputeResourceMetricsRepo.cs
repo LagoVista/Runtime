@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using LagoVista.Core.Models;
 
 namespace LagoVista.IoT.Runtime.Core.Storage
 {

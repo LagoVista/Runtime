@@ -12,6 +12,7 @@ namespace LagoVista.IoT.Runtime.Core.Storage
     public interface IUsageMetricsRepoRemote
     {
         Task AddMetricAsync(UsageMetrics metrics);
+        Task AddMetricsAsync(IEnumerable<UsageMetrics> metrics);
     }
 
     public interface IUsageMetricsRepo : IUsageMetricsRepoRemote

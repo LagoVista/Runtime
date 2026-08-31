@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
     <id>LagoVista.IoT.Runtime.Core</id>
-    <version>3.0.3231.0421</version>
+    <version>6.0.0</version>
     <authors>Software Logistics, LLC</authors>
     <owners>Software Logistics, LLC</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -16,18 +16,18 @@
     <repository url="https://www.github.com/lagovista" type="git" branch="master"></repository>
     <dependencies>
       <group targetFramework="net9.0">
-        <dependency id="LagoVista.IoT.Deployment.Models" version="3.0.3231.0421" />
-        <dependency id="LagoVista.IoT.DeviceAdmin.Models" version="3.0.3231.0414" />
-        <dependency id="LagoVista.IoT.DeviceMessaging.Models" version="3.0.3231.0414" />
-        <dependency id="LagoVista.IoT.DeviceManagement.Core" version="3.0.3231.0414" />
-        <dependency id="LagoVista.IoT.Deployment.Admin" version="3.0.3231.0421" />
-        <dependency id="LagoVista.IoT.Pipeline.Admin" version="3.0.3231.0414" />
+        <dependency id="LagoVista.IoT.Deployment.Admin" version="6.0.0" />
+        <dependency id="LagoVista.IoT.Deployment.Models" version="6.0.0" />
+        <dependency id="LagoVista.IoT.DeviceAdmin.Models" version="6.0.0" />
+        <dependency id="LagoVista.IoT.DeviceManagement.Core" version="6.0.0" />
+        <dependency id="LagoVista.IoT.DeviceMessaging.Models" version="6.0.0" />
+        <dependency id="LagoVista.IoT.Pipeline.Admin" version="6.0.0" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="LagoVistaIcon.png" target="LagoVistaIcon.png" />
-    <file src="bin\release\net9.0\LagoVista.IoT.Runtime.Core.dll" target="lib\net9.0\LagoVista.IoT.Runtime.Core.dll" />
-    <file src="bin\release\net9.0\LagoVista.IoT.Runtime.Core.pdb" target="lib\net9.0\LagoVista.IoT.Runtime.Core.pdb" />
+    <file src="bin/Release/net9.0/LagoVista.IoT.Runtime.Core.dll" target="lib/net9.0/LagoVista.IoT.Runtime.Core.dll" />
+    <file src="bin/Release/net9.0/LagoVista.IoT.Runtime.Core.pdb" target="lib/net9.0/LagoVista.IoT.Runtime.Core.pdb" />
   </files>
 </package>

@@ -48,6 +48,8 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
 
     public interface IInstanceConnector: IUsageMetricsSettingsProvider, ILogWriterSettingsProvider, INotificationConnectionProvider, IRPCSettingsProvider, IEHCheckPointSettingsProvider
     {
+        IRuntimeSignedHttpClient RuntimeSignedHttpClient { get; }
+
         Task<InvokeResult<DeviceDataStorageSettings>> GetDeviceDataStorageSettingsAsync();
         Task<InvokeResult<ConnectionSettings>> GetDeviceStorageSettingsAsync();
         Task<InvokeResult<ConnectionSettings>> GetDeviceConnectionEventStorageSettingsAsync();

@@ -51,7 +51,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         IRuntimeSignedHttpClient RuntimeSignedHttpClient { get; }
 
         Task<InvokeResult<DeviceDataStorageSettings>> GetDeviceDataStorageSettingsAsync();
-        Task<InvokeResult<ConnectionSettings>> GetDeviceConnectionEventStorageSettingsAsync();
         Task<InvokeResult<DeploymentInstance>> GetInstanceAsync();
         Task<InvokeResult<string>> GetKeyFromSecureIdAsync(string keyId);
         Task<InvokeResult<byte[]>> DownloadMLModelAsync(string modelId, string revision = null);

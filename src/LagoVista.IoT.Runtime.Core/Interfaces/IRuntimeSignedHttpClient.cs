@@ -12,6 +12,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<TResult>> PutAsync<TRequest, TResult>(SignedServiceHttpTarget target, string pathAndQuery, TRequest request);
         Task<InvokeResult<TResult>> DeleteAsync<TResult>(SignedServiceHttpTarget target, string pathAndQuery);
         Task<InvokeResult<byte[]>> GetBytesAsync(SignedServiceHttpTarget target, string pathAndQuery);
+        Task<InvokeResult<byte[]>> PostBytesAsync(SignedServiceHttpTarget target, string pathAndQuery, byte[] body, string contentType);
         Task<InvokeResult<string>> GetStringAsync(SignedServiceHttpTarget target, string pathAndQuery);
         Task<InvokeResult<string>> DeleteStringAsync(SignedServiceHttpTarget target, string pathAndQuery);
         Task<InvokeResult<string>> PostJsonStringAsync(SignedServiceHttpTarget target, string pathAndQuery, string json);

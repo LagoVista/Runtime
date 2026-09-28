@@ -71,7 +71,6 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<Device>> DeviceOnlineAsync(Device device, string lastContact);
         Task<InvokeResult<Device>> DeviceOfflineAsync(Device device, string lastContact);
 
-        Task<InvokeResult<ConnectionSettings>> GetDeviceAccountTransactionSettings();
 
         Task<InvokeResult<InstanceService>> AllocatedServiceHostAsync(HostTypes hostType);
         Task<InvokeResult> RemoveServiceHostAsync(string id);

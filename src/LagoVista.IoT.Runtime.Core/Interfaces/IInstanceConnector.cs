@@ -12,6 +12,7 @@ using LagoVista.IoT.Deployment.Models.Settings;
 using LagoVista.IoT.DeviceManagement.Core.Models;
 using LagoVista.IoT.DeviceManagement.Models;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace LagoVista.IoT.Runtime.Core.Interfaces
 {
@@ -66,6 +67,7 @@ namespace LagoVista.IoT.Runtime.Core.Interfaces
         Task<InvokeResult<string>> CreateServiceTicketAsync(CreateServiceTicketRequest ticketRequest);
         Task<InvokeResult> HandleDeviceExceptionAsync(DeviceException exception);
         Task<InvokeResult> SendDeviceNotificationAsync(RaisedDeviceNotification notification);
+        Task<InvokeResult> WriteDeviceProximityObservationsAsync(IReadOnlyList<DeviceProximityObservation> observations);
         Task<InvokeResult> ClearDeviceExceptionAsync(DeviceException exception);
 
         Task<InvokeResult<Device>> DeviceOnlineAsync(Device device, string lastContact);

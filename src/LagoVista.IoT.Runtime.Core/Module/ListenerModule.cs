@@ -382,6 +382,67 @@ namespace LagoVista.IoT.Runtime.Core.Module
                 // reload since the server will have updated the device.
                 device = await PEMBus.DeviceStorage.GetDeviceByDeviceIdAsync(deviceId);
             }
+            else if (sysMessageType == "beacons" || (sysMessageType == "button" && parts.Length > 5 && parts[5] == "rssi"))
+            {
+                // Normalize both firmware payload shapes before crossing the runtime service boundary.
+                // A single RSSI report is submitted as a one-element batch.
+                var observations = new List<DeviceProximityObservation>();
+                try
+                {
+                    var root = Newtonsoft.Json.Linq.JObject.Parse(payload);
+                    var readings = sysMessageType == "beacons"
+                        ? root["beacons"] as Newtonsoft.Json.Linq.JArray
+                        : new Newtonsoft.Json.Linq.JArray(root);
+
+                    if (readings == null)
+                        return InvokeResult<PipelineExecutionMessage>.FromError("Proximity payload must contain a beacons array.");
+
+                    foreach (var item in readings)
+                    {
+                        var observedId = sysMessageType == "beacons"
+                            ? (string)item["deviceId"]
+                            : (string)item["button"];
+                        if (String.IsNullOrWhiteSpace(observedId) || item["rssi"] == null ||
+                            (sysMessageType == "beacons" ? item["distance"] : item["dist"]) == null)
+                            return InvokeResult<PipelineExecutionMessage>.FromError("Proximity payload is missing required fields.");
+
+                        observations.Add(new DeviceProximityObservation
+                        {
+                            Id = Guid.NewGuid().ToId(),
+                            OrganizationId = device.OwnerOrganization.Id,
+                            Organization = device.OwnerOrganization.Text,
+                            TimeStamp = startTimeStamp,
+                            DeviceRepoId = device.DeviceRepository.Id,
+                            DeviceUniqueId = device.Id,
+                            DeviceName = device.Name,
+                            DeviceId = device.DeviceId,
+                            DeviceType = device.DeviceType?.Text,
+                            DeviceTypeId = device.DeviceType?.Id,
+                            ObservedDeviceId = observedId,
+                            Rssi = (double)item["rssi"],
+                            DistanceEstimate = (double)(sysMessageType == "beacons" ? item["distance"] : item["dist"]),
+                            SourceMessageType = sysMessageType == "beacons" ? "beacons" : "button/rssi"
+                        });
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    PEMBus.InstanceLogger.AddException("ListenerModule_ProximityPayload", ex);
+                    return InvokeResult<PipelineExecutionMessage>.FromError("Invalid proximity JSON payload.");
+                }
+
+                if (observations.Count > 0)
+                {
+                    var write = await PEMBus.InstanceConnector.WriteDeviceProximityObservationsAsync(observations);
+                    if (!write.Successful)
+                        return InvokeResult<PipelineExecutionMessage>.FromError("Could not persist proximity observations.");
+                }
+
+                message.MessageId = "device-proximity-observation";
+                message.Status = StatusTypes.Completed;
+                message.ExecutionTimeMS = (DateTime.UtcNow - startTimeStamp).TotalMilliseconds;
+                await PEMBus.PEMStorage.AddMessageAsync(message);
+            }
             else if (sysMessageType == "notification")
             {
                 var replyTopic = $"nuviot/dvcsrvc/{device.DeviceId}/notification/{parts[5]}/ack";
